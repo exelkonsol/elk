@@ -15,16 +15,16 @@
     <!-- Open Graph -->
     <meta property="og:title" content="$ELK - The Burden We Carry Together">
     <meta property="og:description" content="A community-driven memecoin on Solana inspired by philosophical insights. The antlers are heavy. We carry them together.">
-    <meta property="og:image" content="https://exelkonsol.github.io/elk-site/newpreview.png">
+    <meta property="og:image" content="https://your-deployed-site-url.com/elk1.png">
     <meta property="og:image:alt" content="Majestic elk bearing heavy antlers on a dark mountain ridge">
-    <meta property="og:url" content="https://exelkonsol.github.io/elk-site/">
+    <meta property="og:url" content="https://your-deployed-site-url.com/">
     <meta property="og:type" content="website">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="$ELK - The Burden We Carry Together">
     <meta name="twitter:description" content="A community-driven memecoin on Solana inspired by philosophical insights.">
-    <meta name="twitter:image" content="https://exelkonsol.github.io/elk-site/newpreview.png">
+    <meta name="twitter:image" content="https://your-deployed-site-url.com/elk1.png">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -125,29 +125,18 @@
             pointer-events: none;
             background: 
                 /* Soft top light */
-                radial-gradient(ellipse 120% 40% at 50% -5%, rgba(255,255,255,0.02) 0%, transparent 60%),
-                /* Crimson accents - reduced */
-                radial-gradient(ellipse at 25% 35%, rgba(160, 24, 48, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 75% 65%, rgba(107, 18, 18, 0.06) 0%, transparent 50%),
-                /* Dark vignette - corners - ENHANCED */
-                radial-gradient(ellipse 150% 100% at 50% 50%, transparent 15%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0.92) 100%),
-                /* Left corner shadow - stronger */
-                linear-gradient(to right, rgba(0,0,0,0.85) 0%, transparent 30%),
-                /* Right corner shadow - stronger */
-                linear-gradient(to left, rgba(0,0,0,0.85) 0%, transparent 30%),
-                /* Overall darkening - enhanced */
-                linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 20%, rgba(0,0,0,0.15) 80%, rgba(0,0,0,0.65) 100%);
-        }
-        
-        /* Desktop-only extra darkness layer */
-        @media (min-width: 769px) {
-            .atmospheric-overlay::after {
-                content: '';
-                position: absolute;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.18);
-                pointer-events: none;
-            }
+                radial-gradient(ellipse 120% 40% at 50% -5%, rgba(255,255,255,0.03) 0%, transparent 60%),
+                /* Crimson accents */
+                radial-gradient(ellipse at 25% 35%, rgba(160, 24, 48, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 75% 65%, rgba(107, 18, 18, 0.10) 0%, transparent 50%),
+                /* Dark vignette - corners */
+                radial-gradient(ellipse 150% 100% at 50% 50%, transparent 20%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.85) 100%),
+                /* Left corner shadow */
+                linear-gradient(to right, rgba(0,0,0,0.7) 0%, transparent 25%),
+                /* Right corner shadow */
+                linear-gradient(to left, rgba(0,0,0,0.7) 0%, transparent 25%),
+                /* Overall darkening */
+                linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%);
         }
         
         /* Film Grain Texture */
@@ -1291,25 +1280,11 @@
             .audio-panel {
                 width: calc(100vw - 2rem);
                 max-width: 320px;
-                position: absolute;
-                bottom: 100%;
-                right: 0;
-                margin-bottom: 0.5rem;
-            }
-            
-            .audio-player:not(.expanded) .audio-panel {
-                display: none;
-            }
-            
-            .audio-player.expanded .audio-panel {
-                display: block;
             }
             
             .audio-toggle-btn {
                 padding: 0.6rem 0.9rem;
                 font-size: 0.75rem;
-                position: relative;
-                z-index: 1001;
             }
             
             .modal-content {
@@ -1427,7 +1402,7 @@
         <!-- Hero -->
         <section class="hero">
             <h1>$ELK</h1>
-            <p class="tagline">The antlers are heavy. We carry them together.</p>
+            <p class="tagline">The burden becomes beautiful when shared.</p>
             
             <div class="contract-container">
                 <div class="contract-box">
@@ -1558,12 +1533,12 @@
             <div class="track-selector">
                 <label for="trackSelect">Track</label>
                 <select class="track-select" id="trackSelect">
-                    <option value="newtrack.mp3">Mountain Echo</option>
-                    <option value="newtrack2.mp3">Forest Depths</option>
-                    <option value="newtrack3.mp3">Crimson Twilight</option>
-                    <option value="newtrack4.mp3">The Burden</option>
-                    <option value="newtrack5.mp3">Herd Gathering</option>
-                    <option value="newtrack6.mp3">Eternal Weight</option>
+                    <option value="newtrack.mp3">Ambient I - Mountain Echo</option>
+                    <option value="newtrack2.mp3">Ambient II - Forest Depths</option>
+                    <option value="newtrack3.mp3">Ambient III - Crimson Twilight</option>
+                    <option value="newtrack4.mp3">Ambient IV - The Burden</option>
+                    <option value="newtrack5.mp3">Ambient V - Herd Gathering</option>
+                    <option value="newtrack6.mp3">Ambient VI - Eternal Weight</option>
                 </select>
             </div>
             
@@ -1593,7 +1568,7 @@
     </div>
     
     <!-- Audio Element -->
-    <audio id="elkAudio" preload="auto"></audio>
+    <audio id="elkAudio" loop preload="auto"></audio>
     
     <!-- Modal Overlay -->
     <div class="modal-overlay" id="modalOverlay">

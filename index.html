@@ -646,12 +646,12 @@
         }
         
         /* =====================================================
-           SOUNDCLOUD AUDIO PLAYER
+           SOUNDCLOUD AUDIO PLAYER - Fully Responsive
            ===================================================== */
         .audio-player {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
+            bottom: 1.5rem;
+            right: 1.5rem;
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -660,18 +660,19 @@
         }
         
         .audio-panel {
-            background: rgba(15, 15, 15, 0.98);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(196, 30, 58, 0.3);
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(196, 30, 58, 0.4);
             border-radius: 16px;
-            padding: 1.5rem;
-            width: 380px;
+            padding: 1rem;
+            width: 350px;
             opacity: 0;
             transform: translateY(20px) scale(0.95);
             pointer-events: none;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            position: relative;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.9),
+                0 0 30px rgba(196, 30, 58, 0.1);
             overflow: hidden;
         }
         
@@ -685,54 +686,74 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 1px solid rgba(196, 30, 58, 0.2);
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid rgba(196, 30, 58, 0.25);
         }
         
         .audio-panel-title {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--accent-primary);
             letter-spacing: 0.05em;
         }
         
-        /* SoundCloud Embed Container */
+        .audio-panel-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            line-height: 1;
+            transition: color 0.3s ease;
+            display: none;
+        }
+        
+        .audio-panel-close:hover {
+            color: var(--accent-primary);
+        }
+        
+        /* SoundCloud Embed Container - visual=true shows artwork */
         .soundcloud-embed {
             border-radius: 12px;
             overflow: hidden;
-            background: rgba(0, 0, 0, 0.3);
+            background: #000;
         }
         
         .soundcloud-embed iframe {
             display: block;
             border-radius: 12px;
+            width: 100%;
+            height: 450px;
         }
         
         .soundcloud-credit {
-            margin-top: 1rem;
+            margin-top: 0.8rem;
             text-align: center;
         }
         
         .soundcloud-credit a {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             text-decoration: none;
             transition: color 0.3s ease;
+            opacity: 0.7;
         }
         
         .soundcloud-credit a:hover {
             color: var(--accent-primary);
+            opacity: 1;
         }
         
         .audio-toggle-btn {
-            padding: 0.7rem 1rem;
-            background: rgba(15, 15, 15, 0.95);
+            padding: 0.7rem 1.2rem;
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(20px);
             border: 1px solid var(--accent-mist);
-            border-radius: 10px;
+            border-radius: 12px;
             color: var(--text-muted);
             font-family: 'IBM Plex Mono', monospace;
             font-size: 0.8rem;
@@ -754,6 +775,9 @@
         .audio-toggle-btn.playing {
             border-color: var(--accent-primary);
             color: var(--accent-primary);
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.6),
+                0 0 15px rgba(196, 30, 58, 0.25);
         }
         
         /* =====================================================
@@ -1102,17 +1126,35 @@
             }
             
             .audio-player {
-                bottom: 1rem;
-                right: 1rem;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                padding: 0.6rem;
+                align-items: stretch;
             }
             
             .audio-panel {
-                width: calc(100vw - 2rem);
-                max-width: 380px;
-                position: absolute;
-                bottom: 100%;
-                right: 0;
+                width: 100%;
+                max-height: 70vh;
                 margin-bottom: 0.5rem;
+                overflow-y: auto;
+            }
+            
+            .audio-panel::-webkit-scrollbar {
+                width: 3px;
+            }
+            
+            .audio-panel::-webkit-scrollbar-thumb {
+                background: var(--accent-primary);
+                border-radius: 2px;
+            }
+            
+            .audio-panel-close {
+                display: block;
+            }
+            
+            .soundcloud-embed iframe {
+                height: 300px;
             }
             
             .audio-player:not(.expanded) .audio-panel {
@@ -1124,10 +1166,10 @@
             }
             
             .audio-toggle-btn {
-                padding: 0.6rem 0.9rem;
-                font-size: 0.75rem;
-                position: relative;
-                z-index: 1001;
+                width: 100%;
+                justify-content: center;
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
             }
             
             .modal-content {
@@ -1332,6 +1374,7 @@
         <div class="audio-panel">
             <div class="audio-panel-header">
                 <span class="audio-panel-title">🦌 ATMOSPHERE</span>
+                <button class="audio-panel-close" id="audioPanelClose">✕</button>
             </div>
             
             <div class="soundcloud-embed">
@@ -1342,13 +1385,13 @@
                     scrolling="no" 
                     frameborder="no" 
                     allow="autoplay" 
-                    src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/2183381792&color=%23990000&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=true&visual=true">
+                    src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/2183381792&color=%23990000&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=true">
                 </iframe>
             </div>
             
             <div class="soundcloud-credit">
                 <a href="https://soundcloud.com/peter-zapffe-837854216/sets/the-burden-atmospheric-philosophy" target="_blank" rel="noopener">
-                    🎵 The Burden: Atmospheric Philosophy
+                    Open full playlist ↗
                 </a>
             </div>
         </div>
@@ -1412,32 +1455,46 @@
         // ===================================================================
         const audioPlayer = document.getElementById('audioPlayer');
         const audioToggleBtn = document.getElementById('audioToggleBtn');
+        const audioPanelClose = document.getElementById('audioPanelClose');
         const toggleIcon = document.getElementById('toggleIcon');
         const toggleText = document.getElementById('toggleText');
         
         let panelOpen = false;
         
+        function openPanel() {
+            panelOpen = true;
+            audioPlayer.classList.add('expanded');
+            toggleIcon.textContent = '🔊';
+            toggleText.textContent = 'Playing';
+            audioToggleBtn.classList.add('playing');
+        }
+        
+        function closePanel() {
+            panelOpen = false;
+            audioPlayer.classList.remove('expanded');
+            toggleIcon.textContent = '🔇';
+            toggleText.textContent = 'Music';
+            audioToggleBtn.classList.remove('playing');
+        }
+        
         // Toggle panel
         audioToggleBtn.addEventListener('click', () => {
-            panelOpen = !panelOpen;
-            audioPlayer.classList.toggle('expanded', panelOpen);
-            
             if (panelOpen) {
-                toggleIcon.textContent = '🔊';
-                toggleText.textContent = 'Playing';
-                audioToggleBtn.classList.add('playing');
+                closePanel();
             } else {
-                toggleIcon.textContent = '🔇';
-                toggleText.textContent = 'Music';
-                audioToggleBtn.classList.remove('playing');
+                openPanel();
             }
         });
         
-        // Close panel when clicking outside
+        // Close button (visible on mobile)
+        audioPanelClose.addEventListener('click', () => {
+            closePanel();
+        });
+        
+        // Close panel when clicking outside (desktop only)
         document.addEventListener('click', (e) => {
             if (panelOpen && !audioPlayer.contains(e.target)) {
-                panelOpen = false;
-                audioPlayer.classList.remove('expanded');
+                closePanel();
             }
         });
 

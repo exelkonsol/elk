@@ -114,7 +114,9 @@
             inset: 0;
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
+            /* avoid mobile scroll jitter / zoom */
+            background-attachment: scroll;
+            background-repeat: no-repeat;
             opacity: 0;
             transition: opacity 6s ease-in-out;
             will-change: opacity;
@@ -458,7 +460,7 @@
         }
 
         .quote-generator::after {
-            content: '"';
+            content: '\"';
             position: absolute;
             top: -30px;
             right: 40px;
@@ -868,49 +870,79 @@
             gap: 0.35rem;
         }
 
+        /* Upgraded buttons */
         .elk-btn {
-            border: none;
-            background: transparent;
+            border: 1px solid rgba(196, 30, 58, 0.4);
+            background: radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.06), rgba(10, 10, 10, 0.95));
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             border-radius: 999px;
-            padding: 0.3rem 0.4rem;
-            transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+            padding: 0.35rem 0.6rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition:
+                background 0.25s ease,
+                color 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                transform 0.15s ease;
         }
 
         .elk-btn:hover {
-            background: rgba(196, 30, 58, 0.15);
+            background: radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.12), rgba(20, 20, 20, 0.98));
             color: var(--accent-primary);
+            border-color: var(--accent-primary);
             transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8);
         }
 
+        .elk-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Main play/pause button: circular, more prominent */
         .elk-btn-main {
-            background: radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.16), rgba(160, 24, 48, 0.9));
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            padding: 0;
+            font-size: 1.05rem;
+            background: radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.16), rgba(160, 24, 48, 0.95));
             color: var(--bg-dark);
-            padding: 0.45rem 0.9rem;
-            font-size: 1rem;
             box-shadow:
-                0 10px 24px rgba(0, 0, 0, 0.85),
-                0 0 25px rgba(196, 30, 58, 0.55);
+                0 12px 28px rgba(0, 0, 0, 0.9),
+                0 0 26px rgba(196, 30, 58, 0.65);
         }
 
         .elk-btn-main:hover {
             color: var(--bg-dark);
+            transform: translateY(-1px) scale(1.03);
         }
 
+        .elk-btn-main.is-playing {
+            box-shadow:
+                0 14px 32px rgba(0, 0, 0, 0.95),
+                0 0 32px rgba(196, 30, 58, 0.85);
+        }
+
+        /* Small pill controls (shuffle, repeat, speed) */
         .elk-btn-pill {
             font-family: 'IBM Plex Mono', monospace;
             font-size: 0.7rem;
-            padding-inline: 0.55rem;
+            padding: 0.25rem 0.7rem;
             border-radius: 999px;
             border: 1px solid rgba(196, 30, 58, 0.5);
+            background: linear-gradient(135deg, rgba(15, 15, 15, 0.95), rgba(20, 20, 20, 0.98));
         }
 
         .elk-btn-pill.active {
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-dark));
             color: var(--bg-dark);
-            box-shadow: 0 0 12px rgba(196, 30, 58, 0.7);
+            box-shadow: 0 0 14px rgba(196, 30, 58, 0.8);
+            border-color: var(--accent-primary);
         }
 
         .elk-playlist {
@@ -979,9 +1011,10 @@
             color: var(--accent-primary);
         }
 
+        /* Floating toggle button */
         .audio-toggle-btn {
             padding: 0.7rem 1.2rem;
-            background: rgba(10, 10, 10, 0.95);
+            background: rgba(10, 10, 10, 0.96);
             backdrop-filter: blur(20px);
             border: 1px solid var(--accent-mist);
             border-radius: 12px;
@@ -1008,7 +1041,7 @@
             color: var(--accent-primary);
             box-shadow:
                 0 4px 20px rgba(0, 0, 0, 0.6),
-                0 0 15px rgba(196, 30, 58, 0.25);
+                0 0 18px rgba(196, 30, 58, 0.4);
         }
 
         /* =====================================================
@@ -1415,7 +1448,6 @@
             }
 
             .bg-elk {
-                background-attachment: scroll;
                 background-position: top;
                 transition: opacity 3s ease-in-out;
             }
@@ -1639,7 +1671,9 @@
 
                 <div class="elk-play-controls">
                     <button class="elk-btn" id="elkPrevBtn" title="Previous track">⏮</button>
-                    <button class="elk-btn elk-btn-main" id="elkPlayPauseBtn" title="Play / Pause">▶</button>
+                    <button class="elk-btn elk-btn-main" id="elkPlayPauseBtn" aria-label="Play" title="Play">
+                        <span id="elkPlayPauseIcon">▶</span>
+                    </button>
                     <button class="elk-btn" id="elkNextBtn" title="Next track">⏭</button>
                 </div>
 
@@ -1723,6 +1757,7 @@
 
         const elkPrevBtn = document.getElementById('elkPrevBtn');
         const elkPlayPauseBtn = document.getElementById('elkPlayPauseBtn');
+        const elkPlayPauseIcon = document.getElementById('elkPlayPauseIcon');
         const elkNextBtn = document.getElementById('elkNextBtn');
         const elkShuffleBtn = document.getElementById('elkShuffleBtn');
         const elkRepeatBtn = document.getElementById('elkRepeatBtn');
@@ -1912,6 +1947,22 @@
                 toggleIcon.textContent = '▶';
                 toggleText.textContent = 'Atmosphere';
                 elkToggleBtn.classList.remove('playing');
+            }
+        }
+
+        function elkUpdatePlayPauseButton() {
+            const isPaused = elkAudio.paused || elkAudio.ended;
+
+            if (isPaused) {
+                if (elkPlayPauseIcon) elkPlayPauseIcon.textContent = '▶';
+                elkPlayPauseBtn.classList.remove('is-playing');
+                elkPlayPauseBtn.setAttribute('aria-label', 'Play');
+                elkPlayPauseBtn.title = 'Play';
+            } else {
+                if (elkPlayPauseIcon) elkPlayPauseIcon.textContent = '⏸';
+                elkPlayPauseBtn.classList.add('is-playing');
+                elkPlayPauseBtn.setAttribute('aria-label', 'Pause');
+                elkPlayPauseBtn.title = 'Pause';
             }
         }
 
@@ -2125,11 +2176,13 @@
         elkAudio.addEventListener('play', () => {
             elkIsPlaying = true;
             elkUpdateToggleButton();
+            elkUpdatePlayPauseButton();
         });
 
         elkAudio.addEventListener('pause', () => {
             elkIsPlaying = false;
             elkUpdateToggleButton();
+            elkUpdatePlayPauseButton();
         });
 
         elkAudio.addEventListener('loadedmetadata', elkUpdateTimeUI);
@@ -2149,6 +2202,7 @@
             } else {
                 elkIsPlaying = false;
                 elkUpdateToggleButton();
+                elkUpdatePlayPauseButton();
             }
         });
 
@@ -2253,13 +2307,15 @@
             elkUpdateRepeatButton();
             elkShuffleBtn.classList.toggle('active', elkIsShuffle);
             elkApplySpeed();
+
+            // ensure main button icon matches initial paused state
+            elkUpdatePlayPauseButton();
         }
 
         elkInit();
 
         // ========================================================
-        // QUOTE GENERATOR, MODALS, COPY BUTTONS
-        // (unchanged logic, wired to existing DOM)
+        // QUOTE GENERATOR
         // ========================================================
         const quotes = {
             existential: [

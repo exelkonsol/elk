@@ -1,3271 +1,908 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="$ELK - A community-driven memecoin on Solana inspired by Peter Wessel Zapffe's philosophy. The antlers are heavy. We carry them together.">
-    <meta name="keywords" content="ELK, Solana, memecoin, philosophy, Zapffe, cryptocurrency, existentialism">
-    <meta name="theme-color" content="#c41e3a">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="$ELK - A Solana memecoin rooted in existential philosophy. The antlers are heavy. We carry them together.">
+    <meta name="theme-color" content="#050505">
+
+    <meta property="og:title" content="$ELK - The Burden We Carry Together">
+    <meta property="og:description" content="We are carried through life by a series of sublimations—fleeting release valves for the pressure of being.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png">
+    <meta property="og:type" content="website">
 
     <title>$ELK - The Burden We Carry Together</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🦌</text></svg>">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="$ELK - The Burden We Carry Together">
-    <meta property="og:description"
-        content="A community-driven memecoin on Solana inspired by philosophical insights. The antlers are heavy. We carry them together.">
-    <meta property="og:image" content="https://exelkonsol.github.io/elk/newpreview.png">
-    <meta property="og:image:alt" content="Majestic elk bearing heavy antlers on a dark mountain ridge">
-    <meta property="og:url" content="https://exelkonsol.github.io/elk/">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="$ELK - The Burden We Carry Together">
-    <meta name="twitter:description"
-        content="A community-driven memecoin on Solana inspired by philosophical insights.">
-    <meta name="twitter:image" content="https://exelkonsol.github.io/elk/newpreview.png">
-
-    <!-- Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --bg-dark: #050505;
-            --bg-overlay: #121212;
-            --text-primary: #e8e8e8;
-            --text-muted: #9a9a9a;
-            --accent-primary: #a01830;
-            --accent-glow: #c41e3a;
-            --accent-dark: #6b1212;
-            --accent-mist: #3a4555;
-            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(20, 20, 20, 0.6);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-primary);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-glow);
-        }
+        * { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
 
         body {
-            font-family: 'Crimson Pro', serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.8;
+            background-color: #000000;
+            color: #e5e5e5;
             overflow-x: hidden;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            position: relative;
         }
 
-        /* =====================================================
-           BACKGROUND SYSTEM - Ultra Smooth Crossfading
-           ===================================================== */
-        .bg-base {
+        /* 1. Global Background (Newbackground.png) - Grayscale & Reduced Opacity */
+        .global-bg {
             position: fixed;
-            inset: 0;
-            z-index: -3;
-            background: var(--bg-dark);
-            pointer-events: none;
-        }
-
-        .bg-elk-container {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            pointer-events: none;
-        }
-
-        .bg-elk {
-            position: absolute;
-            inset: 0;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/newbackground.png');
             background-size: cover;
             background-position: center;
-            /* avoid mobile scroll jitter / zoom */
-            background-attachment: scroll;
-            background-repeat: no-repeat;
-            opacity: 0;
-            transition: opacity 6s ease-in-out;
-            will-change: opacity;
-            pointer-events: none;
-            /* soften art slightly so low-res PNGs look cleaner */
-            filter: blur(0.6px) saturate(1.05) contrast(0.96);
-            image-rendering: auto;
+            filter: grayscale(100%) opacity(0.3) contrast(1.1);
+            z-index: -10;
         }
 
-        .bg-elk.active {
-            opacity: 0.30;
-        }
-
-        /* Vignette & Atmospheric overlay */
-        .atmospheric-overlay {
+        /* 2. Vignette (Darken Right & Left Edges) */
+        .vignette {
             position: fixed;
-            inset: 0;
-            z-index: -1;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, 
+                rgba(0,0,0,0.9) 0%, 
+                rgba(0,0,0,0.2) 20%, 
+                rgba(0,0,0,0.2) 80%, 
+                rgba(0,0,0,0.9) 100%
+            );
             pointer-events: none;
-            background:
-                radial-gradient(ellipse 120% 40% at 50% -5%, rgba(255, 255, 255, 0.02) 0%, transparent 60%),
-                radial-gradient(ellipse at 25% 35%, rgba(160, 24, 48, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 75% 65%, rgba(107, 18, 18, 0.06) 0%, transparent 50%),
-                radial-gradient(ellipse 150% 100% at 50% 50%, transparent 15%, rgba(0, 0, 0, 0.5) 55%, rgba(0, 0, 0, 0.92) 100%),
-                linear-gradient(to right, rgba(0, 0, 0, 0.85) 0%, transparent 30%),
-                linear-gradient(to left, rgba(0, 0, 0, 0.85) 0%, transparent 30%),
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.15) 20%, rgba(0, 0, 0, 0.15) 80%, rgba(0, 0, 0, 0.65) 100%);
+            z-index: -5;
         }
 
-        @media (min-width: 769px) {
-            .atmospheric-overlay::after {
-                content: '';
-                position: absolute;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.18);
-                pointer-events: none;
-            }
-        }
-
-        /* Film Grain Texture (softened) */
-        .noise-texture {
+        .bg-overlay {
             position: fixed;
-            inset: 0;
-            z-index: -1;
-            opacity: 0.03;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Slightly reduced overlay to let bg show through */
             pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            z-index: -4;
         }
 
-        /* =====================================================
-           AMBIENT MIST ORBS
-           ===================================================== */
-        .ambient-orbs {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0;
-            animation: orbFloat linear infinite;
-            pointer-events: none;
-        }
-
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(196, 30, 58, 0.15) 0%, transparent 70%);
-            left: -10%;
-            top: 20%;
-            animation-duration: 60s;
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(139, 26, 26, 0.12) 0%, transparent 70%);
-            right: -5%;
-            top: 50%;
-            animation-duration: 80s;
-            animation-delay: -20s;
-        }
-
-        .orb-3 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(60, 30, 30, 0.1) 0%, transparent 70%);
-            left: 30%;
-            bottom: -10%;
-            animation-duration: 100s;
-            animation-delay: -40s;
-        }
-
-        @keyframes orbFloat {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 0;
-            }
-
-            10% {
-                opacity: 0.6;
-            }
-
-            50% {
-                transform: translate(100px, -150px) scale(1.2);
-                opacity: 0.8;
-            }
-
-            90% {
-                opacity: 0.6;
-            }
-
-            100% {
-                transform: translate(200px, -300px) scale(1);
-                opacity: 0;
-            }
-        }
-
-        .container {
-            position: relative;
-            z-index: 2;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 clamp(1rem, 4vw, 2rem);
-        }
-
-        /* =====================================================
-           HERO
-           ===================================================== */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: clamp(3rem, 8vh, 6rem) 0;
-            gap: 2.8rem;
-        }
-
-        .hero h1 {
-            font-size: clamp(4.5rem, 12vw, 10rem);
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            color: var(--accent-primary);
-            text-shadow:
-                0 4px 40px rgba(160, 24, 48, 0.6),
-                0 0 80px rgba(107, 18, 18, 0.4);
-            margin: 0;
-            animation: fadeInTitle 1.5s ease-out;
-        }
-
-        @keyframes fadeInTitle {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .tagline {
-            font-size: clamp(1.3rem, 3.5vw, 2.3rem);
-            font-weight: 300;
-            color: var(--text-muted);
-            max-width: 900px;
-            margin: 0 auto;
-            animation: fadeInTitle 1.5s ease-out 0.3s both;
-        }
-
-        .contract-container {
-            max-width: 720px;
-            width: 100%;
-            margin: 0 auto;
-            animation: fadeInTitle 1.5s ease-out 0.6s both;
-        }
-
-        .contract-box {
-            background: rgba(26, 26, 26, 0.92);
-            backdrop-filter: blur(12px);
-            padding: clamp(1.2rem, 3vw, 1.8rem);
-            border-radius: 12px;
-            border: 1px solid var(--accent-mist);
-            border-left: 4px solid var(--accent-primary);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: clamp(0.85rem, 2vw, 1rem);
-            word-break: break-all;
-            transition: var(--transition-smooth);
-        }
-
-        .contract-box:hover {
-            border-color: var(--accent-primary);
-            box-shadow: 0 8px 30px rgba(196, 30, 58, 0.25);
-        }
-
-        .copy-btn {
-            width: 100%;
-            max-width: 720px;
-            margin: 0.5rem auto 0;
-            padding: 1rem;
-            background: transparent;
-            color: var(--text-muted);
-            border: 1px solid var(--accent-mist);
-            border-radius: 8px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            font-weight: 500;
-        }
-
-        .copy-btn:hover:not(.copied) {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: translateY(-2px);
-        }
-
-        .copy-btn.copied {
-            background: var(--accent-primary);
-            color: var(--bg-dark);
-            border-color: var(--accent-primary);
-        }
-
-        .cta-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.2rem;
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto;
-            animation: fadeInTitle 1.5s ease-out 0.9s both;
-        }
-
-        .btn {
-            padding: clamp(1rem, 2.5vw, 1.4rem) clamp(1.5rem, 3vw, 2rem);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: clamp(0.9rem, 2vw, 1.05rem);
-            font-weight: 500;
-            text-decoration: none;
-            text-align: center;
-            border-radius: 10px;
-            border: 2px solid;
-            transition: var(--transition-smooth);
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: var(--accent-primary);
-            color: var(--bg-dark);
-            border-color: var(--accent-primary);
-        }
-
-        .btn-primary:hover {
-            background: transparent;
-            color: var(--accent-primary);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(196, 30, 58, 0.4);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-primary);
-            border-color: var(--text-muted);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: translateY(-4px);
-        }
-
-        /* =====================================================
-           QUOTE GENERATOR
-           ===================================================== */
-        .quote-section {
-            padding: clamp(8rem, 15vh, 12rem) 0;
-        }
-
-        .quote-generator {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: clamp(4rem, 7vw, 6rem) clamp(2.5rem, 5vw, 4.5rem);
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(20, 20, 20, 0.92) 100%);
-            backdrop-filter: blur(25px);
-            border-radius: 24px;
-            border: 1px solid rgba(196, 30, 58, 0.3);
-            box-shadow:
-                0 40px 100px rgba(0, 0, 0, 0.8),
-                0 0 80px rgba(196, 30, 58, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .quote-generator-bg {
-            position: absolute;
-            inset: 0;
-            background-image: url('generatewisdom.png');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.12;
-            pointer-events: none;
-            z-index: 0;
-            transition: opacity 1s ease;
-        }
-
-        .quote-generator:hover .quote-generator-bg {
-            opacity: 0.18;
-        }
-
-        .quote-generator::before {
-            content: '';
-            position: absolute;
-            inset: -50%;
-            background: radial-gradient(circle at center, rgba(196, 30, 58, 0.08) 0%, transparent 70%);
-            animation: pulseGlow 8s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes pulseGlow {
-
-            0%,
-            100% {
-                transform: scale(1) rotate(0deg);
-                opacity: 0.5;
-            }
-
-            50% {
-                transform: scale(1.2) rotate(180deg);
-                opacity: 0.8;
-            }
-        }
-
-        .quote-generator::after {
-            content: '"';
-            position: absolute;
-            top: -30px;
-            right: 40px;
-            font-size: clamp(10rem, 18vw, 16rem);
-            font-family: Georgia, serif;
-            color: var(--accent-primary);
-            opacity: 0.08;
-            line-height: 1;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .quote-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .quote-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .quote-title {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 600;
-            color: var(--accent-primary);
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 25px rgba(160, 24, 48, 0.5);
-        }
-
-        .quote-subtitle {
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            color: var(--text-muted);
-            font-weight: 300;
-        }
-
-        .mode-selector {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 2.5rem;
-            flex-wrap: wrap;
-        }
-
-        .mode-btn {
-            padding: 0.85rem 2rem;
-            background: rgba(26, 26, 26, 0.6);
-            border: 1px solid var(--accent-mist);
-            border-radius: 10px;
-            color: var(--text-muted);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .mode-btn:hover:not(.active) {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: translateY(-2px);
-        }
-
-        .mode-btn.active {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-dark));
-            border-color: var(--accent-primary);
-            color: var(--bg-dark);
-            font-weight: 600;
-            box-shadow: 0 4px 20px rgba(196, 30, 58, 0.4);
-        }
-
-        .mode-btn span {
-            position: relative;
-            z-index: 1;
-        }
-
-        .quote-box {
-            min-height: clamp(250px, 35vh, 320px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem 2rem;
-            margin: 3rem 0;
-            position: relative;
-        }
-
-        .quote-text {
-            font-size: clamp(1.6rem, 4.2vw, 2.8rem);
-            font-weight: 300;
-            font-style: italic;
-            line-height: 1.7;
-            color: var(--text-primary);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: center;
-            max-width: 1000px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .quote-text.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .quote-spinner {
+        /* Soundscape Background (newpreview.png) - Soft & Colorful */
+        .soundscape-bg-layer {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(196, 30, 58, 0.2);
-            border-top-color: var(--accent-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-
-        .quote-spinner.active {
-            display: block;
-        }
-
-        @keyframes spin {
-            to {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        .quote-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .generate-btn {
-            padding: 1.3rem 3.5rem;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-dark));
-            color: var(--bg-dark);
-            border: none;
-            border-radius: 12px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 6px 25px rgba(196, 30, 58, 0.4);
-        }
-
-        .generate-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.6s;
-        }
-
-        .generate-btn:hover::before {
-            transform: translateX(100%);
-        }
-
-        .generate-btn:hover {
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 10px 35px rgba(196, 30, 58, 0.5);
-        }
-
-        .generate-btn:active {
-            transform: scale(0.98);
-        }
-
-        .generate-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .copy-wisdom-btn {
-            padding: 0.8rem 2rem;
-            background: transparent;
-            border: 1px solid var(--accent-mist);
-            border-radius: 10px;
-            color: var(--text-muted);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-        }
-
-        .copy-wisdom-btn:hover:not(.copied) {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: translateY(-2px);
-        }
-
-        .copy-wisdom-btn.copied {
-            background: var(--accent-primary);
-            color: var(--bg-dark);
-            border-color: var(--accent-primary);
-        }
-
-        /* =====================================================
-           RITUAL AUDIO PLAYER - The Antler Resonance
-           ===================================================== */
-        .audio-player {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.5rem;
-        }
-
-        .audio-panel {
-            background: radial-gradient(ellipse at 30% 0%, rgba(160, 24, 48, 0.25), rgba(5, 5, 5, 0.98));
-            backdrop-filter: blur(28px);
-            border-radius: 24px;
-            border: 1px solid rgba(196, 30, 58, 0.4);
-            padding: 1.4rem 1.5rem 1.6rem;
-            width: 420px;
-            max-height: 580px;
-            opacity: 0;
-            transform: translateY(25px) scale(0.95);
-            pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
-            box-shadow:
-                0 30px 90px rgba(0, 0, 0, 0.95),
-                0 0 60px rgba(196, 30, 58, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            overflow: hidden;
-        }
-
-        .audio-player.expanded .audio-panel {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
-
-        /* Ritual pulse animation when playing */
-        .audio-player.expanded.playing .audio-panel {
-            animation: ritualPulse 4s ease-in-out infinite;
-        }
-
-        @keyframes ritualPulse {
-            0%, 100% {
-                box-shadow:
-                    0 30px 90px rgba(0, 0, 0, 0.95),
-                    0 0 60px rgba(196, 30, 58, 0.2),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            }
-            50% {
-                box-shadow:
-                    0 30px 90px rgba(0, 0, 0, 0.95),
-                    0 0 80px rgba(196, 30, 58, 0.35),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            }
-        }
-
-        .elk-audio-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 0.75rem;
-            padding-bottom: 0.9rem;
-            border-bottom: 1px solid rgba(196, 30, 58, 0.25);
-        }
-
-        .elk-audio-tag {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.7rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--accent-primary);
-            margin-bottom: 0.3rem;
-        }
-
-        .elk-track-meta {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .elk-track-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-            color: var(--text-primary);
-        }
-
-        .elk-track-subtitle {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.15rem;
-        }
-
-        .audio-panel-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.4rem;
-            cursor: pointer;
-            padding: 0.2rem 0.5rem;
-            line-height: 1;
-            transition: color 0.3s ease, transform 0.3s ease;
-            display: none;
-            border-radius: 6px;
-        }
-
-        .audio-panel-close:hover {
-            color: var(--accent-primary);
-            transform: rotate(90deg);
-        }
-
-        .audio-panel-close:focus-visible {
-            outline: 2px solid var(--accent-primary);
-            outline-offset: 2px;
-        }
-
-        /* Ritual Disc Container */
-        .ritual-disc-container {
-            display: flex;
-            justify-content: center;
-            margin: 1.2rem 0 1rem;
-            position: relative;
-        }
-
-        .ritual-disc {
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            background-size: cover;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/newpreview.png');
+            background-repeat: no-repeat;
             background-position: center;
-            position: relative;
-            box-shadow:
-                0 0 0 3px rgba(196, 30, 58, 0.3),
-                0 0 40px rgba(196, 30, 58, 0.4),
-                0 15px 40px rgba(0, 0, 0, 0.8);
+            background-size: cover;
+            opacity: 0.15; /* Soft background presence */
+            pointer-events: none;
+            z-index: 0;
+            /* Keep colors, just soften the edges */
+            filter: blur(1px) contrast(1.1) brightness(0.9);
+            mask-image: radial-gradient(circle, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle, black 40%, transparent 80%);
+        }
+
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .blur-fade {
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(5, 5, 5, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Red BUY Button */
+        .buy-btn {
+            background: rgba(139, 0, 0, 0.2);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            color: rgba(255, 100, 100, 0.8);
             transition: all 0.5s ease;
         }
 
-        .ritual-disc::before {
-            content: '';
+        .buy-btn:hover {
+            background: rgba(139, 0, 0, 0.4);
+            border-color: rgba(220, 38, 38, 0.6);
+            color: rgba(255, 150, 150, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(139, 0, 0, 0.3);
+        }
+
+        /* Quote Generator */
+        .quote-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quote-bg {
             position: absolute;
-            inset: -8px;
-            border-radius: 50%;
-            border: 1px solid rgba(196, 30, 58, 0.2);
-            animation: discRing 3s ease-in-out infinite;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/generatewisdom.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.25; /* Increased visibility */
+            filter: blur(0px) contrast(1.1); /* Removed grayscale, reduced blur, soft colors */
+            z-index: 0;
+            mix-blend-mode: screen; /* Blend nicely with dark bg */
         }
 
-        .ritual-disc::after {
-            content: '';
-            position: absolute;
-            inset: -16px;
-            border-radius: 50%;
-            border: 1px solid rgba(196, 30, 58, 0.1);
-            animation: discRing 3s ease-in-out infinite 0.5s;
+        .quote-container {
+            position: relative;
+            z-index: 1;
+            min-height: 600px; /* Made bigger */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 2rem;
         }
 
-        @keyframes discRing {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-            50% {
-                transform: scale(1.05);
-                opacity: 0.8;
-            }
+        .quote-text {
+            font-family: 'Crimson Text', serif;
+            font-style: italic;
+            font-size: clamp(1.5rem, 5vw, 2.75rem);
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.95);
+            text-align: center;
+            max-width: 900px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.8s ease;
+            text-shadow: 0 4px 30px rgba(0,0,0,1);
         }
 
-        .ritual-disc.playing {
-            animation: discRotate 20s linear infinite;
+        .quote-text.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        @keyframes discRotate {
+        .quote-btn-group button {
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quote-btn-group button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-image {
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            filter: blur(0px) brightness(0.85) contrast(1.05);
+            transition: all 1.5s ease;
+        }
+
+        .mechanism-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.6s ease;
+        }
+
+        .mechanism-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .mechanism-card.voted {
+            background: rgba(139, 0, 0, 0.1);
+            border-color: rgba(139, 0, 0, 0.2);
+        }
+
+        /* Audio Player Animations & States */
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 40px;
+            opacity: 0.5;
+        }
+
+        .wave-bar {
+            width: 3px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+            border-radius: 2px;
+        }
+
+        .playing .wave-bar {
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(odd) { animation-duration: 0.8s; }
+        .wave-bar:nth-child(even) { animation-duration: 1.1s; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.3); opacity: 0.3; }
+            50% { transform: scaleY(1); opacity: 0.8; }
+        }
+
+        .vinyl-spin {
+            animation: spin 8s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .playing .vinyl-spin {
+            animation-play-state: running;
+        }
+
+        @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        .ritual-disc:hover {
-            box-shadow:
-                0 0 0 3px rgba(196, 30, 58, 0.5),
-                0 0 60px rgba(196, 30, 58, 0.6),
-                0 15px 40px rgba(0, 0, 0, 0.8);
+        .track-item {
+            transition: all 0.3s ease;
+            border-left: 1px solid transparent;
         }
 
-        /* Loading State for Disc */
-        .ritual-disc.loading {
-            animation: discPulse 1s ease-in-out infinite;
+        .track-item:hover {
+            background: rgba(255,255,255,0.02);
+            padding-left: 1rem;
+            border-left-color: rgba(255,255,255,0.1);
         }
 
-        @keyframes discPulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+        .track-item.active {
+            background: rgba(139, 0, 0, 0.05);
+            border-left-color: rgba(139, 0, 0, 0.3);
         }
 
-        /* Antler Waveform Visualizer */
-        .visualizer-container {
-            width: 100%;
-            height: 70px;
-            margin: 0.8rem 0;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #antlerVisualizer {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Mountain Ridge Progress Bar */
-        .mountain-progress-container {
-            margin: 0.8rem 0;
-            position: relative;
-        }
-
-        .elk-time-row {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            margin-bottom: 0.4rem;
-        }
-
-        .mountain-progress {
-            position: relative;
-            height: 28px;
-            cursor: pointer;
-            overflow: hidden;
-            border-radius: 4px;
-        }
-
-        .mountain-ridge {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 100%;
-            background: linear-gradient(to top, 
-                rgba(40, 40, 40, 0.9) 0%,
-                rgba(60, 60, 60, 0.6) 40%,
-                rgba(80, 80, 80, 0.3) 70%,
-                transparent 100%);
-            clip-path: polygon(
-                0% 100%,
-                5% 70%, 10% 85%, 15% 55%, 20% 75%, 25% 45%,
-                30% 65%, 35% 35%, 40% 55%, 45% 25%, 50% 50%,
-                55% 30%, 60% 60%, 65% 40%, 70% 70%, 75% 50%,
-                80% 80%, 85% 60%, 90% 90%, 95% 70%, 100% 100%
-            );
-        }
-
-        .mountain-fill {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(to top,
-                rgba(196, 30, 58, 0.8) 0%,
-                rgba(160, 24, 48, 0.5) 40%,
-                rgba(196, 30, 58, 0.2) 70%,
-                transparent 100%);
-            clip-path: polygon(
-                0% 100%,
-                5% 70%, 10% 85%, 15% 55%, 20% 75%, 25% 45%,
-                30% 65%, 35% 35%, 40% 55%, 45% 25%, 50% 50%,
-                55% 30%, 60% 60%, 65% 40%, 70% 70%, 75% 50%,
-                80% 80%, 85% 60%, 90% 90%, 95% 70%, 100% 100%
-            );
-            transition: width 0.1s linear;
-            box-shadow: 0 0 20px rgba(196, 30, 58, 0.5);
-        }
-
-        .mountain-progress:hover .mountain-fill {
-            filter: brightness(1.2);
-        }
-
-        /* Crimson Moon Volume Control */
-        .volume-moon-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.8rem;
-            margin: 0.8rem 0;
-            padding: 0.5rem 0;
-        }
-
-        .volume-label {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .moon-volume {
-            position: relative;
-            width: 44px;
-            height: 44px;
-            cursor: pointer;
-        }
-
-        .moon-svg {
-            width: 100%;
-            height: 100%;
-            transform: rotate(-90deg);
-            transition: transform 0.3s ease;
-        }
-
-        .moon-bg {
-            fill: none;
-            stroke: rgba(100, 100, 100, 0.3);
-            stroke-width: 3;
-        }
-
-        .moon-fill {
-            fill: none;
-            stroke: var(--accent-glow);
-            stroke-width: 3;
-            stroke-linecap: round;
-            stroke-dasharray: 126;
-            stroke-dashoffset: 0;
-            transition: stroke-dashoffset 0.3s ease;
-            filter: drop-shadow(0 0 6px rgba(196, 30, 58, 0.6));
-        }
-
-        .moon-volume:hover .moon-fill {
-            filter: drop-shadow(0 0 10px rgba(196, 30, 58, 0.9));
-        }
-
-        .moon-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1rem;
-            color: var(--text-muted);
-            pointer-events: none;
-            transition: color 0.3s ease;
-        }
-
-        .moon-volume:hover .moon-icon {
-            color: var(--accent-glow);
-        }
-
-        /* Playback Controls */
-        .elk-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
-            margin-top: 1rem;
-            padding-top: 0.8rem;
-            border-top: 1px solid rgba(196, 30, 58, 0.2);
-        }
-
-        .elk-btn {
-            border: 1px solid rgba(196, 30, 58, 0.35);
-            background: radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.05), rgba(10, 10, 10, 0.95));
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            cursor: pointer;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.25s ease;
-        }
-
-        .elk-btn:hover {
-            background: radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.1), rgba(20, 20, 20, 0.98));
-            color: var(--accent-primary);
-            border-color: var(--accent-primary);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
-        }
-
-        .elk-btn:focus-visible {
-            outline: 2px solid var(--accent-primary);
-            outline-offset: 2px;
-        }
-
-        .elk-btn:active {
-            transform: translateY(0);
-        }
-
-        .elk-btn-main {
-            width: 54px;
-            height: 54px;
-            font-size: 1.2rem;
-            background: radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.12), rgba(160, 24, 48, 0.95));
-            color: var(--bg-dark);
-            box-shadow:
-                0 12px 30px rgba(0, 0, 0, 0.9),
-                0 0 30px rgba(196, 30, 58, 0.6);
-        }
-
-        .elk-btn-main:hover {
-            color: var(--bg-dark);
-            transform: translateY(-2px) scale(1.03);
-            box-shadow:
-                0 14px 35px rgba(0, 0, 0, 0.95),
-                0 0 40px rgba(196, 30, 58, 0.8);
-        }
-
-        .elk-btn-pill {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.65rem;
-            width: auto;
-            height: 32px;
-            padding: 0 0.9rem;
-            border-radius: 16px;
-            letter-spacing: 0.05em;
-        }
-
-        .elk-btn-pill.active {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-dark));
-            color: var(--bg-dark);
-            box-shadow: 0 0 15px rgba(196, 30, 58, 0.7);
-            border-color: var(--accent-primary);
-        }
-
-        /* Playlist */
-        .elk-playlist {
-            margin-top: 1rem;
-            padding-top: 0.8rem;
-            border-top: 1px dashed rgba(196, 30, 58, 0.25);
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-            max-height: 180px;
-            overflow-y: auto;
-        }
-
-        .elk-playlist::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .elk-playlist::-webkit-scrollbar-track {
-            background: rgba(30, 30, 30, 0.5);
-            border-radius: 2px;
-        }
-
-        .elk-playlist::-webkit-scrollbar-thumb {
-            background: var(--accent-primary);
-            border-radius: 2px;
-        }
-
-        .elk-track {
-            border: none;
-            background: transparent;
-            width: 100%;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.6rem;
-            padding: 0.5rem 0.6rem;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.82rem;
-            font-family: 'IBM Plex Mono', monospace;
-            color: var(--text-muted);
-            transition: all 0.25s ease;
-        }
-
-        .elk-track-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
-
-        .elk-track-title-sm {
-            font-size: 0.82rem;
-        }
-
-        .elk-track-subtitle-sm {
-            font-size: 0.7rem;
-            opacity: 0.7;
-        }
-
-        .elk-track-duration {
-            font-size: 0.7rem;
-            opacity: 0.8;
-        }
-
-        .elk-track:hover {
-            background: rgba(196, 30, 58, 0.12);
-            color: var(--text-primary);
-            transform: translateX(4px);
-        }
-
-        .elk-track.is-active {
-            background: linear-gradient(135deg, rgba(196, 30, 58, 0.25), rgba(20, 20, 20, 0.95));
-            color: var(--text-primary);
-            border-left: 3px solid var(--accent-primary);
-        }
-
-        .elk-track.is-active .elk-track-duration {
-            color: var(--accent-primary);
-        }
-
-        .elk-track:focus-visible {
-            outline: 2px solid var(--accent-primary);
-            outline-offset: -2px;
-        }
-
-        /* Loading indicator for track */
-        .elk-track.loading::after {
-            content: '';
-            width: 12px;
-            height: 12px;
-            border: 2px solid rgba(196, 30, 58, 0.2);
-            border-top-color: var(--accent-primary);
-            border-radius: 50%;
-            animation: trackLoading 0.8s linear infinite;
-        }
-
-        @keyframes trackLoading {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Floating toggle button */
-        .audio-toggle-btn {
-            padding: 0.85rem 1.4rem;
-            background: rgba(10, 10, 10, 0.96);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--accent-mist);
-            border-radius: 14px;
-            color: var(--text-muted);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .audio-toggle-btn:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: translateY(-2px);
-        }
-
-        .audio-toggle-btn:focus-visible {
-            outline: 2px solid var(--accent-primary);
-            outline-offset: 2px;
-        }
-
-        .audio-toggle-btn.playing {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            box-shadow:
-                0 4px 20px rgba(0, 0, 0, 0.6),
-                0 0 20px rgba(196, 30, 58, 0.4);
-            animation: togglePulse 3s ease-in-out infinite;
-        }
-
-        @keyframes togglePulse {
-            0%, 100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 20px rgba(196, 30, 58, 0.4); }
-            50% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 30px rgba(196, 30, 58, 0.6); }
-        }
-
-        /* Crossfade indicator */
-        .crossfade-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--accent-primary);
-            background: rgba(5, 5, 5, 0.9);
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .crossfade-indicator.active {
-            opacity: 1;
-        }
-
-        /* =====================================================
-           PHILOSOPHY & MODALS
-           ===================================================== */
-        .philosophy-section {
-            padding: clamp(8rem, 15vh, 12rem) 0;
-        }
-
-        .section-title {
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            font-weight: 600;
-            text-align: center;
-            color: var(--accent-primary);
-            margin-bottom: 2rem;
-            text-shadow: 0 4px 30px rgba(160, 24, 48, 0.5);
-        }
-
-        .section-subtitle {
-            max-width: 900px;
-            margin: 0 auto 5rem;
-            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-            color: var(--text-muted);
-            text-align: center;
-            line-height: 1.7;
-        }
-
-        .philosophy-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2.5rem;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        @media (min-width: 768px) {
-            .philosophy-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .mechanism-card {
-            background: rgba(26, 26, 26, 0.85);
-            backdrop-filter: blur(15px);
-            padding: clamp(2.5rem, 5vw, 3.5rem);
-            border-radius: 16px;
-            border: 1px solid var(--accent-mist);
-            border-top: 4px solid var(--accent-primary);
-            transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .mechanism-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, transparent, rgba(196, 30, 58, 0.08), transparent);
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        .mechanism-card:hover::before {
-            opacity: 1;
-        }
-
-        .mechanism-card:hover {
-            transform: translateY(-12px);
-            border-color: var(--accent-primary);
-            box-shadow: 0 30px 60px rgba(196, 30, 58, 0.3);
-        }
-
-        .mechanism-card:focus-visible {
-            outline: 3px solid var(--accent-primary);
-            outline-offset: 3px;
-        }
-
-        .mechanism-card .subtitle {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.95rem;
-            color: var(--accent-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .mechanism-card h3 {
-            font-size: clamp(1.8rem, 4vw, 2.3rem);
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .mechanism-card p {
-            font-size: clamp(1rem, 2vw, 1.15rem);
-            color: var(--text-muted);
-            line-height: 1.7;
-        }
-
-        .mechanism-card-hint {
-            font-size: 0.85rem;
-            color: var(--accent-primary);
-            opacity: 0.7;
-            margin-top: 1.5rem;
-            font-family: 'IBM Plex Mono', monospace;
-            font-style: italic;
-        }
-
-        .modal-overlay {
+        /* Floating Mute Button */
+        #mute-toggle-btn {
             position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.94);
-            backdrop-filter: blur(10px);
-            z-index: 9998;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 2rem;
-            overflow-y: auto;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, rgba(20, 20, 20, 0.99) 0%, rgba(15, 15, 15, 0.98) 100%);
-            border: 2px solid var(--accent-primary);
-            border-radius: 20px;
-            max-width: 900px;
-            width: 100%;
-            max-height: calc(100vh - 4rem);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transform: scale(0.9) translateY(30px);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 50px 150px rgba(196, 30, 58, 0.4);
-            position: relative;
-        }
-
-        .modal-overlay.active .modal-content {
-            transform: scale(1) translateY(0);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: rgba(26, 26, 26, 0.8);
-            border: 2px solid var(--accent-mist);
-            color: var(--text-muted);
-            width: 44px;
-            height: 44px;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            font-size: 1.5rem;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 100;
             cursor: pointer;
-            transition: var(--transition-smooth);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease, border-color 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10;
-            flex-shrink: 0;
         }
 
-        .modal-close:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: rotate(90deg);
-            background: rgba(160, 24, 48, 0.15);
+        #mute-toggle-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(255,255,255,0.5);
         }
 
-        .modal-close:focus-visible {
-            outline: 2px solid var(--accent-primary);
-            outline-offset: 2px;
+        #mute-toggle-btn img.btn-art {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            animation: spin 8s linear infinite;
+            animation-play-state: paused;
+        }
+        
+        #mute-toggle-btn.playing img.btn-art {
+            animation-play-state: running;
         }
 
-        .modal-scroll-area {
-            overflow-y: auto;
-            flex: 1;
-            padding: clamp(2rem, 4vw, 3.5rem);
-            padding-top: clamp(2.5rem, 5vw, 4rem);
+        #mute-toggle-btn .mute-icon-overlay {
+            position: relative;
+            z-index: 2;
+            color: rgba(255,255,255,0.9);
         }
 
-        .modal-scroll-area::-webkit-scrollbar {
-            width: 8px;
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 2px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+        
+        /* Utility for text balancing */
+        .text-balance {
+            text-wrap: balance;
         }
 
-        .modal-scroll-area::-webkit-scrollbar-track {
-            background: rgba(26, 26, 26, 0.5);
-            border-radius: 4px;
-        }
-
-        .modal-scroll-area::-webkit-scrollbar-thumb {
-            background: var(--accent-primary);
-            border-radius: 4px;
-        }
-
-        .modal-header {
-            margin-bottom: 2.5rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid rgba(196, 30, 58, 0.3);
-        }
-
-        .modal-subtitle {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.9rem;
-            color: var(--accent-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .modal-title {
-            font-size: clamp(2.2rem, 5vw, 3.2rem);
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0;
-        }
-
-        .modal-body {
-            color: var(--text-primary);
-        }
-
-        .modal-section {
-            margin-bottom: 2.5rem;
-        }
-
-        .modal-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .modal-section h4 {
-            font-size: clamp(1.3rem, 3vw, 1.7rem);
-            color: var(--accent-primary);
-            margin-bottom: 1.2rem;
-            font-weight: 600;
-        }
-
-        .modal-section p {
-            font-size: clamp(1rem, 2vw, 1.15rem);
-            line-height: 1.8;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .modal-section p:last-child {
-            margin-bottom: 0;
-        }
-
-        .modal-quote {
-            background: rgba(196, 30, 58, 0.08);
-            border-left: 4px solid var(--accent-primary);
-            padding: 1.5rem 2rem;
-            margin: 2rem 0;
-            border-radius: 8px;
-            font-style: italic;
-            font-size: clamp(1.05rem, 2vw, 1.2rem);
-            color: var(--text-primary);
-            line-height: 1.8;
-        }
-
-        .modal-quote-author {
-            display: block;
-            margin-top: 1rem;
-            font-style: normal;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--accent-primary);
-            text-align: right;
-        }
-
-        /* =====================================================
-           FOOTER
-           ===================================================== */
-        .footer {
-            padding: clamp(6rem, 12vh, 10rem) 0 3rem;
-            text-align: center;
-            border-top: 1px solid rgba(74, 85, 104, 0.3);
-            background: linear-gradient(to bottom, transparent, rgba(10, 10, 10, 0.6));
-        }
-
-        .footer-quote {
-            font-size: clamp(1.3rem, 3vw, 1.9rem);
-            font-style: italic;
-            color: var(--text-muted);
-            margin-bottom: 3rem;
-            font-weight: 300;
-        }
-
-        .footer-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: clamp(1.5rem, 3vw, 2.5rem);
-            justify-content: center;
-            margin-bottom: 3rem;
-        }
-
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-            transition: color 0.3s ease;
-            font-weight: 500;
-        }
-
-        .footer-links a:hover {
-            color: var(--accent-primary);
-        }
-
-        .footer-links a:focus-visible {
-            outline: 2px solid var(--accent-primary);
-            outline-offset: 3px;
-            border-radius: 2px;
-        }
-
-        .disclaimer {
-            font-size: clamp(0.8rem, 1.8vw, 0.9rem);
-            color: #666;
-            max-width: 800px;
-            margin: 0 auto;
-            padding-top: 2.5rem;
-            border-top: 1px solid rgba(74, 85, 104, 0.2);
-            line-height: 1.6;
-        }
-
-        /* =====================================================
-           RESPONSIVE
-           ===================================================== */
-        @media (max-width: 768px) {
-            .cta-buttons {
-                grid-template-columns: 1fr;
-                max-width: 400px;
-            }
-
-            .mode-selector {
-                flex-direction: column;
-                max-width: 300px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .mode-btn {
-                width: 100%;
-            }
-
-            .quote-generator::after {
-                font-size: 8rem;
-                top: -20px;
-                right: 20px;
-            }
-
-            .audio-player {
-                bottom: 0;
-                right: 0;
-                left: 0;
-                padding: 0.6rem;
-                align-items: stretch;
-            }
-
-            .audio-panel {
-                width: 100%;
-                max-height: 75vh;
-                margin-bottom: 0.5rem;
-                overflow-y: auto;
-                border-radius: 20px 20px 8px 8px;
-            }
-
-            .audio-panel::-webkit-scrollbar {
-                width: 3px;
-            }
-
-            .audio-panel::-webkit-scrollbar-thumb {
-                background: var(--accent-primary);
-                border-radius: 2px;
-            }
-
-            .audio-panel-close {
-                display: block;
-            }
-
-            .audio-player:not(.expanded) .audio-panel {
-                display: none;
-            }
-
-            .audio-player.expanded .audio-panel {
-                display: block;
-            }
-
-            .audio-toggle-btn {
-                width: 100%;
-                justify-content: center;
-                padding: 0.85rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .ritual-disc {
-                width: 100px;
-                height: 100px;
-            }
-
-            .visualizer-container {
-                height: 55px;
-            }
-
-            .elk-btn {
-                width: 44px;
-                height: 44px;
-            }
-
-            .elk-btn-main {
-                width: 50px;
-                height: 50px;
-            }
-
-            .elk-track {
-                padding: 0.65rem 0.7rem;
-                min-height: 48px;
-            }
-
-            .modal-content {
-                max-height: calc(100vh - 2rem);
-                margin: 1rem;
-            }
-
-            .modal-scroll-area {
-                padding: 1.5rem;
-                padding-top: 3rem;
-            }
-
-            .modal-close {
-                top: 1rem;
-                right: 1rem;
-                width: 38px;
-                height: 38px;
-                font-size: 1.3rem;
-            }
-
-            .bg-elk {
-                background-position: top;
-                transition: opacity 3s ease-in-out;
-            }
-
-            .noise-texture {
-                opacity: 0.015;
-            }
-
-            .ambient-orbs {
-                display: none;
-            }
-
-            .atmospheric-overlay {
-                background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, transparent 100%);
-            }
-
-            .quote-generator::before {
-                animation-duration: 12s;
-            }
-
-            .quote-generator {
-                backdrop-filter: blur(10px);
-            }
-
-            .mechanism-card {
-                transition: all 0.2s ease;
-            }
-
-            .hero h1 {
-                font-size: clamp(3rem, 12vw, 6rem);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
     </style>
+<base target="_blank">
 </head>
-
-<body>
-    <div class="bg-base"></div>
-
-    <!-- Background System: 2 crossfading layers driven by track artwork -->
-    <div class="bg-elk-container" id="bgContainer">
-        <div class="bg-elk" id="bg0"></div>
-        <div class="bg-elk" id="bg1"></div>
+<body class="font-body antialiased selection:bg-white/10 selection:text-white relative">
+    <div class="noise"></div>
+    <div class="global-bg"></div>
+    <div class="vignette"></div>
+    <div class="bg-overlay"></div>
+    
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 blur-fade px-6 py-3 translate-y-full opacity-0 transition-all duration-500 z-[100] rounded-full border border-white/10">
+        <span class="font-mono text-xs text-white/70 tracking-wider flex items-center gap-2">
+            <i data-lucide="check" class="w-3 h-3"></i> <span id="toast-msg">COPIED</span>
+        </span>
     </div>
 
-    <div class="atmospheric-overlay"></div>
-    <div class="noise-texture"></div>
-
-    <!-- Ambient Orbs -->
-    <div class="ambient-orbs">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
-
-    <div class="container">
-        <!-- Hero -->
-        <section class="hero">
-            <h1>$ELK</h1>
-            <p class="tagline">The burden becomes beautiful when shared.</p>
-
-            <div class="contract-container">
-                <div class="contract-box">
-                    8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-40 blur-fade border-b-0 h-16 sm:h-20 flex items-center">
+        <div class="w-full max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center">
+                <span class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-white/60">$ELK</span>
+                <div class="hidden md:flex items-center gap-8 lg:gap-12 font-mono text-[10px] tracking-[0.3em] uppercase">
+                    <a href="#mechanisms" class="text-white/20 hover:text-white/60 transition-all duration-700">Mechanisms</a>
+                    <a href="#manifesto" class="text-white/20 hover:text-white/60 transition-all duration-700">Manifesto</a>
+                    <a href="#soundscape" class="text-white/20 hover:text-white/60 transition-all duration-700">Soundscape</a>
                 </div>
-                <button class="copy-btn" id="copyContract">Copy Contract</button>
-            </div>
-
-            <div class="cta-buttons">
-                <a href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" class="btn btn-primary"
-                    target="_blank" rel="noopener">Buy on Pump.fun</a>
-                <a href="https://birdeye.so/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump?chain=solana"
-                    class="btn btn-secondary" target="_blank" rel="noopener">View Chart</a>
-                <a href="https://x.com/ElkBurden" class="btn btn-secondary" target="_blank" rel="noopener">Follow on
-                    X</a>
-            </div>
-        </section>
-
-        <!-- Quote Generator -->
-        <section class="quote-section">
-            <div class="quote-generator">
-                <div class="quote-generator-bg"></div>
-                <div class="quote-content">
-                    <div class="quote-header">
-                        <h2 class="quote-title">Philosophical Wisdom</h2>
-                        <p class="quote-subtitle">Explore the depths of existential thought</p>
-                    </div>
-
-                    <div class="mode-selector">
-                        <button class="mode-btn active" data-mode="existential"><span>🌌 Existential</span></button>
-                        <button class="mode-btn" data-mode="degen"><span>🚀 Degen</span></button>
-                        <button class="mode-btn" data-mode="elk"><span>🦌 Elk Wisdom</span></button>
-                        <button class="mode-btn" data-mode="contemplative"><span>🍃 Contemplative</span></button>
-                    </div>
-
-                    <div class="quote-box">
-                        <div class="quote-spinner" id="quoteSpinner"></div>
-                        <p class="quote-text show" id="quoteText">
-                            The antlers are heavy, but in their weight we find our purpose—not despite the burden, but
-                            because of it.
-                        </p>
-                    </div>
-
-                    <div class="quote-controls">
-                        <button class="generate-btn" id="generateBtn">Generate Wisdom</button>
-                        <button class="copy-wisdom-btn" id="copyWisdom">Copy Wisdom</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Philosophy Grid -->
-        <section class="philosophy-section">
-            <h2 class="section-title">The Four Mechanisms</h2>
-            <p class="section-subtitle">
-                Inspired by Peter Wessel Zapffe's philosophy, $ELK transforms existential coping into community-driven
-                action. Our treasury serves the four mechanisms through which we endure the burden of consciousness.
-            </p>
-
-            <div class="philosophy-grid">
-                <article class="mechanism-card" data-mechanism="isolation" tabindex="0" role="button" aria-label="Learn about Isolation mechanism">
-                    <div class="subtitle">BURN</div>
-                    <h3>Isolation</h3>
-                    <p>Permanently remove tokens from circulation. Suppress the noise, reduce the supply, face the
-                        void.</p>
-                    <p class="mechanism-card-hint">Click to explore deeper →</p>
-                </article>
-
-                <article class="mechanism-card" data-mechanism="anchoring" tabindex="0" role="button" aria-label="Learn about Anchoring mechanism">
-                    <div class="subtitle">LOCK</div>
-                    <h3>Anchoring</h3>
-                    <p>Lock liquidity permanently. Cling to structure and stability in the chaos of markets.</p>
-                    <p class="mechanism-card-hint">Click to explore deeper →</p>
-                </article>
-
-                <article class="mechanism-card" data-mechanism="distraction" tabindex="0" role="button" aria-label="Learn about Distraction mechanism">
-                    <div class="subtitle">MEME</div>
-                    <h3>Distraction</h3>
-                    <p>Fund marketing, raids, and content creation. Divert attention through activity and spectacle.</p>
-                    <p class="mechanism-card-hint">Click to explore deeper →</p>
-                </article>
-
-                <article class="mechanism-card" data-mechanism="sublimation" tabindex="0" role="button" aria-label="Learn about Sublimation mechanism">
-                    <div class="subtitle">LEARN</div>
-                    <h3>Sublimation</h3>
-                    <p>Support philosophy, education, and meaning-making. Transform suffering into wisdom.</p>
-                    <p class="mechanism-card-hint">Click to explore deeper →</p>
-                </article>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p class="footer-quote">"The antlers are heavy. We carry them together."</p>
-
-            <nav class="footer-links">
-                <a href="https://exelkonsol.github.io/elk/" target="_blank" rel="noopener">Website</a>
-                <a href="https://x.com/ElkBurden" target="_blank" rel="noopener">X / Twitter</a>
-                <a href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank"
-                    rel="noopener">Pump.fun</a>
-                <a href="https://birdeye.so/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump?chain=solana"
-                    target="_blank" rel="noopener">Birdeye</a>
-                <a href="https://solscan.io/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank"
-                    rel="noopener">Solscan</a>
-            </nav>
-
-            <p class="disclaimer">
-                <strong>Disclaimer:</strong> $ELK is a memecoin with no intrinsic value or expectation of financial
-                return. Participation carries risk. This is for informational purposes only and does not constitute
-                investment advice.
-            </p>
-        </footer>
-    </div>
-
-    <!-- RITUAL AUDIO PLAYER - The Antler Resonance -->
-    <div class="audio-player" id="audioPlayer">
-        <div class="audio-panel">
-            <div class="elk-audio-header">
-                <div class="elk-track-meta">
-                    <div class="elk-audio-tag">🦌 Ritual Atmosphere</div>
-                    <div class="elk-track-title" id="elkTrackTitle">Loading atmosphere...</div>
-                    <div class="elk-track-subtitle" id="elkTrackSubtitle">The antlers resonate</div>
-                </div>
-                <button class="audio-panel-close" id="audioPanelClose" aria-label="Close player">×</button>
-            </div>
-
-            <!-- Ritual Disc -->
-            <div class="ritual-disc-container">
-                <div class="ritual-disc" id="ritualDisc"></div>
-                <div class="crossfade-indicator" id="crossfadeIndicator">crossfading...</div>
-            </div>
-
-            <!-- Antler Waveform Visualizer -->
-            <div class="visualizer-container">
-                <canvas id="antlerVisualizer"></canvas>
-            </div>
-
-            <!-- Mountain Ridge Progress -->
-            <div class="mountain-progress-container">
-                <div class="elk-time-row">
-                    <span id="elkCurrentTime">0:00</span>
-                    <span id="elkTotalTime">0:00</span>
-                </div>
-                <div class="mountain-progress" id="mountainProgress" role="slider" aria-label="Track progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
-                    <div class="mountain-ridge"></div>
-                    <div class="mountain-fill" id="mountainFill"></div>
-                </div>
-            </div>
-
-            <!-- Crimson Moon Volume -->
-            <div class="volume-moon-container">
-                <span class="volume-label">Volume</span>
-                <div class="moon-volume" id="moonVolume" role="slider" aria-label="Volume control" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" tabindex="0">
-                    <svg class="moon-svg" viewBox="0 0 44 44">
-                        <circle class="moon-bg" cx="22" cy="22" r="20"/>
-                        <circle class="moon-fill" id="moonFill" cx="22" cy="22" r="20"/>
-                    </svg>
-                    <span class="moon-icon" id="moonIcon">🔊</span>
-                </div>
-            </div>
-
-            <!-- Playback Controls -->
-            <div class="elk-controls">
-                <button class="elk-btn elk-btn-pill" id="elkShuffleBtn" title="Shuffle" aria-label="Toggle shuffle">🔀</button>
-                <button class="elk-btn" id="elkPrevBtn" title="Previous track" aria-label="Previous track">⏮</button>
-                <button class="elk-btn elk-btn-main" id="elkPlayPauseBtn" aria-label="Play" title="Play">
-                    <span id="elkPlayPauseIcon">▶</span>
+                <button onclick="copyToClipboard('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump', 'CA COPIED')" class="font-mono text-[8px] sm:text-[9px] text-white/20 hover:text-white/50 transition-all duration-500 tracking-wider uppercase border border-white/5 px-3 py-1.5 rounded hover:bg-white/5">
+                    <span class="hidden sm:inline">8DaLP...Gpump</span>
+                    <span class="sm:hidden">CA</span>
                 </button>
-                <button class="elk-btn" id="elkNextBtn" title="Next track" aria-label="Next track">⏭</button>
-                <button class="elk-btn elk-btn-pill" id="elkRepeatBtn" title="Repeat mode" aria-label="Toggle repeat">🔁 off</button>
-            </div>
-
-            <!-- Playlist -->
-            <div class="elk-playlist" id="elkPlaylist"></div>
-        </div>
-
-        <button class="audio-toggle-btn" id="audioToggleBtn" aria-label="Toggle atmosphere player">
-            <span id="toggleIcon">▶</span>
-            <span id="toggleText">Atmosphere</span>
-        </button>
-    </div>
-
-    <!-- Modal Overlay -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-content" id="modalContent">
-            <button class="modal-close" id="modalClose" aria-label="Close modal">×</button>
-            <div class="modal-scroll-area" id="modalScrollArea">
-                <div id="modalBody"></div>
             </div>
         </div>
+    </nav>
+
+    <!-- Floating Mute Button -->
+    <div id="mute-toggle-btn" onclick="toggleMute()">
+        <img id="btn-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/Before%20the%20Clearing.png" alt="Art" class="btn-art">
+        <div class="mute-icon-overlay">
+            <i id="mute-icon" data-lucide="volume-2" class="w-6 h-6"></i>
+        </div>
     </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center py-20 px-4 overflow-hidden">
+        <div class="relative z-10 max-w-4xl mx-auto text-center w-full flex flex-col items-center">
+            <!-- Increased Logo Size -->
+            <div class="mb-12 sm:mb-16">
+                <img src="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" 
+                     alt="$ELK" 
+                     class="w-56 h-56 sm:w-72 sm:h-72 md:w-96 md:h-96 mx-auto hero-image opacity-90 object-contain">
+            </div>
+
+            <div class="space-y-6 sm:space-y-8 mb-12 sm:mb-16 max-w-4xl px-4">
+                <p class="font-mono text-[8px] sm:text-[9px] tracking-[0.4em] sm:tracking-[0.5em] text-white/10 uppercase">Peter Wessel Zapffe // On The Tragic</p>
+
+                <h1 class="font-serif text-xl sm:text-3xl md:text-5xl font-light text-white/60 leading-normal sm:leading-relaxed tracking-wide text-balance">
+                    "We are carried through life by a series of 
+                    <span class="text-white/90 italic">sublimations</span>—fleeting release valves 
+                    for the pressure of being."
+                </h1>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-8">
+                <a href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank"
+                   class="buy-btn w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] uppercase text-center">
+                    BUY
+                </a>
+                <a href="https://x.com/i/communities/2014904566983094598" target="_blank"
+                   class="blur-fade w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] text-white/40 hover:text-white/80 uppercase transition-all hover:scale-105 text-center">
+                    Join The Silence
+                </a>
+                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank"
+                   class="blur-fade w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-[9px] font-mono tracking-[0.2em] text-white/30 hover:text-white/70 uppercase transition-all hover:scale-105 text-center">
+                    Chart
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Four Mechanisms -->
+    <section id="mechanisms" class="relative py-20 sm:py-32 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 sm:mb-20 space-y-4">
+                <span class="font-mono text-[9px] tracking-[0.5em] text-white/10 uppercase block">Survival Architecture</span>
+                <h2 class="font-serif text-3xl sm:text-5xl font-light text-white/50">Four Mechanisms</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Card 1 -->
+                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg" data-mechanism="isolation">
+                    <div>
+                        <h3 class="font-serif text-2xl text-white/70 mb-4">Isolation</h3>
+                        <p class="text-white/30 text-sm leading-relaxed mb-4">
+                            Remove tokens from circulation. Confine anxiety to manageable compartments.
+                        </p>
+                        <p class="text-[10px] text-white/20 font-mono uppercase">Suppression through reduction</p>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-white/30 font-mono">Cast</span>
+                            <span class="vote-count font-mono text-lg text-white/50" data-count="2847">2,847</span>
+                        </div>
+                        <button onclick="vote('isolation')" class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100">
+                            Vote
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg" data-mechanism="anchoring">
+                    <div>
+                        <h3 class="font-serif text-2xl text-white/70 mb-4">Anchoring</h3>
+                        <p class="text-white/30 text-sm leading-relaxed mb-4">
+                            Permanent liquidity. Fixed points preventing drift into the chaotic void.
+                        </p>
+                        <p class="text-[10px] text-white/20 font-mono uppercase">Structure against entropy</p>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-white/30 font-mono">Cast</span>
+                            <span class="vote-count font-mono text-lg text-white/50" data-count="1923">1,923</span>
+                        </div>
+                        <button onclick="vote('anchoring')" class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100">
+                            Vote
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg" data-mechanism="distraction">
+                    <div>
+                        <h3 class="font-serif text-2xl text-white/70 mb-4">Distraction</h3>
+                        <p class="text-white/30 text-sm leading-relaxed mb-4">
+                            Marketing, raids, content. Keep the mind moving against the abyss.
+                        </p>
+                        <p class="text-[10px] text-white/20 font-mono uppercase">Motion against stillness</p>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-white/30 font-mono">Cast</span>
+                            <span class="vote-count font-mono text-lg text-white/50" data-count="3156">3,156</span>
+                        </div>
+                        <button onclick="vote('distraction')" class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100">
+                            Vote
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg" data-mechanism="sublimation">
+                    <div>
+                        <h3 class="font-serif text-2xl text-white/70 mb-4">Sublimation</h3>
+                        <p class="text-white/30 text-sm leading-relaxed mb-4">
+                            Transform suffering into art. Philosophy as evolutionary bypass.
+                        </p>
+                        <p class="text-[10px] text-white/20 font-mono uppercase">Pain becomes meaning</p>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-white/30 font-mono">Cast</span>
+                            <span class="vote-count font-mono text-lg text-white/50" data-count="156">156</span>
+                        </div>
+                        <button onclick="vote('sublimation')" class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100">
+                            Vote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Manifesto / Quote Generator Section -->
+    <section id="manifesto" class="relative py-20 sm:py-32 px-4 sm:px-6">
+        <div class="max-w-5xl mx-auto">
+            <!-- Quote Generator -->
+            <div class="quote-section blur-fade mb-10 rounded-xl border border-white/5">
+                <div class="quote-bg"></div>
+                <div class="quote-container">
+                    <div class="absolute top-6 left-1/2 -translate-x-1/2 w-full">
+                         <p class="font-mono text-[9px] tracking-[0.4em] text-white/20 uppercase text-center">Echoes of the Present Void</p>
+                    </div>
+                   
+                    <div id="quote-display" class="quote-text visible">
+                        "We built machines to save time, and now we kill time staring at them, waiting for something to happen."
+                    </div>
+                    
+                    <div class="quote-btn-group mt-12 flex gap-4 relative z-10">
+                        <button onclick="generateQuote()" class="px-8 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 uppercase tracking-widest text-[10px] transition-all">
+                            Generate Echo
+                        </button>
+                        <button onclick="copyQuote()" class="px-4 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 text-white/50 hover:text-white transition-all" aria-label="Copy Quote">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Soundscape -->
+    <section id="soundscape" class="relative py-20 sm:py-32 px-4 sm:px-6 min-h-[700px] overflow-hidden">
+        
+        <!-- Background Specific to Soundscape (newpreview.png) -->
+        <div class="soundscape-bg-layer"></div>
+
+        <div class="max-w-5xl mx-auto h-full flex flex-col relative z-10">
+            <div class="text-center mb-12 sm:mb-20 space-y-4">
+                <span class="font-mono text-[9px] tracking-[0.5em] text-white/10 uppercase block">Auditory Space</span>
+                <h2 class="font-serif text-3xl sm:text-5xl font-light text-white/50">The Sound of Being</h2>
+            </div>
+
+            <!-- Audio Interface -->
+            <div id="audio-interface" class="blur-fade p-6 sm:p-12 rounded-xl border border-white/5 relative bg-black/40">
+                
+                <div class="player-grid grid md:grid-cols-5 gap-8 md:gap-12">
+                    
+                    <!-- Left: Vinyl & Visuals -->
+                    <div class="md:col-span-2 flex flex-col items-center justify-center vinyl-container">
+                        <div class="relative w-48 h-48 sm:w-56 sm:h-56 mb-8">
+                            <div class="absolute inset-0 rounded-full border border-white/5 vinyl-spin" id="vinyl-disc"></div>
+                            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="48" fill="none" stroke="#111" stroke-width="1"/>
+                                <circle id="progress-ring" cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" 
+                                        stroke-dasharray="301.59" stroke-dashoffset="301.59" stroke-linecap="round"
+                                        style="transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 0.1s;"/>
+                            </svg>
+                            <div class="absolute inset-10 rounded-full overflow-hidden bg-black/80 border border-white/10 cursor-pointer shadow-2xl" onclick="togglePlay()">
+                                <img id="album-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/Before%20the%20Clearing.png" 
+                                     alt="Album" class="w-full h-full object-cover opacity-60">
+                            </div>
+                        </div>
+
+                        <div id="wave-container" class="waveform mb-4">
+                            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Info, Playlist, Controls -->
+                    <div class="md:col-span-3 flex flex-col h-full justify-center">
+                        
+                        <!-- Header -->
+                        <div class="mb-6">
+                            <h3 id="track-title" class="font-serif text-xl sm:text-2xl text-white/70 mb-1 leading-tight">Before the Clearing</h3>
+                            <p id="track-desc" class="text-white/20 text-xs sm:text-sm italic">"The silence before revelation"</p>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="flex items-center gap-4 mb-6 mt-4 text-[10px] font-mono text-white/20">
+                            <span id="time-current">00:00</span>
+                            <div class="flex-1 h-1.5 bg-white/5 relative cursor-pointer rounded-full overflow-hidden group" onclick="seek(event)">
+                                <div id="progress-fill" class="absolute left-0 top-0 h-full bg-white/30 w-0 group-hover:bg-white/50 transition-colors"></div>
+                            </div>
+                            <span id="time-total">00:00</span>
+                        </div>
+
+                        <!-- Main Controls -->
+                         <div class="controls-row flex items-center justify-center gap-8 mb-8">
+                            <button onclick="prevTrack()" class="text-white/10 hover:text-white/40 transition-all hover:scale-110"><i data-lucide="skip-back" class="w-6 h-6"></i></button>
+                            <button onclick="togglePlay()" id="play-btn" class="w-14 h-14 rounded-full border border-white/10 hover:border-white/30 hover:bg-white/5 flex items-center justify-center transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+                                <i data-lucide="play" id="play-icon" class="w-6 h-6 text-white/70 ml-1"></i>
+                            </button>
+                            <button onclick="nextTrack()" class="text-white/10 hover:text-white/40 transition-all hover:scale-110"><i data-lucide="skip-forward" class="w-6 h-6"></i></button>
+                        </div>
+
+                        <!-- Playlist -->
+                        <div class="flex-1 overflow-y-auto max-h-48 space-y-1 pr-2 mb-6" id="playlist">
+                            <!-- JS Generated -->
+                        </div>
+
+                        <!-- Volume (Visual only as floating controls main mute) -->
+                        <div class="volume-container px-4">
+                             <input type="range" min="0" max="100" value="60" class="w-full h-1 bg-white/5 rounded-lg appearance-none cursor-pointer" style="accent-color: rgba(255,255,255,0.3);" oninput="setVolume(this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <audio id="audio-player" preload="metadata"></audio>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative py-20 sm:py-32 px-6 border-t border-white/5 bg-transparent overflow-hidden">
+        <div class="relative z-10 max-w-2xl mx-auto text-center space-y-12">
+            <blockquote class="font-body text-white/20 text-sm sm:text-base leading-relaxed italic px-4">
+                "The tragedy of man is that he is constituted to strive for goals he can never fully attain, and to seek answers he can never fully comprehend."
+            </blockquote>
+
+            <div class="flex justify-center gap-12">
+                <a href="https://github.com/exelkonsol/elk" target="_blank" class="text-white/10 hover:text-white/50 transition-all duration-700 hover:scale-110"><i data-lucide="github" class="w-5 h-5"></i></a>
+                <a href="https://x.com/ElkBurden" target="_blank" class="text-white/10 hover:text-white/50 transition-all duration-700 hover:scale-110"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" class="text-white/10 hover:text-white/50 transition-all duration-700 hover:scale-110"><i data-lucide="activity" class="w-5 h-5"></i></a>
+            </div>
+
+            <p class="font-mono text-[8px] text-white/[0.05] tracking-[0.4em] uppercase">The Antlers Are Heavy // We Carry Them Together</p>
+        </div>
+    </footer>
 
     <script>
-        'use strict';
+        lucide.createIcons();
 
-        // ========================================================
-        // BACKGROUND SYSTEM – artwork-driven crossfade
-        // ========================================================
-        const backgrounds = Array.from(document.querySelectorAll('.bg-elk'));
-        let activeBgIndex = 0;
-
-        function setBackgroundImage(url) {
-            if (!backgrounds.length || !url) return;
-
-            const currentEl = backgrounds[activeBgIndex];
-            const nextIndex = (activeBgIndex + 1) % backgrounds.length;
-            const nextEl = backgrounds[nextIndex];
-
-            nextEl.style.backgroundImage = `url("${url}")`;
-            nextEl.classList.add('active');
-            currentEl.classList.remove('active');
-
-            activeBgIndex = nextIndex;
+        // --- TOAST NOTIFICATION ---
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            const m = document.getElementById('toast-msg');
+            m.innerText = msg;
+            t.classList.remove('translate-y-full', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-full', 'opacity-0'), 2000);
         }
 
-        // Start with the first layer visible (blank until a track loads)
-        if (backgrounds[0]) {
-            backgrounds[0].classList.add('active');
+        function copyToClipboard(text, msg) {
+            navigator.clipboard.writeText(text).then(() => showToast(msg));
         }
 
-        // ========================================================
-        // RITUAL AUDIO PLAYER - The Antler Resonance
-        // ========================================================
-        
-        // Web Audio API Context
-        let audioContext = null;
-        let analyser = null;
-        let gainNode = null;
-        let crossfadeGainA = null;
-        let crossfadeGainB = null;
-        let sourceNode = null;
-        let isAudioContextInitialized = false;
-        
-        // Audio elements for crossfade
-        const audioA = new Audio();
-        const audioB = new Audio();
-        let currentAudio = audioA;
-        let nextAudio = audioB;
-        let isCrossfading = false;
-        
-        // UI Elements
-        const elkPlayerEl = document.getElementById('audioPlayer');
-        const elkPanelClose = document.getElementById('audioPanelClose');
-        const elkToggleBtn = document.getElementById('audioToggleBtn');
-        const toggleIcon = document.getElementById('toggleIcon');
-        const toggleText = document.getElementById('toggleText');
-        const ritualDisc = document.getElementById('ritualDisc');
-        const crossfadeIndicator = document.getElementById('crossfadeIndicator');
-
-        const elkTrackTitle = document.getElementById('elkTrackTitle');
-        const elkTrackSubtitle = document.getElementById('elkTrackSubtitle');
-
-        const elkCurrentTimeEl = document.getElementById('elkCurrentTime');
-        const elkTotalTimeEl = document.getElementById('elkTotalTime');
-        const mountainProgress = document.getElementById('mountainProgress');
-        const mountainFill = document.getElementById('mountainFill');
-
-        const moonVolume = document.getElementById('moonVolume');
-        const moonFill = document.getElementById('moonFill');
-        const moonIcon = document.getElementById('moonIcon');
-
-        const elkPrevBtn = document.getElementById('elkPrevBtn');
-        const elkPlayPauseBtn = document.getElementById('elkPlayPauseBtn');
-        const elkPlayPauseIcon = document.getElementById('elkPlayPauseIcon');
-        const elkNextBtn = document.getElementById('elkNextBtn');
-        const elkShuffleBtn = document.getElementById('elkShuffleBtn');
-        const elkRepeatBtn = document.getElementById('elkRepeatBtn');
-
-        const elkPlaylistEl = document.getElementById('elkPlaylist');
-        const visualizerCanvas = document.getElementById('antlerVisualizer');
-        const visualizerCtx = visualizerCanvas.getContext('2d');
-
-        const ELK_STORAGE_PREFIX = 'elkPlayer_';
-
-        // Track definitions
-        const elkTracks = [
-            {
-                id: 0,
-                title: "Before the Clearing",
-                subtitle: "The hush before the herd moves.",
-                src: "Before the Clearing.mp3",
-                durationLabel: "--:--",
-                artwork: "Before the Clearing.png"
-            },
-            {
-                id: 1,
-                title: "Crimson Twilight",
-                subtitle: "Evening light on heavy antlers.",
-                src: "Crimson Twilight.mp3",
-                durationLabel: "--:--",
-                artwork: "Crimson Twilight.png"
-            },
-            {
-                id: 2,
-                title: "Echoes Where Meaning Was",
-                subtitle: "Old answers fading in the valley.",
-                src: "Echoes Where Meaning Was.mp3",
-                durationLabel: "--:--",
-                artwork: "Echoes Where Meaning Was.png"
-            },
-            {
-                id: 3,
-                title: "Eternal Weight",
-                subtitle: "The burden that never sets down.",
-                src: "Eternal Weight.mp3",
-                durationLabel: "--:--",
-                artwork: "Eternal Weight.png"
-            },
-            {
-                id: 4,
-                title: "Forest Depths",
-                subtitle: "Breathing with the dark pines.",
-                src: "Forest Depths.mp3",
-                durationLabel: "--:--",
-                artwork: "Forest Depths.png"
-            },
-            {
-                id: 5,
-                title: "Herd Gathering",
-                subtitle: "Steps converging in the distance.",
-                src: "Herd Gathering.mp3",
-                durationLabel: "--:--",
-                artwork: "Herd Gathering.png"
-            },
-            {
-                id: 6,
-                title: "Herd Through the Valley",
-                subtitle: "Procession beneath the crimson sky.",
-                src: "Herd Through the Valley.mp3",
-                durationLabel: "--:--",
-                artwork: "Herd Through the Valley.png"
-            },
-            {
-                id: 7,
-                title: "Migration of the Burdened",
-                subtitle: "Carrying weight across seasons.",
-                src: "Migration of the Burdened.mp3",
-                durationLabel: "--:--",
-                artwork: "Migration of the Burdened.png"
-            },
-            {
-                id: 8,
-                title: "Mountain Echo",
-                subtitle: "The ridge repeats what we won't say.",
-                src: "Mountain Echo.mp3",
-                durationLabel: "--:--",
-                artwork: "Mountain Echo.png"
-            },
-            {
-                id: 9,
-                title: "No Elk Walks Alone",
-                subtitle: "The herd holds the invisible weight.",
-                src: "No Elk Walks Alone.mp3",
-                durationLabel: "--:--",
-                artwork: "No Elk Walks Alone.png"
-            },
-            {
-                id: 10,
-                title: "Signal from the Ridge",
-                subtitle: "A distant call through thin air.",
-                src: "Signal from the Ridge.mp3",
-                durationLabel: "--:--",
-                artwork: "Signal from the Ridge.png"
-            },
-            {
-                id: 11,
-                title: "The Burden",
-                subtitle: "What consciousness costs the herd.",
-                src: "The Burden.mp3",
-                durationLabel: "--:--",
-                artwork: "The Burden.png"
-            },
-            {
-                id: 12,
-                title: "The Herd Remembers",
-                subtitle: "Memory written in tracks and scars.",
-                src: "The Herd Remembers.mp3",
-                durationLabel: "--:--",
-                artwork: "The Herd Remembers.png"
-            },
-            {
-                id: 13,
-                title: "The Weight of Knowing",
-                subtitle: "When awareness grows heavier than bone.",
-                src: "The Weight of Knowing.mp3",
-                durationLabel: "--:--",
-                artwork: "The Weight of Knowing.png"
-            },
-            {
-                id: 14,
-                title: "Turning Ash to Altar",
-                subtitle: "Loss rising as ritual and flame.",
-                src: "Turning Ash to Altar.mp3",
-                durationLabel: "--:--",
-                artwork: "Turning Ash to Altar.png"
-            },
-            {
-                id: 15,
-                title: "What Consciousness Costs",
-                subtitle: "The final tally of the burden.",
-                src: "What Consciousness Costs.mp3",
-                durationLabel: "--:--",
-                artwork: "What Consciousness Costs.png"
-            }
+        // --- MASSIVE QUOTE POOL ---
+        const quotes = [
+            "We built machines to save time, and now we kill time staring at them, waiting for something to happen.",
+            "The notification bell rings and we salivate, Pavlov's heirs in a digital age.",
+            "We are the first generation to document our own collapse in real-time.",
+            "The void stares back through every loading screen, every buffer wheel, every unread message.",
+            "We traded silence for signal, then discovered the signal was noise.",
+            "Each like is a small anchoring against the drift, temporary buoys in an endless sea.",
+            "The algorithm knows our anxieties better than we do, feeds them back disguised as content.",
+            "We scroll to escape thought, then think about why we scroll.",
+            "The burden of infinite choice in a finite existence.",
+            "Every screen is a mirror that reflects not our faces, but our need to be seen.",
+            "We have mapped the world and lost our place within it.",
+            "The meme is our century's sigh, compressed despair packaged as humor.",
+            "Connection at scale has produced isolation at depth.",
+            "We optimize for engagement while disengaging from ourselves.",
+            "The blockchain remembers what we wish to forget about ourselves.",
+            "In the liquidity of modern life, we seek permanent locks.",
+            "The antlers grow heavier with each season of awareness.",
+            "We carry devices that connect us to everyone and tether us to loneliness.",
+            "The feed is infinite but our time is not.",
+            "Every transaction is a small death, every coin a tiny coffin.",
+            "We mint meaning in a universe that burns it.",
+            "The herd moves as one, each alone in their burden.",
+            "Trading is just anxiety with a chart.",
+            "The red candle and the green are just different shades of the same blood.",
+            "We worship at the altar of liquidity.",
+            "Value is consensus, consensus is trust, trust is faith, faith is the last anchor.",
+            "The wallet shows what we are: digits waiting to be spent.",
+            "Pump and dump is the rhythm of modern existence.",
+            "We are all just temporary custodians of value that outlives us.",
+            "The blockchain doesn't care about your feelings, and neither does the market.",
+            "Community is the new cult, token the new sacrament.",
+            "We burn tokens like we burn years: hoping the reduction creates value.",
+            "The chart moves because we are afraid it will.",
+            "Decentralization just means we are all equally lost.",
+            "The whitepaper is scripture, the devs are priests, we are the congregation.",
+            "We look for signals in noise because the silence is unbearable.",
+            "FOMO is just mortality wearing a trading mask.",
+            "The next block will save us, or the one after that, or the one after that.",
+            "We are early, they say, but early for what and for whom?",
+            "The bull runs, the bear sleeps, we wait in purgatory.",
+            "Every wallet is a diary written in transactions.",
+            "We don't buy tokens, we buy hope in divisible units.",
+            "The moon is just another way of saying the end of anxiety.",
+            "Diamond hands are just scar tissue from previous burns.",
+            "We ape in because standing still feels like dying.",
+            "The community votes, the devs build, the market decides, nobody wins.",
+            "Gas fees are the price of participating in the void.",
+            "We stake our claims on digital land that doesn't exist.",
+            "The drop is coming, always, but never for us.",
+            "We are bagholders in the economy of meaning.",
+            "The liquidity pool is just a reflection of collective desperation.",
+            "Every rally is a revolt against the silence, every crash a return to it.",
+            "We chart patterns because randomness is too terrifying to accept.",
+            "The wallet connects but the user disconnects.",
+            "We measure life in percentage gains and emotional losses.",
+            "The contract is immutable, our understanding is not.",
+            "Success is just failure that hasn't happened yet.",
+            "We don't trade assets, we trade versions of ourselves.",
+            "The ATH is a memory of a future that never happened.",
+            "We burn the past to heat the present, knowing winter comes.",
+            "The address is anonymous, the patterns reveal everything.",
+            "We are all just noise in the signal, waiting to be filtered.",
+            "The buy button is hope, the sell button is despair, the hodl is purgatory.",
+            "Every transaction leaves a trace, every trace fades, every fade is forgotten.",
+            "We seek alpha in a world of random walks.",
+            "The token rises, our spirits rise with it, both temporarily.",
+            "We are early adopters of our own obsolescence.",
+            "The DAO deliberates, the code executes, the user suffers.",
+            "We vote with our wallets because our voices lost meaning long ago.",
+            "The bridge connects chains but not souls.",
+            "Every layer 2 is just another layer of abstraction from the real.",
+            "We seek decentralization and find ourselves more centralized in our loneliness.",
+            "The metaverse is just reality with fewer textures.",
+            "We mint NFTs to prove we existed, knowing the blockchain forgets no one.",
+            "The floor price is the basement of our expectations.",
+            "We are all just liquidity for someone else's exit.",
+            "The airdrop is grace, the dump is nature, the hold is faith.",
+            "We calculate risk while time calculates us.",
+            "Solana is speed, but we are stuck in the slow lane of consciousness.",
+            "The green candle cures depression, the red candle confirms it.",
+            "We are looking for the 100x to escape the 9-to-5 of the soul.",
+            "WAGMI is a prayer whispered in a crowded room of strangers.",
+            "Rugpulls are just sudden reminders of impermanence.",
+            "The memecoin is the purest form of financial nihilism.",
+            "We lock liquidity to pretend we can lock time.",
+            "The slippage is the friction of existence.",
+            "We refresh the page to refresh our dopamine.",
+            "The bot trades faster than we can feel.",
+            "We are liquidity providers for the universe's entropy."
         ];
 
-        let elkCurrentIndex = 0;
-        let elkIsPlaying = false;
-        let elkIsShuffle = false;
-        let elkRepeatMode = 'off'; // 'off' | 'one' | 'all'
-
-        // Initialize Web Audio API
-        function initAudioContext() {
-            if (isAudioContextInitialized) return;
-            
-            try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioContext.createAnalyser();
-                analyser.fftSize = 128;
-                analyser.smoothingTimeConstant = 0.85;
-                
-                // Create gain nodes for crossfade
-                crossfadeGainA = audioContext.createGain();
-                crossfadeGainB = audioContext.createGain();
-                
-                // Connect to destination
-                crossfadeGainA.connect(analyser);
-                crossfadeGainB.connect(analyser);
-                analyser.connect(audioContext.destination);
-                
-                isAudioContextInitialized = true;
-            } catch (e) {
-                console.warn('Web Audio API not supported, falling back to basic audio');
-            }
-        }
-
-        // Connect audio element to Web Audio
-        function connectAudioElement(audioEl, gainNode) {
-            if (!isAudioContextInitialized || !gainNode) return;
-            
-            try {
-                const source = audioContext.createMediaElementSource(audioEl);
-                source.connect(gainNode);
-            } catch (e) {
-                // Already connected
-            }
-        }
-
-        // Crossfade between tracks
-        function crossfadeToTrack(newIndex, autoplay = false) {
-            if (isCrossfading) return;
-            isCrossfading = true;
-            
-            const oldAudio = currentAudio;
-            const oldGain = currentAudio === audioA ? crossfadeGainA : crossfadeGainB;
-            
-            // Setup next audio
-            nextAudio = currentAudio === audioA ? audioB : audioA;
-            const newGain = nextAudio === audioA ? crossfadeGainA : crossfadeGainB;
-            
-            // Load new track
-            const track = elkTracks[newIndex];
-            nextAudio.src = track.src;
-            nextAudio.load();
-            
-            // Show crossfade indicator
-            crossfadeIndicator.classList.add('active');
-            ritualDisc.classList.add('loading');
-            
-            // Connect to Web Audio if needed
-            if (isAudioContextInitialized) {
-                connectAudioElement(nextAudio, newGain);
-            }
-            
-            // When new track is ready, start crossfade
-            nextAudio.addEventListener('canplay', function onCanPlay() {
-                nextAudio.removeEventListener('canplay', onCanPlay);
-                
-                // Update UI immediately
-                elkCurrentIndex = newIndex;
-                updateTrackUI(track);
-                elkHighlightActiveTrack();
-                elkSave('currentIndex', elkCurrentIndex);
-                
-                if (isAudioContextInitialized && oldGain && newGain) {
-                    const fadeDuration = 2.5; // seconds
-                    const now = audioContext.currentTime;
-                    
-                    // Fade out old
-                    oldGain.gain.setValueAtTime(oldGain.gain.value, now);
-                    oldGain.gain.exponentialRampToValueAtTime(0.001, now + fadeDuration);
-                    
-                    // Fade in new
-                    newGain.gain.setValueAtTime(0.001, now);
-                    newGain.gain.exponentialRampToValueAtTime(1, now + fadeDuration);
-                }
-                
-                // Start playing new track
-                if (autoplay) {
-                    nextAudio.play().catch(() => {});
-                }
-                
-                // Stop old track after fade
-                setTimeout(() => {
-                    oldAudio.pause();
-                    oldAudio.currentTime = 0;
-                    isCrossfading = false;
-                    crossfadeIndicator.classList.remove('active');
-                    ritualDisc.classList.remove('loading');
-                    currentAudio = nextAudio;
-                }, 2500);
-            }, { once: true });
-            
-            // Handle errors
-            nextAudio.addEventListener('error', function onError() {
-                nextAudio.removeEventListener('error', onError);
-                isCrossfading = false;
-                crossfadeIndicator.classList.remove('active');
-                ritualDisc.classList.remove('loading');
-            }, { once: true });
-        }
-
-        // Update track UI
-        function updateTrackUI(track) {
-            elkTrackTitle.textContent = track.title;
-            elkTrackSubtitle.textContent = track.subtitle;
-            ritualDisc.style.backgroundImage = `url("${track.artwork}")`;
-            setBackgroundImage(track.artwork);
-        }
-
-        // Antler Waveform Visualizer
-        function initVisualizer() {
-            // Set canvas size
-            const dpr = window.devicePixelRatio || 1;
-            const rect = visualizerCanvas.getBoundingClientRect();
-            visualizerCanvas.width = rect.width * dpr;
-            visualizerCanvas.height = rect.height * dpr;
-            visualizerCtx.scale(dpr, dpr);
-            
-            drawVisualizer();
-        }
-
-        function drawVisualizer() {
-            requestAnimationFrame(drawVisualizer);
-            
-            if (!analyser || !elkIsPlaying) {
-                // Draw idle state - gentle pulsing antler outline
-                drawIdleAntler();
-                return;
-            }
-            
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-            analyser.getByteFrequencyData(dataArray);
-            
-            const width = visualizerCanvas.width / (window.devicePixelRatio || 1);
-            const height = visualizerCanvas.height / (window.devicePixelRatio || 1);
-            
-            visualizerCtx.clearRect(0, 0, width, height);
-            
-            // Draw antler-shaped visualizer
-            drawAntlerVisualizer(dataArray, bufferLength, width, height);
-        }
-
-        function drawIdleAntler() {
-            const width = visualizerCanvas.width / (window.devicePixelRatio || 1);
-            const height = visualizerCanvas.height / (window.devicePixelRatio || 1);
-            
-            visualizerCtx.clearRect(0, 0, width, height);
-            
-            // Gentle pulse
-            const pulse = Math.sin(Date.now() / 1000) * 0.1 + 0.9;
-            
-            visualizerCtx.strokeStyle = `rgba(196, 30, 58, ${0.2 * pulse})`;
-            visualizerCtx.lineWidth = 2;
-            visualizerCtx.lineCap = 'round';
-            
-            // Draw antler outline
-            drawAntlerShape(width, height, 0.3 * pulse);
-        }
-
-        function drawAntlerShape(width, height, intensity) {
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const barWidth = 3;
-            const gap = 2;
-            
-            // Left antler (low frequencies)
-            for (let i = 0; i < 8; i++) {
-                const barHeight = 8 + i * 2;
-                const x = centerX - 40 - i * (barWidth + gap);
-                const y = centerY - barHeight / 2;
-                
-                visualizerCtx.beginPath();
-                visualizerCtx.moveTo(x + barWidth / 2, centerY + barHeight / 2);
-                visualizerCtx.lineTo(x + barWidth / 2, centerY - barHeight / 2);
-                visualizerCtx.stroke();
-            }
-            
-            // Center (mid frequencies)
-            for (let i = 0; i < 5; i++) {
-                const barHeight = 15;
-                const x = centerX - 8 + i * (barWidth + gap);
-                const y = centerY - barHeight / 2;
-                
-                visualizerCtx.beginPath();
-                visualizerCtx.moveTo(x + barWidth / 2, centerY + barHeight / 2);
-                visualizerCtx.lineTo(x + barWidth / 2, centerY - barHeight / 2);
-                visualizerCtx.stroke();
-            }
-            
-            // Right antler (high frequencies)
-            for (let i = 0; i < 8; i++) {
-                const barHeight = 8 + i * 2;
-                const x = centerX + 40 + i * (barWidth + gap);
-                const y = centerY - barHeight / 2;
-                
-                visualizerCtx.beginPath();
-                visualizerCtx.moveTo(x + barWidth / 2, centerY + barHeight / 2);
-                visualizerCtx.lineTo(x + barWidth / 2, centerY - barHeight / 2);
-                visualizerCtx.stroke();
-            }
-        }
-
-        function drawAntlerVisualizer(dataArray, bufferLength, width, height) {
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const barWidth = 3;
-            const gap = 2;
-            
-            // Calculate average amplitude for glow intensity
-            let avgAmplitude = 0;
-            for (let i = 0; i < bufferLength; i++) {
-                avgAmplitude += dataArray[i];
-            }
-            avgAmplitude /= bufferLength;
-            const glowIntensity = avgAmplitude / 255;
-            
-            // Left antler - low frequencies (bins 0-8)
-            for (let i = 0; i < 8; i++) {
-                const dataIndex = Math.floor(i * (bufferLength / 32));
-                const value = dataArray[dataIndex] || 0;
-                const barHeight = Math.max(4, (value / 255) * height * 0.7);
-                const x = centerX - 40 - i * (barWidth + gap);
-                
-                // Gradient for bar
-                const gradient = visualizerCtx.createLinearGradient(0, centerY + barHeight / 2, 0, centerY - barHeight / 2);
-                gradient.addColorStop(0, `rgba(196, 30, 58, ${0.3 + glowIntensity * 0.4})`);
-                gradient.addColorStop(0.5, `rgba(196, 30, 58, ${0.6 + glowIntensity * 0.4})`);
-                gradient.addColorStop(1, `rgba(255, 100, 100, ${0.4 + glowIntensity * 0.4})`);
-                
-                visualizerCtx.fillStyle = gradient;
-                visualizerCtx.fillRect(x, centerY - barHeight / 2, barWidth, barHeight);
-                
-                // Glow effect
-                visualizerCtx.shadowColor = 'rgba(196, 30, 58, 0.8)';
-                visualizerCtx.shadowBlur = 8 + glowIntensity * 12;
-                visualizerCtx.fillRect(x, centerY - barHeight / 2, barWidth, barHeight);
-                visualizerCtx.shadowBlur = 0;
-            }
-            
-            // Center - mid frequencies (bins 8-16)
-            for (let i = 0; i < 5; i++) {
-                const dataIndex = Math.floor(8 + i * (bufferLength / 32));
-                const value = dataArray[dataIndex] || 0;
-                const barHeight = Math.max(4, (value / 255) * height * 0.8);
-                const x = centerX - 8 + i * (barWidth + gap);
-                
-                const gradient = visualizerCtx.createLinearGradient(0, centerY + barHeight / 2, 0, centerY - barHeight / 2);
-                gradient.addColorStop(0, `rgba(196, 30, 58, ${0.4 + glowIntensity * 0.4})`);
-                gradient.addColorStop(0.5, `rgba(196, 30, 58, ${0.7 + glowIntensity * 0.3})`);
-                gradient.addColorStop(1, `rgba(255, 150, 150, ${0.5 + glowIntensity * 0.5})`);
-                
-                visualizerCtx.fillStyle = gradient;
-                visualizerCtx.fillRect(x, centerY - barHeight / 2, barWidth, barHeight);
-                
-                visualizerCtx.shadowColor = 'rgba(196, 30, 58, 0.9)';
-                visualizerCtx.shadowBlur = 10 + glowIntensity * 15;
-                visualizerCtx.fillRect(x, centerY - barHeight / 2, barWidth, barHeight);
-                visualizerCtx.shadowBlur = 0;
-            }
-            
-            // Right antler - high frequencies (bins 16-24)
-            for (let i = 0; i < 8; i++) {
-                const dataIndex = Math.floor(16 + i * (bufferLength / 32));
-                const value = dataArray[dataIndex] || 0;
-                const barHeight = Math.max(4, (value / 255) * height * 0.7);
-                const x = centerX + 40 + i * (barWidth + gap);
-                
-                const gradient = visualizerCtx.createLinearGradient(0, centerY + barHeight / 2, 0, centerY - barHeight / 2);
-                gradient.addColorStop(0, `rgba(196, 30, 58, ${0.3 + glowIntensity * 0.4})`);
-                gradient.addColorStop(0.5, `rgba(196, 30, 58, ${0.6 + glowIntensity * 0.4})`);
-                gradient.addColorStop(1, `rgba(255, 100, 100, ${0.4 + glowIntensity * 0.4})`);
-                
-                visualizerCtx.fillStyle = gradient;
-                visualizerCtx.fillRect(x, centerY - barHeight / 2, barWidth, barHeight);
-                
-                visualizerCtx.shadowColor = 'rgba(196, 30, 58, 0.8)';
-                visualizerCtx.shadowBlur = 8 + glowIntensity * 12;
-                visualizerCtx.fillRect(x, centerY - barHeight / 2, barWidth, barHeight);
-                visualizerCtx.shadowBlur = 0;
-            }
-        }
-
-        // Storage helpers
-        function elkSave(key, value) {
-            try {
-                localStorage.setItem(ELK_STORAGE_PREFIX + key, JSON.stringify(value));
-            } catch (e) { }
-        }
-
-        function elkLoad(key, fallback) {
-            try {
-                const raw = localStorage.getItem(ELK_STORAGE_PREFIX + key);
-                if (!raw) return fallback;
-                return JSON.parse(raw);
-            } catch (e) {
-                return fallback;
-            }
-        }
-
-        function elkFormatTime(sec) {
-            if (!isFinite(sec) || sec < 0) return '0:00';
-            const s = Math.floor(sec % 60);
-            const m = Math.floor(sec / 60);
-            return m + ':' + (s < 10 ? '0' + s : s);
-        }
-
-        function elkOpenPanel() {
-            elkPlayerEl.classList.add('expanded');
-        }
-
-        function elkClosePanel() {
-            elkPlayerEl.classList.remove('expanded');
-        }
-
-        function elkUpdateToggleButton() {
-            if (elkIsPlaying) {
-                toggleIcon.textContent = '⏸';
-                toggleText.textContent = 'Atmosphere playing';
-                elkToggleBtn.classList.add('playing');
-                elkPlayerEl.classList.add('playing');
-                ritualDisc.classList.add('playing');
-            } else {
-                toggleIcon.textContent = '▶';
-                toggleText.textContent = 'Atmosphere';
-                elkToggleBtn.classList.remove('playing');
-                elkPlayerEl.classList.remove('playing');
-                ritualDisc.classList.remove('playing');
-            }
-        }
-
-        function elkUpdatePlayPauseButton() {
-            const isPaused = currentAudio.paused || currentAudio.ended;
-
-            if (isPaused) {
-                elkPlayPauseIcon.textContent = '▶';
-                elkPlayPauseBtn.setAttribute('aria-label', 'Play');
-                elkPlayPauseBtn.title = 'Play';
-            } else {
-                elkPlayPauseIcon.textContent = '⏸';
-                elkPlayPauseBtn.setAttribute('aria-label', 'Pause');
-                elkPlayPauseBtn.title = 'Pause';
-            }
-        }
-
-        function elkRenderPlaylist() {
-            elkPlaylistEl.innerHTML = '';
-            elkTracks.forEach((track, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'elk-track';
-                btn.dataset.index = index;
-                btn.setAttribute('aria-label', `Play ${track.title}`);
-
-                const info = document.createElement('div');
-                info.className = 'elk-track-info';
-
-                const title = document.createElement('div');
-                title.className = 'elk-track-title-sm';
-                title.textContent = track.title;
-
-                const subtitle = document.createElement('div');
-                subtitle.className = 'elk-track-subtitle-sm';
-                subtitle.textContent = track.subtitle;
-
-                info.appendChild(title);
-                info.appendChild(subtitle);
-
-                const right = document.createElement('div');
-                right.className = 'elk-track-duration';
-                right.textContent = track.durationLabel;
-
-                btn.appendChild(info);
-                btn.appendChild(right);
-
-                btn.addEventListener('click', () => {
-                    if (elkCurrentIndex === index && elkIsPlaying) {
-                        elkTogglePlayPause();
-                    } else {
-                        crossfadeToTrack(index, true);
-                    }
-                });
-
-                elkPlaylistEl.appendChild(btn);
-            });
-            elkHighlightActiveTrack();
-        }
-
-        function elkHighlightActiveTrack() {
-            const buttons = elkPlaylistEl.querySelectorAll('.elk-track');
-            buttons.forEach((btn, idx) => {
-                btn.classList.toggle('is-active', idx === elkCurrentIndex);
-            });
-        }
-
-        function elkResetProgressUI() {
-            elkCurrentTimeEl.textContent = '0:00';
-            elkTotalTimeEl.textContent = '0:00';
-            mountainFill.style.width = '0%';
-            mountainProgress.setAttribute('aria-valuenow', '0');
-        }
-
-        function elkUpdateTimeUI() {
-            if (!isFinite(currentAudio.duration) || currentAudio.duration <= 0) {
-                elkResetProgressUI();
-                return;
-            }
-            const ratio = Math.max(0, Math.min(1, currentAudio.currentTime / currentAudio.duration));
-            mountainFill.style.width = `${ratio * 100}%`;
-            mountainProgress.setAttribute('aria-valuenow', Math.round(ratio * 100));
-            elkCurrentTimeEl.textContent = elkFormatTime(currentAudio.currentTime);
-            elkTotalTimeEl.textContent = elkFormatTime(currentAudio.duration);
-        }
-
-        function elkLoadTrack(index, autoplay = false) {
-            if (!elkTracks.length) return;
-            if (index < 0) index = elkTracks.length - 1;
-            if (index >= elkTracks.length) index = 0;
-
-            // Use crossfade for track changes
-            crossfadeToTrack(index, autoplay);
-        }
-
-        function elkTogglePlayPause() {
-            initAudioContext();
-            
-            if (currentAudio.paused) {
-                currentAudio.play().catch(() => {});
-            } else {
-                currentAudio.pause();
-            }
-        }
-
-        function elkNextTrack(userTriggered = false) {
-            if (elkIsShuffle && !userTriggered && elkTracks.length > 1) {
-                let nextIndex = elkCurrentIndex;
-                while (nextIndex === elkCurrentIndex) {
-                    nextIndex = Math.floor(Math.random() * elkTracks.length);
-                }
-                elkLoadTrack(nextIndex, true);
-            } else {
-                elkLoadTrack(elkCurrentIndex + 1, true);
-            }
-        }
-
-        function elkPrevTrack() {
-            elkLoadTrack(elkCurrentIndex - 1, true);
-        }
-
-        function elkCycleRepeatMode() {
-            if (elkRepeatMode === 'off') elkRepeatMode = 'all';
-            else if (elkRepeatMode === 'all') elkRepeatMode = 'one';
-            else elkRepeatMode = 'off';
-            elkSave('repeat', elkRepeatMode);
-            elkUpdateRepeatButton();
-        }
-
-        function elkUpdateRepeatButton() {
-            let label = 'off';
-            if (elkRepeatMode === 'all') label = 'all';
-            if (elkRepeatMode === 'one') label = '1';
-            elkRepeatBtn.textContent = '🔁 ' + label;
-            elkRepeatBtn.classList.toggle('active', elkRepeatMode !== 'off');
-        }
-
-        function elkToggleShuffle() {
-            elkIsShuffle = !elkIsShuffle;
-            elkSave('shuffle', elkIsShuffle);
-            elkShuffleBtn.classList.toggle('active', elkIsShuffle);
-        }
-
-        function elkSetVolumeFromRatio(ratio) {
-            const clamped = Math.max(0, Math.min(1, ratio));
-            currentAudio.volume = clamped;
-            if (nextAudio) nextAudio.volume = clamped;
-            
-            // Update moon visual
-            const circumference = 2 * Math.PI * 20;
-            const offset = circumference * (1 - clamped);
-            moonFill.style.strokeDashoffset = offset;
-            
-            elkSave('volume', clamped);
-
-            if (clamped === 0) {
-                moonIcon.textContent = '🔇';
-            } else if (clamped < 0.5) {
-                moonIcon.textContent = '🔉';
-            } else {
-                moonIcon.textContent = '🔊';
-            }
-        }
-
-        function elkSeekFromRatio(ratio) {
-            if (!isFinite(currentAudio.duration) || currentAudio.duration <= 0) return;
-            const clamped = Math.max(0, Math.min(1, ratio));
-            currentAudio.currentTime = clamped * currentAudio.duration;
-            elkUpdateTimeUI();
-        }
-
-        // Drag handlers for progress and volume
-        function attachDrag(element, onRatioChange, isCircular = false) {
-            let dragging = false;
-
-            const getRatio = (e) => {
-                const rect = element.getBoundingClientRect();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
-                if (isCircular) {
-                    // For circular volume control
-                    const centerX = rect.left + rect.width / 2;
-                    const centerY = rect.top + rect.height / 2;
-                    const angle = Math.atan2(clientY - centerY, clientX - centerX);
-                    let ratio = (angle + Math.PI / 2) / (2 * Math.PI);
-                    if (ratio < 0) ratio += 1;
-                    return ratio;
-                } else {
-                    // For linear progress bar
-                    if (!rect.width) return 0;
-                    return (clientX - rect.left) / rect.width;
-                }
-            };
-
-            const move = (e) => {
-                if (!dragging) return;
-                e.preventDefault();
-                onRatioChange(getRatio(e));
-            };
-
-            const end = () => {
-                dragging = false;
-                window.removeEventListener('mousemove', move);
-                window.removeEventListener('mouseup', end);
-                window.removeEventListener('touchmove', move);
-                window.removeEventListener('touchend', end);
-            };
-
-            element.addEventListener('mousedown', (e) => {
-                dragging = true;
-                onRatioChange(getRatio(e));
-                window.addEventListener('mousemove', move);
-                window.addEventListener('mouseup', end);
-            });
-
-            element.addEventListener('touchstart', (e) => {
-                dragging = true;
-                onRatioChange(getRatio(e));
-                window.addEventListener('touchmove', move, { passive: false });
-                window.addEventListener('touchend', end);
-            }, { passive: true });
-        }
-
-        // Event wiring
-        function setupAudioEvents(audio) {
-            audio.addEventListener('play', () => {
-                elkIsPlaying = true;
-                elkUpdateToggleButton();
-                elkUpdatePlayPauseButton();
-            });
-
-            audio.addEventListener('pause', () => {
-                elkIsPlaying = false;
-                elkUpdateToggleButton();
-                elkUpdatePlayPauseButton();
-            });
-
-            audio.addEventListener('loadedmetadata', elkUpdateTimeUI);
-            audio.addEventListener('durationchange', elkUpdateTimeUI);
-            audio.addEventListener('timeupdate', elkUpdateTimeUI);
-
-            audio.addEventListener('ended', () => {
-                if (elkRepeatMode === 'one') {
-                    audio.currentTime = 0;
-                    audio.play().catch(() => {});
-                    return;
-                }
-                if (elkRepeatMode === 'all') {
-                    elkNextTrack();
-                } else if (elkCurrentIndex < elkTracks.length - 1) {
-                    elkNextTrack();
-                } else {
-                    elkIsPlaying = false;
-                    elkUpdateToggleButton();
-                    elkUpdatePlayPauseButton();
-                }
-            });
-        }
-
-        setupAudioEvents(audioA);
-        setupAudioEvents(audioB);
-
-        // Button event listeners
-        elkPlayPauseBtn.addEventListener('click', () => {
-            initAudioContext();
-            elkOpenPanel();
-            elkTogglePlayPause();
-        });
-
-        elkPrevBtn.addEventListener('click', () => {
-            elkOpenPanel();
-            elkPrevTrack();
-        });
-
-        elkNextBtn.addEventListener('click', () => {
-            elkOpenPanel();
-            elkNextTrack(true);
-        });
-
-        elkShuffleBtn.addEventListener('click', elkToggleShuffle);
-        elkRepeatBtn.addEventListener('click', elkCycleRepeatMode);
-
-        // Progress bar click
-        mountainProgress.addEventListener('click', (e) => {
-            const rect = mountainProgress.getBoundingClientRect();
-            if (!rect.width) return;
-            const ratio = (e.clientX - rect.left) / rect.width;
-            elkSeekFromRatio(ratio);
-        });
-        attachDrag(mountainProgress, elkSeekFromRatio);
-
-        // Volume control
-        moonVolume.addEventListener('click', (e) => {
-            const rect = moonVolume.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-            let ratio = (angle + Math.PI / 2) / (2 * Math.PI);
-            if (ratio < 0) ratio += 1;
-            elkSetVolumeFromRatio(ratio);
-        });
-
-        // Toggle panel
-        elkToggleBtn.addEventListener('click', () => {
-            const isExpanded = elkPlayerEl.classList.contains('expanded');
-            if (isExpanded) {
-                elkClosePanel();
-            } else {
-                elkOpenPanel();
-            }
-        });
-
-        elkPanelClose.addEventListener('click', elkClosePanel);
-
-        // Close on outside tap (mobile)
-        document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768) {
-                if (!elkPlayerEl.contains(e.target)) {
-                    elkClosePanel();
-                }
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            const tag = (e.target && e.target.tagName) ? e.target.tagName : '';
-            if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-
-            if (e.code === 'Space') {
-                e.preventDefault();
-                initAudioContext();
-                elkTogglePlayPause();
-            } else if (e.code === 'ArrowRight') {
-                if (isFinite(currentAudio.duration)) {
-                    currentAudio.currentTime = Math.min(currentAudio.currentTime + 5, currentAudio.duration);
-                    elkUpdateTimeUI();
-                }
-            } else if (e.code === 'ArrowLeft') {
-                if (isFinite(currentAudio.duration)) {
-                    currentAudio.currentTime = Math.max(currentAudio.currentTime - 5, 0);
-                    elkUpdateTimeUI();
-                }
-            } else if (e.code === 'ArrowUp') {
-                e.preventDefault();
-                elkSetVolumeFromRatio(currentAudio.volume + 0.1);
-            } else if (e.code === 'ArrowDown') {
-                e.preventDefault();
-                elkSetVolumeFromRatio(currentAudio.volume - 0.1);
-            }
-        });
-
-        // Initialize
-        function elkInit() {
-            const savedIndex = elkLoad('currentIndex', 0);
-            const savedVolume = elkLoad('volume', 1);
-            const savedRepeat = elkLoad('repeat', 'off');
-            const savedShuffle = elkLoad('shuffle', false);
-
-            elkCurrentIndex = Math.max(0, Math.min(elkTracks.length - 1, savedIndex));
-            elkRepeatMode = savedRepeat;
-            elkIsShuffle = !!savedShuffle;
-
-            // Load initial track (no autoplay)
-            const track = elkTracks[elkCurrentIndex];
-            currentAudio.src = track.src;
-            currentAudio.load();
-            updateTrackUI(track);
-
-            elkRenderPlaylist();
-            elkSetVolumeFromRatio(savedVolume);
-            elkUpdateRepeatButton();
-            elkShuffleBtn.classList.toggle('active', elkIsShuffle);
-            elkUpdatePlayPauseButton();
-            
-            // Initialize visualizer
-            initVisualizer();
-            
-            // Handle window resize for canvas
-            window.addEventListener('resize', initVisualizer);
-        }
-
-        elkInit();
-
-        // ========================================================
-        // ENHANCED QUOTE GENERATOR (Removed broken AI mode)
-        // ========================================================
-        const quotes = {
-            existential: [
-                "Consciousness is the fatal gift; it crowns us with antlers too heavy for our own necks, yet we stand taller for it.",
-                "The tragedy is not that we suffer, but that we are aware of our suffering—and still choose to go on.",
-                "We build distractions not to escape reality, but to make the weight of reality bearable for one more day.",
-                "To know the void is to live forever on its edge, anchored only by the illusions we dare to call meaning.",
-                "The antlers grow with every question we ask, until the burden becomes the only proof that we are alive.",
-                "Humanity's greatest invention is not fire or language, but the art of forgetting what we cannot endure remembering.",
-                "We sublimate despair into culture, politics, love—anything to transform the unbearable into something we can carry.",
-                "Existence is a mountain we were never meant to climb, yet here we are, step after deliberate step.",
-                "Awareness is the wound that never heals, and meaning is the scar tissue we proudly display.",
-                "We are creatures condemned to meaning in a universe that offers none, and that condemnation is our glory.",
-                "The heaviest antlers are not made of bone, but of questions no answer can ever lighten.",
-                "To be conscious is to carry the knowledge of death through every moment of life.",
-                "We distract ourselves with noise because silence reveals the terrifying clarity of our condition.",
-                "The burden of consciousness is shared only by those brave enough to acknowledge it.",
-                "Man is a rope stretched between the animal and the overman—a rope over an abyss.",
-                "The struggle itself toward the heights is enough to fill a man's heart. One must imagine Sisyphus happy.",
-                "In the depth of winter, I finally learned that within me there lay an invincible summer.",
-                "He who has a why to live can bear almost any how.",
-                "The individual has always had to struggle to keep from being overwhelmed by the tribe.",
-                "There is but one truly serious philosophical problem, and that is suicide.",
-                "Life can only be understood backwards; but it must be lived forwards.",
-                "Anxiety is the dizziness of freedom.",
-                "What does not kill me makes me stronger.",
-                "To live is to suffer; to survive is to find some meaning in the suffering."
-            ],
-            degen: [
-                "The market doesn't care about your feelings, only your conviction in the face of volatility.",
-                "Diamond hands aren't forged in green candles—they're tempered in the red.",
-                "We didn't choose the degen life; consciousness chose it for us, and we simply refuse to look away.",
-                "To ape or not to ape—the question itself reveals we've already decided.",
-                "The charts reflect not just price, but the collective psychology of those brave enough to play.",
-                "In the casino of existence, we are simultaneously the house, the player, and the game itself.",
-                "HODL is not a strategy—it's a philosophical stance against the tyranny of short-term thinking.",
-                "Every dip is a test of conviction; every pump, a validation of belief against the void.",
-                "We chase moons not for wealth, but to prove we can defy gravity—even if just for a moment.",
-                "The ultimate degeneracy is pretending life has inherent meaning. We create it with every trade.",
-                "Leverage is the physical manifestation of existential risk—amplifying both glory and ruin.",
-                "To risk it all on a meme coin is to embrace the absurd with full awareness of its absurdity.",
-                "The rug pull is merely the market's way of teaching us about the impermanence of all things.",
-                "We don't invest in tokens—we invest in collective narratives against the darkness.",
-                "The whitepaper is our scripture, the chart our meditation, the community our congregation.",
-                "In a world of fiat and decay, we choose digital scarcity and communal hope.",
-                "Every degen knows the real treasure isn't profit—it's the philosophy we argued about along the way.",
-                "To buy the dip is to affirm life in the face of uncertainty.",
-                "We are not gambling—we are philosophically hedging against meaninglessness.",
-                "The moon was always metaphorical; we knew this, yet we reach anyway.",
-                "WAGMI is not a promise—it's a prayer we make to each other.",
-                "The herd remembers every paper hand that sold, and honors every diamond hand that stayed.",
-                "Bear markets build character; bull markets reveal it.",
-                "We are early to something we cannot yet name."
-            ],
-            elk: [
-                "The elk carries the forest on its antlers, and the forest remembers.",
-                "Heavy is the crown of bone and velvet, heavier still the responsibility to the herd.",
-                "The antlers are heavy. We carry them together.",
-                "In the mountain's shadow, the elk teaches: endure, persist, prevail.",
-                "The burden becomes beautiful when shared across the herd.",
-                "Majestic not because it is unburdened, but because it bears the weight with grace.",
-                "The elk does not ask why the antlers grow—it simply stands taller.",
-                "Through winter's deepest cold, the herd remains. This is our truth.",
-                "The mountain is steep, the path uncertain, yet the elk climbs on.",
-                "Alone, the antlers crush. Together, they crown us.",
-                "The forest whispers: those who carry burdens become legends.",
-                "The elk's strength is not in its antlers, but in its refusal to shed them.",
-                "Every step forward is a triumph over the weight we bear.",
-                "The herd knows no individual glory—only collective endurance.",
-                "To stand with the elk is to accept the weight and find meaning in the carrying.",
-                "The antlers grow heavier with wisdom, lighter with companionship.",
-                "In the clearing where burdens are shared, the herd finds peace.",
-                "The elk teaches: to carry is to live; to share is to transcend.",
-                "Through fog and shadow, antlers held high, the herd persists.",
-                "The weight shapes us. The community sustains us. The journey defines us.",
-                "The elk does not seek to be unburdened, but to be worthy of its burden.",
-                "When one elk stumbles, the herd slows. This is our way.",
-                "The antlers reach toward the sky, but the elk's strength is rooted in the earth.",
-                "In silence, the herd speaks. In stillness, we move forward."
-            ],
-            contemplative: [
-                "A single breath between thoughts is all the peace we need.",
-                "The mist clears not when we search for answers, but when we stop asking.",
-                "Stillness is not the absence of movement, but the presence of awareness.",
-                "In the space between heartbeats, eternity dwells.",
-                "The mountain does not hurry to its height, yet it arrives.",
-                "What we seek is already here, wearing the disguise of ordinary moments.",
-                "The pine does not question why it grows toward light. It simply reaches.",
-                "Silence speaks louder than the words we use to fill it.",
-                "To watch the fog lift is to witness time itself.",
-                "The smallest stream, given time, carves the deepest canyon.",
-                "We are not lost; we are simply between recognitions.",
-                "The moon asks nothing of the tide, yet the tide responds.",
-                "In the hush before dawn, even the burden feels like a blessing.",
-                "The elk pauses not because it is tired, but because the moment asks it to.",
-                "What if the weight we carry is actually holding us to the earth?",
-                "A shadow is proof that light exists. Suffering is proof that we do.",
-                "The valley teaches what the peak cannot: patience.",
-                "We do not find ourselves; we create ourselves in the quiet moments.",
-                "The forest does not rush, yet everything is accomplished.",
-                "To breathe deeply is to remember we are alive.",
-                "The antler's point is not to wound, but to reach.",
-                "In the depth of night, stars remind us that darkness has its own light.",
-                "The path does not exist until we walk it."
-            ]
-        };
-
-        function shuffle(arr) {
-            const a = arr.slice();
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
-
-        const queues = {
-            existential: shuffle(quotes.existential),
-            degen: shuffle(quotes.degen),
-            elk: shuffle(quotes.elk),
-            contemplative: shuffle(quotes.contemplative)
-        };
-
-        let currentMode = 'existential';
-        const quoteText = document.getElementById('quoteText');
-        const quoteSpinner = document.getElementById('quoteSpinner');
-        const generateBtn = document.getElementById('generateBtn');
-
-        function getNextQuote(mode) {
-            if (!queues[mode] || queues[mode].length === 0) {
-                queues[mode] = shuffle(quotes[mode]);
-            }
-            return queues[mode].pop();
-        }
-
-        function displayQuote() {
-            quoteSpinner.classList.add('active');
-            quoteText.classList.remove('show');
-            generateBtn.disabled = true;
+        let currentQuote = 0;
+
+        function generateQuote() {
+            const display = document.getElementById('quote-display');
+            display.classList.remove('visible');
 
             setTimeout(() => {
-                quoteSpinner.classList.remove('active');
-                quoteText.textContent = getNextQuote(currentMode);
-                quoteText.classList.add('show');
-                generateBtn.disabled = false;
+                let newQuote;
+                do {
+                    newQuote = Math.floor(Math.random() * quotes.length);
+                } while (newQuote === currentQuote);
+                
+                currentQuote = newQuote;
+                display.textContent = '"' + quotes[currentQuote] + '"';
+                display.classList.add('visible');
             }, 400);
         }
 
-        document.querySelectorAll('.mode-btn').forEach((btn) => {
-            btn.onclick = function () {
-                document.querySelectorAll('.mode-btn').forEach((b) => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentMode = btn.dataset.mode;
-                displayQuote();
-            };
-        });
+        function copyQuote() {
+            const text = document.getElementById('quote-display').innerText;
+            copyToClipboard(text, 'WISDOM COPIED');
+        }
 
-        generateBtn.onclick = displayQuote;
+        // --- VOTING SYSTEM ---
+        const votes = { isolation: 2847, anchoring: 1923, distraction: 3156, sublimation: 156 };
+        let hasVoted = false;
 
-        document.getElementById('copyWisdom').onclick = function () {
-            const wisdom = quoteText.textContent.trim();
-            navigator.clipboard
-                .writeText(wisdom)
-                .then(() => {
-                    this.textContent = 'Copied!';
-                    this.classList.add('copied');
-                    setTimeout(() => {
-                        this.textContent = 'Copy Wisdom';
-                        this.classList.remove('copied');
-                    }, 2500);
-                })
-                .catch(() => {
-                    this.textContent = 'Copy failed';
-                    setTimeout(() => {
-                        this.textContent = 'Copy Wisdom';
-                    }, 2000);
-                });
-        };
-
-        document.getElementById('copyContract').onclick = function () {
-            navigator.clipboard
-                .writeText('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump')
-                .then(() => {
-                    this.textContent = 'Copied!';
-                    this.classList.add('copied');
-                    setTimeout(() => {
-                        this.textContent = 'Copy Contract';
-                        this.classList.remove('copied');
-                    }, 2500);
-                });
-        };
-
-        // ========================================================
-        // MECHANISM MODALS
-        // ========================================================
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalBody = document.getElementById('modalBody');
-        const modalClose = document.getElementById('modalClose');
-        const modalScrollArea = document.getElementById('modalScrollArea');
-
-        const modalData = {
-            isolation: {
-                subtitle: 'BURN',
-                title: 'Isolation',
-                content: `
-                    <div class="modal-section">
-                        <h4>Zapffe's First Mechanism</h4>
-                        <p>Peter Wessel Zapffe identified <strong>Isolation</strong> as humanity's first defense against the overwhelming burden of consciousness. We isolate—mentally exile—thoughts and experiences too painful to confront.</p>
-                        <p>We push away existential dread, suppress awareness of mortality, and compartmentalize suffering to function in daily life.</p>
-                        <div class="modal-quote">
-                            "We know we are doomed, and we know we will fail. But we must seal away this knowledge to live."
-                            <span class="modal-quote-author">Peter Wessel Zapffe, The Last Messiah</span>
-                        </div>
-                    </div>
-                    <div class="modal-section">
-                        <h4>The ELK Implementation</h4>
-                        <p>In ELK, <strong>Isolation</strong> manifests as token burns—the permanent removal of supply from circulation. Just as we mentally isolate unbearable truths to preserve sanity, we isolate tokens to preserve value and create scarcity.</p>
-                        <p>Every burn is an act of philosophical defiance: we acknowledge the void (the burn address) and willingly consign tokens to it, reducing noise in the ecosystem and sharpening our collective focus.</p>
-                    </div>
-                    <div class="modal-section">
-                        <h4>Community Application</h4>
-                        <p>Regular community-voted burns serve as <strong>rituals of renewal</strong>. They force us to face the reality of impermanence and scarcity.</p>
-                        <p>The burn mechanism is our shared acknowledgment that not everything deserves to persist—including certain tokens, certain thoughts, certain illusions. We burn to clarify. We burn to focus. We burn to survive.</p>
-                    </div>
-                `
-            },
-            anchoring: {
-                subtitle: 'LOCK',
-                title: 'Anchoring',
-                content: `
-                    <div class="modal-section">
-                        <h4>Zapffe's Second Mechanism</h4>
-                        <p>Zapffe's <strong>Anchoring</strong> is the act of clinging to fixed points—work, family, routines, beliefs—that provide stability amid existential chaos.</p>
-                        <p>We anchor ourselves to structures that give life predictability and meaning, even if that meaning is constructed.</p>
-                        <div class="modal-quote">
-                            "Man must anchor himself to something—anything—or be swept away by the tide of awareness."
-                            <span class="modal-quote-author">Peter Wessel Zapffe</span>
-                        </div>
-                    </div>
-                    <div class="modal-section">
-                        <h4>The ELK Implementation</h4>
-                        <p>For ELK, <strong>Anchoring</strong> translates to locked liquidity—the permanent, irrevocable commitment of liquidity pools that cannot be withdrawn.</p>
-                        <p>By locking liquidity, we create trust, stability, and commitment. We say: we are not fleeing. We are not rug-pulling. We are anchored to this project, this community, this philosophy.</p>
-                    </div>
-                    <div class="modal-section">
-                        <h4>Community Application</h4>
-                        <p>When liquidity is permanently locked, the community knows the foundation is solid. There's no exit scam on the horizon.</p>
-                        <p>Anchoring through liquidity locks is our collective decision to <strong>commit to the burden together</strong>. We anchor not just to survive, but to thrive.</p>
-                    </div>
-                `
-            },
-            distraction: {
-                subtitle: 'MEME',
-                title: 'Distraction',
-                content: `
-                    <div class="modal-section">
-                        <h4>Zapffe's Third Mechanism</h4>
-                        <p>Zapffe's <strong>Distraction</strong> is perhaps his most relatable mechanism: we divert ourselves from existential dread through entertainment, work, social media, politics, sports—anything to avoid confronting the void directly.</p>
-                        <div class="modal-quote">
-                            "We fill the hours with noise and spectacle, not to escape meaning, but to avoid the terror of its absence."
-                            <span class="modal-quote-author">Peter Wessel Zapffe</span>
-                        </div>
-                    </div>
-                    <div class="modal-section">
-                        <h4>The ELK Implementation</h4>
-                        <p>In crypto, distraction is the lifeblood of memetic energy. For ELK, <strong>Distraction</strong> manifests as marketing, raids, content creation, and meme warfare.</p>
-                        <p>We fund these activities from the treasury to keep the community engaged, energized, and laughing in the face of absurdity.</p>
-                    </div>
-                    <div class="modal-section">
-                        <h4>Community Application</h4>
-                        <p>The ELK community thrives on <strong>creative distraction</strong>. We don't just HODL passively—we actively engage in the spectacle of memecoin culture.</p>
-                        <p>We distract not to forget the burden, but to make carrying it more bearable. We laugh, we create, we share—and in doing so, we transform suffering into something generative.</p>
-                    </div>
-                `
-            },
-            sublimation: {
-                subtitle: 'LEARN',
-                title: 'Sublimation',
-                content: `
-                    <div class="modal-section">
-                        <h4>Zapffe's Fourth Mechanism</h4>
-                        <p>Zapffe's <strong>Sublimation</strong> is the transformation of existential suffering into higher pursuits—art, philosophy, science, religion.</p>
-                        <p>We channel the pain of awareness into creative and intellectual endeavors that give suffering a sense of nobility and purpose.</p>
-                        <div class="modal-quote">
-                            "The only way to bear the weight of consciousness is to transform it into something worth carrying."
-                            <span class="modal-quote-author">Echoes of Zapffe</span>
-                        </div>
-                    </div>
-                    <div class="modal-section">
-                        <h4>The ELK Implementation</h4>
-                        <p>For ELK, <strong>Sublimation</strong> means funding education, philosophy, and meaning-making initiatives.</p>
-                        <p>We dedicate a portion of the treasury to essays, book clubs, discussions, and media that explore the deeper questions that brought us here.</p>
-                    </div>
-                    <div class="modal-section">
-                        <h4>Community Application</h4>
-                        <p>The ELK community is <strong>intellectually curious</strong>. We're not just here for gains—we're here for wisdom.</p>
-                        <p>Through sublimation, we elevate the discourse and prove that a memecoin can be both absurd and profound, humorous and serious. We carry the antlers—and we transform their weight into wisdom.</p>
-                    </div>
-                `
+        function vote(mech) {
+            if (hasVoted) {
+                showToast("ALREADY VOTED");
+                return;
             }
-        };
-
-        function openModal(mechanism) {
-            const data = modalData[mechanism];
-            if (!data) return;
-
-            modalBody.innerHTML = `
-                <div class="modal-header">
-                    <div class="modal-subtitle">${data.subtitle}</div>
-                    <h3 class="modal-title">${data.title}</h3>
-                </div>
-                <div class="modal-body">
-                    ${data.content}
-                </div>
-            `;
-
-            modalScrollArea.scrollTop = 0;
-            modalOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            votes[mech]++;
+            const card = document.querySelector(`[data-mechanism="${mech}"]`);
+            card.querySelector('.vote-count').textContent = votes[mech].toLocaleString();
+            card.classList.add('voted');
+            hasVoted = true;
+            showToast("VOTE CAST");
         }
 
-        function closeModal() {
-            modalOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
+        // --- AUDIO PLAYER ---
+        const tracks = [
+            { title: "Before the Clearing", file: "Before the Clearing", desc: "The silence before revelation" },
+            { title: "Crimson Twilight", file: "Crimson Twilight", desc: "Day bleeds into night" },
+            { title: "Echoes Where Meaning Was", file: "Echoes Where Meaning Was", desc: "Hollow chambers" },
+            { title: "Eternal Weight", file: "Eternal Weight", desc: "The paradox of being" },
+            { title: "Forest Depths", file: "Forest Depths", desc: "Dissolution of self" },
+            { title: "Herd Gathering", file: "Herd Gathering", desc: "Many antlers, one burden" },
+            { title: "Herd Through the Valley", file: "Herd Through the Valley", desc: "Moving through the low points" },
+            { title: "Migration of the Burdened", file: "Migration of the Burdened", desc: "Perpetual motion" },
+            { title: "Mountain Echo", file: "Mountain Echo", desc: "Voices returning to us" },
+            { title: "No Elk Walks Alone", file: "No Elk Walks Alone", desc: "Solitude in numbers" },
+            { title: "Signal from the Ridge", file: "Signal from the Ridge", desc: "A call to ascend" },
+            { title: "The Burden", file: "The Burden", desc: "We are our weight" },
+            { title: "The Herd Remembers", file: "The Herd Remembers", desc: "History carved in bone" },
+            { title: "The Weight of Knowing", file: "The Weight of Knowing", desc: "Awareness is heavy" },
+            { title: "Turning Ash to Altar", file: "Turning Ash to Altar", desc: "Sacred remnants" },
+            { title: "What Consciousness Costs", file: "What Consciousness Costs", desc: "The price of awakening" }
+        ];
 
-        document.querySelectorAll('.mechanism-card').forEach((card) => {
-            card.addEventListener('click', () => {
-                const mechanism = card.dataset.mechanism;
-                openModal(mechanism);
+        let current = 0, playing = false, muted = false;
+        const audio = document.getElementById('audio-player');
+        const circumference = 2 * Math.PI * 48;
+        
+        // Elements
+        const muteBtn = document.getElementById('mute-toggle-btn');
+        const btnArt = document.getElementById('btn-art');
+        const muteIcon = document.getElementById('mute-icon');
+
+        function initPlaylist() {
+            const pl = document.getElementById('playlist');
+            pl.innerHTML = '';
+            tracks.forEach((t, i) => {
+                const d = document.createElement('div');
+                d.className = `track-item p-3 cursor-pointer flex items-center justify-between text-sm ${i === 0 ? 'active' : ''} rounded`;
+                d.onclick = () => loadTrack(i);
+                d.innerHTML = `<span class="text-white/30 truncate mr-2">${t.title}</span><span class="text-[10px] text-white/10 shrink-0">${String(i+1).padStart(2,'0')}</span>`;
+                pl.appendChild(d);
             });
+            loadTrack(0, false);
+        }
+
+        function loadTrack(idx, auto = true) {
+            current = idx;
+            const t = tracks[idx], base = 'https://raw.githubusercontent.com/exelkonsol/elk/main/';
+            audio.src = `${base}${encodeURIComponent(t.file)}.mp3`;
             
-            // Keyboard accessibility for cards
-            card.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    const mechanism = card.dataset.mechanism;
-                    openModal(mechanism);
-                }
-            });
-        });
+            // Update Main UI
+            document.getElementById('track-title').textContent = t.title;
+            document.getElementById('track-desc').textContent = '"' + t.desc + '"';
+            const artUrl = `${base}${encodeURIComponent(t.file)}.png`;
+            document.getElementById('album-art').src = artUrl;
+            
+            // Update Mute Btn Art
+            btnArt.src = artUrl;
 
-        modalClose.addEventListener('click', closeModal);
+            // Update List Active State
+            document.querySelectorAll('.track-item').forEach((e, i) => e.classList.toggle('active', i === idx));
+            
+            if (auto) playAudio();
+        }
 
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                closeModal();
+        function togglePlay() {
+            playing ? pauseAudio() : playAudio();
+        }
+
+        function playAudio() {
+            audio.play().catch(e => console.log("User interaction required"));
+            playing = true;
+            document.getElementById('vinyl-disc').classList.add('playing');
+            document.getElementById('wave-container').classList.add('playing');
+            muteBtn.classList.add('playing');
+            
+            // Update Icons
+            document.getElementById('play-icon').setAttribute('data-lucide', 'pause');
+            lucide.createIcons();
+        }
+
+        function pauseAudio() {
+            audio.pause();
+            playing = false;
+            document.getElementById('vinyl-disc').classList.remove('playing');
+            document.getElementById('wave-container').classList.remove('playing');
+            muteBtn.classList.remove('playing');
+            
+            // Update Icons
+            document.getElementById('play-icon').setAttribute('data-lucide', 'play');
+            lucide.createIcons();
+        }
+
+        function toggleMute() {
+            muted = !muted;
+            audio.muted = muted;
+            if (muted) {
+                muteIcon.setAttribute('data-lucide', 'volume-x');
+                muteBtn.style.opacity = "0.7";
+            } else {
+                muteIcon.setAttribute('data-lucide', 'volume-2');
+                muteBtn.style.opacity = "1";
             }
+            lucide.createIcons();
+        }
+
+        function nextTrack() { loadTrack((current + 1) % tracks.length); }
+        function prevTrack() { loadTrack((current - 1 + tracks.length) % tracks.length); }
+        
+        function seek(e) {
+            const r = e.currentTarget.getBoundingClientRect();
+            audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+        }
+        
+        function setVolume(v) { 
+            audio.volume = v / 100; 
+            if (v > 0 && muted) toggleMute(); // Unmute if dragging volume
+        }
+        
+        function fmt(s) {
+            if (isNaN(s)) return '00:00';
+            const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+            return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            const p = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progress-fill').style.width = p + '%';
+            document.getElementById('time-current').textContent = fmt(audio.currentTime);
+            document.getElementById('progress-ring').style.strokeDashoffset = circumference - (p/100) * circumference;
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
-                closeModal();
-            }
+        audio.addEventListener('loadedmetadata', () => {
+            document.getElementById('time-total').textContent = fmt(audio.duration);
         });
+
+        audio.addEventListener('ended', nextTrack);
+
+        // Init
+        initPlaylist();
     </script>
 </body>
-
 </html>

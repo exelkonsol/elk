@@ -23,13 +23,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
-        * { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Removed global transition * { ... } to fix mobile glitching */
 
         html {
             touch-action: manipulation;
             -webkit-text-size-adjust: 100%;
             -webkit-tap-highlight-color: transparent;
-            scroll-padding-top: 80px; /* Prevents header obscuring content on anchor jump */
+            scroll-padding-top: 80px;
         }
 
         body {
@@ -51,7 +51,7 @@
             background-position: center;
             filter: grayscale(100%) opacity(0.3) contrast(1.1);
             z-index: -10;
-            transform: translateZ(0); /* Hardware accel */
+            transform: translateZ(0);
         }
 
         .vignette {
@@ -94,7 +94,7 @@
             background: rgba(139, 0, 0, 0.2);
             border: 1px solid rgba(220, 38, 38, 0.3);
             color: rgba(255, 100, 100, 0.8);
-            transition: all 0.5s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             touch-action: manipulation;
             user-select: none;
         }
@@ -109,7 +109,7 @@
 
         .buy-btn:active { transform: scale(0.98); }
 
-        /* Quote Section */
+        /* Quote Section - Fixed Mobile Layout */
         .quote-section { position: relative; overflow: hidden; }
         
         .quote-bg {
@@ -128,12 +128,13 @@
         .quote-container {
             position: relative;
             z-index: 1;
-            min-height: 600px;
+            min-height: 500px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 3rem 2rem;
+            padding: 4rem 1.5rem;
+            text-align: center;
         }
 
         .quote-text {
@@ -142,13 +143,16 @@
             font-size: clamp(1.5rem, 5vw, 2.75rem);
             line-height: 1.4;
             color: rgba(255, 255, 255, 0.95);
-            text-align: center;
             max-width: 900px;
             opacity: 0;
             transform: translateY(10px);
             transition: all 0.8s ease;
             text-shadow: 0 4px 30px rgba(0,0,0,1);
-            will-change: opacity, transform;
+            margin: 2rem 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .quote-text.visible { opacity: 1; transform: translateY(0); }
@@ -183,10 +187,10 @@
 
         .mode-selector {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 0.5rem;
             flex-wrap: wrap;
             justify-content: center;
+            margin-top: 1rem;
         }
 
         .mode-btn {
@@ -225,11 +229,10 @@
         .hero-image {
             filter: blur(0px) brightness(0.9) contrast(1.05);
             transition: all 1.5s ease;
-            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            /* Removed mask-image to prevent black line artifacts */
             object-fit: contain;
-            mix-blend-mode: soft-light;
-            opacity: 0.9;
+            mix-blend-mode: normal; /* Changed from soft-light for clearer image */
+            opacity: 1;
             transform: translateZ(0);
             will-change: transform;
         }
@@ -239,7 +242,7 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.6s ease;
+            transition: transform 0.3s ease, background-color 0.3s ease;
         }
 
         .mechanism-card:hover {
@@ -253,7 +256,7 @@
             border-color: rgba(139, 0, 0, 0.2);
         }
 
-        .mechanism-card button { touch-action: manipulation; min-height: 44px; }
+        .mechanism-card button { touch-action: manipulation; min-height: 44px; transition: opacity 0.3s ease; }
 
         /* Footer Background */
         .footer-bg-layer {
@@ -269,14 +272,12 @@
             pointer-events: none;
             z-index: 0;
             filter: grayscale(0%) contrast(1.2);
-            will-change: transform;
         }
 
         /* Audio Player */
         .audio-player-container {
             position: relative;
             overflow: hidden;
-            /* contain: layout style paint; removed to fix potential rendering clips on some browsers */
         }
 
         #visualizer-canvas {
@@ -295,15 +296,10 @@
             border-radius: 50%;
             background: repeating-radial-gradient(circle at center, #111 0px, #111 2px, #0a0a0a 3px, #0a0a0a 4px);
             box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 10px 30px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.9);
-            animation: spin 25s linear infinite;
-            animation-play-state: paused;
-            will-change: transform;
             cursor: pointer;
             touch-action: manipulation;
             transform: translateZ(0);
         }
-
-        .vinyl-record.playing { animation-play-state: running; }
 
         .vinyl-label {
             position: absolute;
@@ -328,11 +324,6 @@
             border: 1px solid rgba(255,255,255,0.2);
             z-index: 2;
             pointer-events: none;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
         }
 
         .progress-container {
@@ -372,7 +363,7 @@
         }
 
         .track-item {
-            transition: all 0.3s ease;
+            transition: background 0.2s ease, padding 0.2s ease;
             border-left: 2px solid transparent;
             position: relative;
             overflow: hidden;
@@ -396,7 +387,7 @@
         .track-item.active::before { transform: scaleY(1); }
 
         .control-btn {
-            transition: all 0.2s;
+            transition: transform 0.2s, color 0.2s;
             touch-action: manipulation;
             min-height: 44px; min-width: 44px;
             display: inline-flex; align-items: center; justify-content: center;
@@ -413,7 +404,7 @@
             background: rgba(255,255,255,0.05);
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.3s, box-shadow 0.3s;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
             touch-action: manipulation;
             user-select: none;
@@ -448,14 +439,8 @@
         #mute-toggle-btn img.btn-art {
             position: absolute; width: 100%; height: 100%;
             object-fit: cover; opacity: 0.6;
-            animation: spin 25s linear infinite;
-            animation-play-state: paused;
             pointer-events: none;
-            will-change: transform;
-            transform: translateZ(0);
         }
-        
-        #mute-toggle-btn.playing img.btn-art { animation-play-state: running; }
 
         .mute-icon-overlay {
             position: relative; z-index: 2;
@@ -477,9 +462,10 @@
         @media (max-width: 640px) {
             .vinyl-record { width: 160px; height: 160px; }
             .vinyl-label { width: 60px; height: 60px; }
-            .quote-container { min-height: 400px; }
+            .quote-container { min-height: 400px; padding: 3rem 1rem; }
             #mute-toggle-btn { bottom: 16px; right: 16px; width: 50px; height: 50px; }
             .hero-image { width: 180px !important; height: 180px !important; }
+            .quote-text { font-size: 1.5rem; }
         }
 
         @media (pointer: coarse) {
@@ -496,7 +482,6 @@
         @media (prefers-reduced-motion: reduce) {
             * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
             .hero-content { opacity: 1; transform: none; filter: none; }
-            .vinyl-record, #mute-toggle-btn img.btn-art { animation: none !important; }
         }
     </style>
 </head>
@@ -519,9 +504,9 @@
             <div class="flex justify-between items-center">
                 <a href="#" class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-white/60 hover:text-white/90 transition-colors touch-manipulation">$ELK</a>
                 <div class="hidden md:flex items-center gap-8 lg:gap-12 font-mono text-[10px] tracking-[0.3em] uppercase">
-                    <a href="#mechanisms" class="text-white/20 hover:text-white/60 transition-all duration-700 py-2">Mechanisms</a>
-                    <a href="#manifesto" class="text-white/20 hover:text-white/60 transition-all duration-700 py-2">Manifesto</a>
-                    <a href="#soundscape" class="text-white/20 hover:text-white/60 transition-all duration-700 py-2">Soundscape</a>
+                    <a href="#mechanisms" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Mechanisms</a>
+                    <a href="#manifesto" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Manifesto</a>
+                    <a href="#soundscape" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Soundscape</a>
                 </div>
                 <button onclick="copyToClipboard('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump', 'CA COPIED')" 
                         class="font-mono text-[8px] sm:text-[9px] text-white/20 hover:text-white/50 transition-all duration-500 tracking-wider uppercase border border-white/5 px-3 py-1.5 rounded hover:bg-white/5 active:scale-95 touch-manipulation min-h-[44px]">
@@ -545,7 +530,7 @@
         <div class="hero-content relative z-10 max-w-4xl mx-auto text-center w-full flex flex-col items-center">
             
             <div class="mb-6 sm:mb-8 w-full flex justify-center items-center relative">
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 pointer-events-none z-10"></div>
+                <!-- Removed the gradient overlay that was causing the black line/box artifact -->
                 <img src="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" 
                      alt="$ELK Stag" 
                      width="400" 
@@ -590,7 +575,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <!-- Cards same as previous but button sizing ensured -->
                 <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg" data-mechanism="isolation">
                     <div>
                         <h3 class="font-serif text-2xl text-white/70 mb-4">Isolation</h3>
@@ -654,27 +638,29 @@
         </div>
     </section>
 
-    <!-- Manifesto -->
+    <!-- Manifesto / Quote Generator Section - Refactored for Mobile Stability -->
     <section id="manifesto" class="relative py-20 sm:py-32 px-4 sm:px-6">
         <div class="max-w-5xl mx-auto">
             <div class="quote-section blur-fade mb-10 rounded-xl border border-white/5">
                 <div class="quote-bg"></div>
                 <div class="quote-container">
-                    <div class="absolute top-6 left-1/2 -translate-x-1/2 w-full">
-                         <p class="font-mono text-[9px] tracking-[0.4em] text-white/20 uppercase text-center">Echoes of the Present Void</p>
+                    
+                    <!-- Content Stacked Naturally for better Mobile Layout -->
+                    <div class="mb-6 w-full text-center relative z-10">
+                         <p class="font-mono text-[9px] tracking-[0.4em] text-white/20 uppercase">Echoes of the Present Void</p>
                     </div>
 
-                    <div class="mode-selector absolute top-16 left-1/2 -translate-x-1/2 w-full z-10">
+                    <div class="mode-selector mb-8 relative z-10">
                         <button class="mode-btn active" onclick="setMode('existential', this)" aria-pressed="true">EXISTENTIAL</button>
                         <button class="mode-btn" onclick="setMode('degen', this)" aria-pressed="false">DEGEN</button>
                         <button class="mode-btn" onclick="setMode('elk', this)" aria-pressed="false">ELK WISDOM</button>
                     </div>
                    
-                    <div id="quote-display" class="quote-text visible mt-12 px-4">
+                    <div id="quote-display" class="quote-text visible px-4 relative z-10">
                         "We built machines to save time, and now we kill time staring at them, waiting for something to happen."
                     </div>
                     
-                    <div class="quote-btn-group mt-12 flex gap-4 relative z-10">
+                    <div class="quote-btn-group mt-auto flex gap-4 relative z-10">
                         <button onclick="generateQuote()" class="px-8 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 uppercase tracking-widest text-[10px] transition-all active:scale-95 touch-manipulation min-h-[44px]">Generate Echo</button>
                         <button onclick="copyQuote()" class="px-4 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 text-white/50 hover:text-white transition-all active:scale-95 touch-manipulation min-h-[44px] min-w-[44px]" aria-label="Copy Quote"><i data-lucide="copy" class="w-4 h-4"></i></button>
                     </div>
@@ -756,21 +742,28 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="relative py-20 sm:py-32 px-6 border-t border-white/5 bg-black overflow-hidden">
-        <div class="footer-bg-layer"></div>
+    <!-- Footer - Refactored for Stability -->
+    <footer class="relative py-16 sm:py-24 px-6 border-t border-white/5 bg-black overflow-hidden">
+        <!-- Z-index adjusted to prevent overlap issues -->
+        <div class="footer-bg-layer z-0"></div>
+        
         <div class="relative z-10 max-w-2xl mx-auto text-center space-y-12">
             <blockquote class="font-body text-white/30 text-sm sm:text-base leading-relaxed italic px-4">"The tragedy of man is that he is constituted to strive for goals he can never fully attain, and to seek answers he can never fully comprehend."</blockquote>
             <div class="flex justify-center gap-12">
-                <a href="https://github.com/exelkonsol/elk" target="_blank" class="text-white/20 hover:text-white/60 transition-all duration-700 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="GitHub"><i data-lucide="github" class="w-5 h-5"></i></a>
-                <a href="https://x.com/ElkBurden" target="_blank" class="text-white/20 hover:text-white/60 transition-all duration-700 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Twitter"><i data-lucide="twitter" class="w-5 h-5"></i></a>
-                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" class="text-white/20 hover:text-white/60 transition-all duration-700 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Chart"><i data-lucide="activity" class="w-5 h-5"></i></a>
+                <a href="https://github.com/exelkonsol/elk" target="_blank" class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="GitHub"><i data-lucide="github" class="w-5 h-5"></i></a>
+                <a href="https://x.com/ElkBurden" target="_blank" class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Twitter"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Chart"><i data-lucide="activity" class="w-5 h-5"></i></a>
             </div>
             <p class="font-mono text-[8px] text-white/[0.08] tracking-[0.4em] uppercase">The Antlers Are Heavy // We Carry Them Together</p>
         </div>
     </footer>
 
     <script>
+        // Prevent scroll jump on reload
+        if (history.scrollRestoration) {
+            history.scrollRestoration = 'manual';
+        }
+
         lucide.createIcons();
 
         // Audio Context Handling
@@ -778,7 +771,6 @@
         function unlockAudioContext() {
             if (audioContextUnlocked) return;
             const audio = document.getElementById('audio-player');
-            // Do not play/pause here, just resume context if it exists
             if (typeof AudioContext !== 'undefined' && AudioContext.state === 'suspended') {
                 AudioContext.resume().then(() => { audioContextUnlocked = true; });
             } else if (typeof webkitAudioContext !== 'undefined') {
@@ -939,12 +931,11 @@
             function animate() {
                 visualizerAnimationId = requestAnimationFrame(animate);
                 if (!playing || !analyser) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Use raw dimensions to clear everything
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); 
                     return;
                 }
                 analyser.getByteFrequencyData(dataArray);
                 
-                // Get logical dimensions for drawing
                 const dpr = window.devicePixelRatio || 1;
                 const width = canvas.width / dpr;
                 const height = canvas.height / dpr;
@@ -976,12 +967,10 @@
             tracks.forEach((t, i) => {
                 const d = document.createElement('div');
                 d.className = `track-item p-3 cursor-pointer flex items-center justify-between text-sm ${i === 0 ? 'active' : ''} rounded`;
-                // Pass true for scroll on click
                 d.onclick = () => loadTrack(i, true, true);
                 d.innerHTML = `<span class="text-white/40 truncate mr-2 font-mono text-xs">${t.title}</span><span class="text-[10px] text-white/20 shrink-0">${String(i+1).padStart(2,'0')}</span>`;
                 pl.appendChild(d);
             });
-            // Initial load: auto=false, scroll=false to prevent jump
             loadTrack(0, false, false);
         }
 
@@ -1002,7 +991,6 @@
             
             document.querySelectorAll('.track-item').forEach((e, i) => {
                 e.classList.toggle('active', i === idx);
-                // Only scroll if explicitly requested (user interaction)
                 if (i === idx && scroll) e.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             });
             
@@ -1149,7 +1137,6 @@
         audio.addEventListener('ended', () => { if (!repeat) nextTrack(); });
         audio.addEventListener('pause', () => {
             if (playing && audio.currentTime !== audio.duration && !audio.ended) {
-                // External pause logic
                 playing = false;
                 document.getElementById('vinyl-disc').classList.remove('playing');
                 document.getElementById('mute-toggle-btn').classList.remove('playing');
@@ -1167,10 +1154,6 @@
                 case 'ArrowRight': e.shiftKey ? nextTrack() : audio.currentTime += 5; break;
                 case 'KeyM': toggleMute(); break;
             }
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            // Optional: logic if needed when switching tabs
         });
 
         initPlaylist();

@@ -229,9 +229,8 @@
         .hero-image {
             filter: blur(0px) brightness(0.9) contrast(1.05);
             transition: all 1.5s ease;
-            /* Removed mask-image to prevent black line artifacts */
             object-fit: contain;
-            mix-blend-mode: normal; /* Changed from soft-light for clearer image */
+            mix-blend-mode: normal;
             opacity: 1;
             transform: translateZ(0);
             will-change: transform;
@@ -508,8 +507,9 @@
                     <a href="#manifesto" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Manifesto</a>
                     <a href="#soundscape" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Soundscape</a>
                 </div>
+                <!-- INCREASED OPACITY FOR CA BUTTON -->
                 <button onclick="copyToClipboard('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump', 'CA COPIED')" 
-                        class="font-mono text-[8px] sm:text-[9px] text-white/20 hover:text-white/50 transition-all duration-500 tracking-wider uppercase border border-white/5 px-3 py-1.5 rounded hover:bg-white/5 active:scale-95 touch-manipulation min-h-[44px]">
+                        class="font-mono text-[8px] sm:text-[9px] text-white/60 hover:text-white/90 transition-all duration-500 tracking-wider uppercase border border-white/5 px-3 py-1.5 rounded hover:bg-white/5 active:scale-95 touch-manipulation min-h-[44px]">
                     <span class="hidden sm:inline">8DaLP...Gpump</span>
                     <span class="sm:hidden">CA</span>
                 </button>
@@ -530,7 +530,6 @@
         <div class="hero-content relative z-10 max-w-4xl mx-auto text-center w-full flex flex-col items-center">
             
             <div class="mb-6 sm:mb-8 w-full flex justify-center items-center relative">
-                <!-- Removed the gradient overlay that was causing the black line/box artifact -->
                 <img src="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" 
                      alt="$ELK Stag" 
                      width="400" 
@@ -638,28 +637,23 @@
         </div>
     </section>
 
-    <!-- Manifesto / Quote Generator Section - Refactored for Mobile Stability -->
+    <!-- Manifesto / Quote Generator Section -->
     <section id="manifesto" class="relative py-20 sm:py-32 px-4 sm:px-6">
         <div class="max-w-5xl mx-auto">
             <div class="quote-section blur-fade mb-10 rounded-xl border border-white/5">
                 <div class="quote-bg"></div>
                 <div class="quote-container">
-                    
-                    <!-- Content Stacked Naturally for better Mobile Layout -->
                     <div class="mb-6 w-full text-center relative z-10">
                          <p class="font-mono text-[9px] tracking-[0.4em] text-white/20 uppercase">Echoes of the Present Void</p>
                     </div>
-
                     <div class="mode-selector mb-8 relative z-10">
                         <button class="mode-btn active" onclick="setMode('existential', this)" aria-pressed="true">EXISTENTIAL</button>
                         <button class="mode-btn" onclick="setMode('degen', this)" aria-pressed="false">DEGEN</button>
                         <button class="mode-btn" onclick="setMode('elk', this)" aria-pressed="false">ELK WISDOM</button>
                     </div>
-                   
                     <div id="quote-display" class="quote-text visible px-4 relative z-10">
                         "We built machines to save time, and now we kill time staring at them, waiting for something to happen."
                     </div>
-                    
                     <div class="quote-btn-group mt-auto flex gap-4 relative z-10">
                         <button onclick="generateQuote()" class="px-8 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 uppercase tracking-widest text-[10px] transition-all active:scale-95 touch-manipulation min-h-[44px]">Generate Echo</button>
                         <button onclick="copyQuote()" class="px-4 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 text-white/50 hover:text-white transition-all active:scale-95 touch-manipulation min-h-[44px] min-w-[44px]" aria-label="Copy Quote"><i data-lucide="copy" class="w-4 h-4"></i></button>
@@ -676,7 +670,8 @@
         <div class="max-w-5xl mx-auto h-full flex flex-col relative z-10">
             <div class="text-center mb-12 sm:mb-20 space-y-4">
                 <span class="font-mono text-[9px] tracking-[0.5em] text-white/10 uppercase block">Auditory Space</span>
-                <h2 class="font-serif text-3xl sm:text-5xl font-light text-white/50">The Sound of Being</h2>
+                <!-- RENAMED TITLE -->
+                <h2 class="font-serif text-3xl sm:text-5xl font-light text-white/50">HYMNS FOR THE HERD</h2>
             </div>
 
             <!-- Audio Interface -->
@@ -742,19 +737,19 @@
         </div>
     </section>
 
-    <!-- Footer - Refactored for Stability -->
+    <!-- Footer - INCREASED VISIBILITY -->
     <footer class="relative py-16 sm:py-24 px-6 border-t border-white/5 bg-black overflow-hidden">
-        <!-- Z-index adjusted to prevent overlap issues -->
         <div class="footer-bg-layer z-0"></div>
-        
         <div class="relative z-10 max-w-2xl mx-auto text-center space-y-12">
-            <blockquote class="font-body text-white/30 text-sm sm:text-base leading-relaxed italic px-4">"The tragedy of man is that he is constituted to strive for goals he can never fully attain, and to seek answers he can never fully comprehend."</blockquote>
+            <!-- Increased text opacity to white/60 -->
+            <blockquote class="font-body text-white/60 text-sm sm:text-base leading-relaxed italic px-4">"The tragedy of man is that he is constituted to strive for goals he can never fully attain, and to seek answers he can never fully comprehend."</blockquote>
             <div class="flex justify-center gap-12">
                 <a href="https://github.com/exelkonsol/elk" target="_blank" class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="GitHub"><i data-lucide="github" class="w-5 h-5"></i></a>
                 <a href="https://x.com/ElkBurden" target="_blank" class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Twitter"><i data-lucide="twitter" class="w-5 h-5"></i></a>
                 <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Chart"><i data-lucide="activity" class="w-5 h-5"></i></a>
             </div>
-            <p class="font-mono text-[8px] text-white/[0.08] tracking-[0.4em] uppercase">The Antlers Are Heavy // We Carry Them Together</p>
+            <!-- Increased text opacity to white/30 -->
+            <p class="font-mono text-[8px] text-white/30 tracking-[0.4em] uppercase">The Antlers Are Heavy // We Carry Them Together</p>
         </div>
     </footer>
 
@@ -853,18 +848,61 @@
             copyToClipboard(document.getElementById('quote-display').innerText, 'WISDOM COPIED');
         }
 
-        // Voting
-        const votes = { isolation: 0, anchoring: 0, distraction: 0, sublimation: 0 };
-        let hasVoted = false;
+        // --- PERSISTENT VOTING SYSTEM ---
+        
+        // Initial state from LocalStorage or 0
+        let votes = JSON.parse(localStorage.getItem('elk_votes')) || { isolation: 0, anchoring: 0, distraction: 0, sublimation: 0 };
+        // Check if user has voted
+        let hasVoted = localStorage.getItem('elk_has_voted') === 'true';
+        // Get which mechanism they voted for (to highlight it)
+        let votedMech = localStorage.getItem('elk_voted_mech');
+
+        // Function to update the UI based on current state
+        function updateVoteUI() {
+            for (const [mech, count] of Object.entries(votes)) {
+                const card = document.querySelector(`[data-mechanism="${mech}"]`);
+                if (card) {
+                    card.querySelector('.vote-count').textContent = count.toLocaleString();
+                }
+            }
+            
+            // If already voted, disable all buttons and highlight the choice
+            if (hasVoted) {
+                document.querySelectorAll('.mechanism-card button').forEach(btn => {
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                    btn.textContent = "Voted";
+                    btn.onclick = null; // Remove click handler
+                });
+
+                if (votedMech) {
+                    const chosenCard = document.querySelector(`[data-mechanism="${votedMech}"]`);
+                    if (chosenCard) chosenCard.classList.add('voted');
+                }
+            }
+        }
+
         function vote(mech) {
             if (hasVoted) { showToast("ALREADY VOTED"); return; }
+            
+            // Update state
             votes[mech]++;
-            const card = document.querySelector(`[data-mechanism="${mech}"]`);
-            card.querySelector('.vote-count').textContent = votes[mech].toLocaleString();
-            card.classList.add('voted');
             hasVoted = true;
+            votedMech = mech;
+            
+            // Save to LocalStorage
+            localStorage.setItem('elk_votes', JSON.stringify(votes));
+            localStorage.setItem('elk_has_voted', 'true');
+            localStorage.setItem('elk_voted_mech', mech);
+            
+            // Update UI
+            updateVoteUI();
             showToast("VOTE CAST");
         }
+
+        // Initialize Voting UI on Load
+        updateVoteUI();
+
 
         // Audio Player
         const tracks = [

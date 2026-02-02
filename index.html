@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="description" content="$ELK - A Solana memecoin rooted in existential philosophy. The antlers are heavy. We carry them together.">
+    <meta name="description"
+        content="$ELK - A Solana memecoin rooted in existential philosophy. The antlers are heavy. We carry them together.">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
 
     <meta property="og:title" content="$ELK - The Burden We Carry Together">
-    <meta property="og:description" content="We are carried through life by a series of sublimations—fleeting release valves for the pressure of being.">
+    <meta property="og:description"
+        content="We are carried through life by a series of sublimations—fleeting release valves for the pressure of being.">
     <meta property="og:image" content="https://raw.githubusercontent.com/exelkonsol/elk/main/newpreview.png">
     <meta property="og:type" content="website">
 
@@ -21,7 +24,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap"
+        rel="stylesheet">
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -30,7 +35,7 @@
 
         const firebaseConfig = JSON.parse(window.__firebase_config || '{}');
         const appId = window.__app_id || 'default-elk-app';
-        
+
         let app = null;
         let auth = null;
         let db = null;
@@ -82,9 +87,9 @@
 
         function initRealtimeVotes() {
             if (!db) return;
-            
+
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mechanisms', 'counts');
-            
+
             // Real-time listener for global vote counts
             onSnapshot(docRef, (docSnap) => {
                 if (docSnap.exists()) {
@@ -117,7 +122,7 @@
 
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mechanisms', 'counts');
-                
+
                 // Atomic increment - ensures accurate global count
                 await updateDoc(docRef, {
                     [mech]: increment(1)
@@ -152,7 +157,7 @@
                 btn.classList.add('opacity-50', 'cursor-not-allowed');
                 btn.textContent = "Voted";
             });
-            
+
             const card = document.querySelector(`[data-mechanism="${mech}"]`);
             if (card) card.classList.add('voted');
         }
@@ -196,20 +201,27 @@
         /* Global Background - CHANGED to elk2.png with increased opacity */
         .global-bg {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/elk2.png');
             background-size: cover;
             background-position: center;
-            filter: grayscale(100%) opacity(0.38) contrast(1.1); /* Increased opacity from 0.3 to 0.38 */
+            filter: grayscale(100%) opacity(0.38) contrast(1.1);
+            /* Increased opacity from 0.3 to 0.38 */
             z-index: -10;
             transform: translateZ(0);
         }
 
         .vignette {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.95) 100%),
-                        linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 80%, rgba(0,0,0,0.9) 100%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.95) 100%),
+                linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.1) 20%, rgba(0, 0, 0, 0.1) 80%, rgba(0, 0, 0, 0.9) 100%);
             pointer-events: none;
             z-index: -5;
             transform: translateZ(0);
@@ -217,7 +229,10 @@
 
         .bg-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.6);
             pointer-events: none;
             z-index: -4;
@@ -226,7 +241,10 @@
 
         .noise {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             z-index: 50;
             opacity: 0.04;
@@ -258,13 +276,21 @@
             box-shadow: 0 10px 40px rgba(139, 0, 0, 0.3);
         }
 
-        .buy-btn:active { transform: scale(0.98); }
+        .buy-btn:active {
+            transform: scale(0.98);
+        }
 
-        .quote-section { position: relative; overflow: hidden; }
-        
+        .quote-section {
+            position: relative;
+            overflow: hidden;
+        }
+
         .quote-bg {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/generatewisdom.png');
             background-size: cover;
             background-position: center;
@@ -297,7 +323,7 @@
             opacity: 0;
             transform: translateY(10px);
             transition: all 0.8s ease;
-            text-shadow: 0 4px 30px rgba(0,0,0,1);
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 1);
             margin: 2rem 0;
             flex: 1;
             display: flex;
@@ -305,7 +331,10 @@
             justify-content: center;
         }
 
-        .quote-text.visible { opacity: 1; transform: translateY(0); }
+        .quote-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         .quote-btn-group button {
             backdrop-filter: blur(5px);
@@ -333,7 +362,9 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-        .quote-btn-group button:active { transform: scale(0.95); }
+        .quote-btn-group button:active {
+            transform: scale(0.95);
+        }
 
         .mode-selector {
             display: flex;
@@ -349,8 +380,8 @@
             letter-spacing: 0.2em;
             text-transform: uppercase;
             padding: 0.5rem 1rem;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
             cursor: pointer;
             transition: all 0.3s ease;
             background: transparent;
@@ -359,15 +390,25 @@
             min-height: 44px;
         }
 
-        .mode-btn:hover, .mode-btn.active {
+        .mode-btn:hover,
+        .mode-btn.active {
             border-color: rgba(139, 0, 0, 0.5);
-            color: rgba(255,255,255,0.9);
+            color: rgba(255, 255, 255, 0.9);
             background: rgba(139, 0, 0, 0.1);
         }
 
         @keyframes materialize {
-            0% { opacity: 0; transform: scale(1.15) translateY(40px); filter: blur(12px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+            0% {
+                opacity: 0;
+                transform: scale(1.15) translateY(40px);
+                filter: blur(12px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
         }
 
         .hero-content {
@@ -405,11 +446,18 @@
             border-color: rgba(139, 0, 0, 0.2);
         }
 
-        .mechanism-card button { touch-action: manipulation; min-height: 44px; transition: all 0.3s ease; }
-        
+        .mechanism-card button {
+            touch-action: manipulation;
+            min-height: 44px;
+            transition: all 0.3s ease;
+        }
+
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
@@ -423,7 +471,10 @@
             padding: 1.5rem;
         }
 
-        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
         .modal-content {
             background: #0a0a0a;
@@ -434,25 +485,35 @@
             border-radius: 8px;
             transform: scale(0.95);
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
-        .modal-overlay.open .modal-content { transform: scale(1); }
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
 
         .footer-bg-layer {
             position: absolute;
-            top: 50%; left: 50%;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
-            width: 100%; height: 100%;
-            background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/logo.png');
+            width: 100%;
+            height: 100%;
+
+            background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/newpreview.png');
+
+            /* FIX */
+            background-size: contain;
+            background-position: center bottom;
             background-repeat: no-repeat;
-            background-position: center;
-            background-size: clamp(300px, 60vw, 800px);
-            opacity: 0.15;
+
+            opacity: 0.18;
             pointer-events: none;
             z-index: 0;
-            filter: grayscale(0%) contrast(1.2);
+
+            filter: grayscale(0%) contrast(1.15);
         }
+
 
         .audio-player-container {
             position: relative;
@@ -468,7 +529,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
             z-index: 0;
@@ -477,8 +538,10 @@
 
         #visualizer-canvas {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             opacity: 0.3;
             z-index: 1;
@@ -520,38 +583,47 @@
             aspect-ratio: 1/1;
             border-radius: 50%;
             background: repeating-radial-gradient(circle at center, #111 0px, #111 2px, #0a0a0a 3px, #0a0a0a 4px);
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 10px 30px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.9);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.9);
             cursor: pointer;
             touch-action: manipulation;
             transform: translateZ(0);
         }
 
         @keyframes vinyl-spin {
-            from { transform: translateZ(0) rotate(0deg); }
-            to { transform: translateZ(0) rotate(360deg); }
+            from {
+                transform: translateZ(0) rotate(0deg);
+            }
+
+            to {
+                transform: translateZ(0) rotate(360deg);
+            }
         }
 
         .vinyl-label {
             position: absolute;
-            top: 50%; left: 50%;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
-            width: 35%; height: 35%;
+            width: 35%;
+            height: 35%;
             border-radius: 50%;
             background: #000;
             border: 2px solid rgba(139, 0, 0, 0.3);
             overflow: hidden;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
             pointer-events: none;
         }
 
         .vinyl-hole {
             position: absolute;
-            top: 50%; left: 50%;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
-            width: 4%; height: 4%;
+            width: 4%;
+            height: 4%;
             border-radius: 50%;
             background: #000;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             z-index: 2;
             pointer-events: none;
         }
@@ -559,7 +631,7 @@
         .progress-container {
             position: relative;
             height: 4px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 2px;
             cursor: pointer;
@@ -569,30 +641,32 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, rgba(139,0,0,0.5), rgba(255,255,255,0.3));
+            background: linear-gradient(90deg, rgba(139, 0, 0, 0.5), rgba(255, 255, 255, 0.3));
             width: 0%;
             position: relative;
             border-radius: 2px;
             pointer-events: none;
-            top: -1px; 
-            height: calc(100% + 2px); 
+            top: -1px;
+            height: calc(100% + 2px);
         }
 
         .progress-handle {
             position: absolute;
-            right: -6px; top: 50%;
+            right: -6px;
+            top: 50%;
             transform: translateY(-50%) scale(0);
-            width: 12px; height: 12px;
+            width: 12px;
+            height: 12px;
             background: #fff;
             border-radius: 50%;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             transition: transform 0.2s;
             pointer-events: none;
         }
 
-        .progress-container:hover .progress-handle, 
-        .progress-container:active .progress-handle { 
-            transform: translateY(-50%) scale(1); 
+        .progress-container:hover .progress-handle,
+        .progress-container:active .progress-handle {
+            transform: translateY(-50%) scale(1);
         }
 
         .track-item {
@@ -608,16 +682,29 @@
 
         .track-item::before {
             content: '';
-            position: absolute; left: 0; top: 0;
-            height: 100%; width: 3px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
             background: rgba(139, 0, 0, 0.5);
             transform: scaleY(0);
             transition: transform 0.3s;
         }
 
-        .track-item:hover { background: rgba(255,255,255,0.03); padding-left: 1rem; }
-        .track-item.active { background: rgba(139, 0, 0, 0.05); border-left-color: rgba(139, 0, 0, 0.5); }
-        .track-item.active::before { transform: scaleY(1); }
+        .track-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            padding-left: 1rem;
+        }
+
+        .track-item.active {
+            background: rgba(139, 0, 0, 0.05);
+            border-left-color: rgba(139, 0, 0, 0.5);
+        }
+
+        .track-item.active::before {
+            transform: scaleY(1);
+        }
 
         .controls-wrapper {
             display: flex;
@@ -631,19 +718,25 @@
         .control-btn {
             transition: all 0.2s ease;
             touch-action: manipulation;
-            min-height: 44px; min-width: 44px;
-            display: inline-flex; align-items: center; justify-content: center;
+            min-height: 44px;
+            min-width: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             user-select: none;
             opacity: 0.6;
         }
 
-        .control-btn:hover { 
-            transform: scale(1.1); 
+        .control-btn:hover {
+            transform: scale(1.1);
             opacity: 1;
             color: #fff;
-            filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
         }
-        .control-btn:active { transform: scale(0.95); }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
 
         .control-btn svg {
             width: 24px;
@@ -652,14 +745,17 @@
         }
 
         .play-btn-main {
-            width: 70px; height: 70px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 0px rgba(255,255,255,0);
+            box-shadow: 0 0 0px rgba(255, 255, 255, 0);
             touch-action: manipulation;
             user-select: none;
             backdrop-filter: blur(4px);
@@ -668,47 +764,60 @@
         .play-btn-main svg {
             width: 32px;
             height: 32px;
-            fill: rgba(255,255,255,0.9);
+            fill: rgba(255, 255, 255, 0.9);
             stroke: none;
             margin-left: 4px;
         }
-        
+
         .play-btn-main svg[data-lucide="pause"] {
             margin-left: 0;
-            fill: rgba(255,255,255,0.9);
+            fill: rgba(255, 255, 255, 0.9);
         }
 
         .play-btn-main:hover {
-            background: rgba(255,255,255,0.2);
-            border-color: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.8);
             transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255,255,255,0.15);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
         }
 
-        .play-btn-main:active { transform: scale(0.95); }
+        .play-btn-main:active {
+            transform: scale(0.95);
+        }
 
         #mute-toggle-btn {
-            position: fixed; bottom: 20px; right: 20px;
-            width: 60px; height: 60px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background: rgba(0,0,0,0.9);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             z-index: 90;
             cursor: pointer;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
             transition: transform 0.3s, border-color 0.3s;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             touch-action: manipulation;
             user-select: none;
             transform: translateZ(0);
         }
 
-        #mute-toggle-btn:hover { transform: scale(1.1); border-color: rgba(255,255,255,0.5); }
+        #mute-toggle-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
 
         #mute-toggle-btn img.btn-art {
-            position: absolute; width: 100%; height: 100%;
-            object-fit: cover; opacity: 0.6;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
             pointer-events: none;
         }
 
@@ -716,92 +825,178 @@
             display: none;
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
 
-        .text-balance { text-wrap: balance; }
-        button:focus-visible, a:focus-visible { outline: 1px solid rgba(139, 0, 0, 0.5); outline-offset: 2px; }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .text-balance {
+            text-wrap: balance;
+        }
+
+        button:focus-visible,
+        a:focus-visible {
+            outline: 1px solid rgba(139, 0, 0, 0.5);
+            outline-offset: 2px;
+        }
 
         @media (max-width: 640px) {
-            .quote-container { min-height: 400px; padding: 3rem 1rem; }
-            #mute-toggle-btn { bottom: 16px; right: 16px; width: 50px; height: 50px; }
-            .hero-image { width: 180px !important; height: 180px !important; }
-            .quote-text { font-size: 1.5rem; }
-            
+            .quote-container {
+                min-height: 400px;
+                padding: 3rem 1rem;
+            }
+
+            #mute-toggle-btn {
+                bottom: 16px;
+                right: 16px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .hero-image {
+                width: 180px !important;
+                height: 180px !important;
+            }
+
+            .quote-text {
+                font-size: 1.5rem;
+            }
+
             .vinyl-record {
                 animation: vinyl-spin 8s linear infinite;
                 animation-play-state: paused;
-                will-change: transform; /* Added to fix reset on mobile */
+                will-change: transform;
+                /* Added to fix reset on mobile */
             }
+
             .vinyl-record.playing {
                 animation-play-state: running;
             }
-            
+
             #mute-toggle-btn .btn-art {
-                 animation: vinyl-spin 8s linear infinite;
-                 animation-play-state: paused;
-                 will-change: transform; /* Added to fix reset on mobile */
+                animation: vinyl-spin 8s linear infinite;
+                animation-play-state: paused;
+                will-change: transform;
+                /* Added to fix reset on mobile */
             }
+
             #mute-toggle-btn.playing .btn-art {
                 animation-play-state: running;
             }
 
-            .vinyl-record { max-width: 260px; }
+            .vinyl-record {
+                max-width: 260px;
+            }
 
             .controls-wrapper {
                 gap: 1.25rem;
                 margin: 1.5rem 0;
             }
+
             .play-btn-main {
-                width: 56px; height: 56px;
+                width: 56px;
+                height: 56px;
             }
+
             .play-btn-main svg {
-                width: 24px; height: 24px;
+                width: 24px;
+                height: 24px;
             }
+
             .control-btn {
-                min-width: 36px; min-height: 36px;
+                min-width: 36px;
+                min-height: 36px;
             }
+
             .control-btn svg {
-                width: 20px; height: 20px;
+                width: 20px;
+                height: 20px;
             }
         }
 
         @media (pointer: coarse) {
-            .progress-container { height: 20px; margin: -8px 0; background: transparent; border: none; }
-            .progress-container::before {
-                content: ''; position: absolute; top: 8px; left: 0; right: 0;
-                height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px;
-                border: 1px solid rgba(255,255,255,0.1);
+            .progress-container {
+                height: 20px;
+                margin: -8px 0;
+                background: transparent;
+                border: none;
             }
-            .progress-fill { top: 8px; height: 4px; }
-            .progress-handle { right: -8px; width: 16px; height: 16px; transform: translateY(-50%) scale(1); }
-            .track-item { padding-top: 12px; padding-bottom: 12px; }
+
+            .progress-container::before {
+                content: '';
+                position: absolute;
+                top: 8px;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 2px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .progress-fill {
+                top: 8px;
+                height: 4px;
+            }
+
+            .progress-handle {
+                right: -8px;
+                width: 16px;
+                height: 16px;
+                transform: translateY(-50%) scale(1);
+            }
+
+            .track-item {
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-            .hero-content { opacity: 1; transform: none; filter: none; }
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .hero-content {
+                opacity: 1;
+                transform: none;
+                filter: none;
+            }
         }
     </style>
-<base target="_blank">
+    <base target="_blank">
 </head>
+
 <body class="font-body antialiased selection:bg-white/10 selection:text-white relative">
     <div class="noise"></div>
     <div class="global-bg"></div>
     <div class="vignette"></div>
     <div class="bg-overlay"></div>
-    
+
     <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
         <div class="modal-content relative">
-            <button onclick="closeModal(event, true)" class="absolute top-4 right-4 text-white/50 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <button onclick="closeModal(event, true)" class="absolute top-4 right-4 text-white/50 hover:text-white"><i
+                    data-lucide="x" class="w-6 h-6"></i></button>
             <h3 id="modal-title" class="font-serif text-3xl text-white/90 mb-4"></h3>
             <div id="modal-body" class="font-body text-white/70 leading-relaxed text-lg space-y-4"></div>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 blur-fade px-6 py-3 translate-y-full opacity-0 transition-all duration-500 z-[100] rounded-full border border-white/10">
+    <div id="toast"
+        class="fixed bottom-8 left-1/2 transform -translate-x-1/2 blur-fade px-6 py-3 translate-y-full opacity-0 transition-all duration-500 z-[100] rounded-full border border-white/10">
         <span class="font-mono text-xs text-white/70 tracking-wider flex items-center gap-2">
             <i data-lucide="check" class="w-3 h-3"></i> <span id="toast-msg">COPIED</span>
         </span>
@@ -810,14 +1005,19 @@
     <nav class="fixed top-0 w-full z-40 blur-fade border-b-0 h-16 sm:h-20 flex items-center">
         <div class="w-full max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex justify-between items-center">
-                <a href="#" target="_self" class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-white/60 hover:text-white/90 transition-colors touch-manipulation">$ELK</a>
-                <div class="hidden md:flex items-center gap-8 lg:gap-12 font-mono text-[10px] tracking-[0.3em] uppercase">
-                    <a href="#mechanisms" target="_self" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Mechanisms</a>
-                    <a href="#manifesto" target="_self" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Manifesto</a>
-                    <a href="#soundscape" target="_self" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Soundscape</a>
+                <a href="#" target="_self"
+                    class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-white/60 hover:text-white/90 transition-colors touch-manipulation">$ELK</a>
+                <div
+                    class="hidden md:flex items-center gap-8 lg:gap-12 font-mono text-[10px] tracking-[0.3em] uppercase">
+                    <a href="#mechanisms" target="_self"
+                        class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Mechanisms</a>
+                    <a href="#manifesto" target="_self"
+                        class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Manifesto</a>
+                    <a href="#soundscape" target="_self"
+                        class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Soundscape</a>
                 </div>
-                <button onclick="copyToClipboard('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump', 'CA COPIED')" 
-                        class="font-mono text-[8px] sm:text-[9px] text-white/60 hover:text-white/90 transition-all duration-500 tracking-wider uppercase border border-white/5 px-3 py-1.5 rounded hover:bg-white/5 active:scale-95 touch-manipulation min-h-[44px]">
+                <button onclick="copyToClipboard('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump', 'CA COPIED')"
+                    class="font-mono text-[8px] sm:text-[9px] text-white/60 hover:text-white/90 transition-all duration-500 tracking-wider uppercase border border-white/5 px-3 py-1.5 rounded hover:bg-white/5 active:scale-95 touch-manipulation min-h-[44px]">
                     <span class="hidden sm:inline">8DaLP...Gpump</span>
                     <span class="sm:hidden">CA</span>
                 </button>
@@ -826,7 +1026,8 @@
     </nav>
 
     <div id="mute-toggle-btn" onclick="togglePlay()" role="button" aria-label="Toggle Play/Pause">
-        <img id="btn-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/Before%20the%20Clearing.png" alt="Album Art" class="btn-art" decoding="async">
+        <img id="btn-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/Before%20the%20Clearing.png"
+            alt="Album Art" class="btn-art" decoding="async">
         <div class="mute-icon-overlay">
             <i id="mute-icon" data-lucide="volume-2" class="w-5 h-5"></i>
         </div>
@@ -834,37 +1035,37 @@
 
     <section class="relative min-h-screen flex items-center justify-center py-20 px-4 overflow-hidden">
         <div class="hero-content relative z-10 max-w-4xl mx-auto text-center w-full flex flex-col items-center">
-            
+
             <div class="mb-6 sm:mb-8 w-full flex justify-center items-center relative">
-                <img src="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" 
-                     alt="$ELK Stag" 
-                     width="400" 
-                     height="400"
-                     decoding="async"
-                     class="hero-image w-[180px] h-[180px] sm:w-[240px] sm:h-[240px] md:w-[320px] md:h-[320px] lg:w-[400px] lg:h-[400px] mx-auto object-contain select-none">
+                <img src="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" alt="$ELK Stag" width="400"
+                    height="400" decoding="async"
+                    class="hero-image w-[180px] h-[180px] sm:w-[240px] sm:h-[240px] md:w-[320px] md:h-[320px] lg:w-[400px] lg:h-[400px] mx-auto object-contain select-none">
             </div>
 
             <div class="space-y-6 sm:space-y-8 mb-12 sm:mb-16 max-w-4xl px-4 relative z-20">
-                <p class="font-mono text-[8px] sm:text-[9px] tracking-[0.4em] sm:tracking-[0.5em] text-white/10 uppercase">Peter Wessel Zapffe // On The Tragic</p>
+                <p
+                    class="font-mono text-[8px] sm:text-[9px] tracking-[0.4em] sm:tracking-[0.5em] text-white/10 uppercase">
+                    Peter Wessel Zapffe // On The Tragic</p>
 
-                <h1 class="font-serif text-xl sm:text-3xl md:text-5xl font-light text-white/60 leading-normal sm:leading-relaxed tracking-wide text-balance">
-                    "We are carried through life by a series of 
-                    <span class="text-white/90 italic">sublimations</span>—fleeting release valves 
+                <h1
+                    class="font-serif text-xl sm:text-3xl md:text-5xl font-light text-white/60 leading-normal sm:leading-relaxed tracking-wide text-balance">
+                    "We are carried through life by a series of
+                    <span class="text-white/90 italic">sublimations</span>—fleeting release valves
                     for the pressure of being."
                 </h1>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-8 relative z-20">
-                <a href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" 
-                   class="buy-btn w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] uppercase text-center rounded touch-manipulation">
+                <a href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump"
+                    class="buy-btn w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] uppercase text-center rounded touch-manipulation">
                     BUY
                 </a>
-                <a href="https://x.com/i/communities/2014904566983094598" 
-                   class="blur-fade w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] text-white/40 hover:text-white/80 uppercase transition-all hover:scale-105 text-center rounded touch-manipulation">
+                <a href="https://x.com/i/communities/2014904566983094598"
+                    class="blur-fade w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] text-white/40 hover:text-white/80 uppercase transition-all hover:scale-105 text-center rounded touch-manipulation">
                     Join The Silence
                 </a>
-                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" 
-                   class="blur-fade w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-[9px] font-mono tracking-[0.2em] text-white/30 hover:text-white/70 uppercase transition-all hover:scale-105 text-center rounded touch-manipulation">
+                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump"
+                    class="blur-fade w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-[9px] font-mono tracking-[0.2em] text-white/30 hover:text-white/70 uppercase transition-all hover:scale-105 text-center rounded touch-manipulation">
                     Chart
                 </a>
             </div>
@@ -874,18 +1075,23 @@
     <section id="mechanisms" class="relative py-20 sm:py-32 px-4 sm:px-6">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 sm:mb-20 space-y-4">
-                <span class="font-mono text-[9px] tracking-[0.5em] text-white/10 uppercase block">Survival Architecture</span>
+                <span class="font-mono text-[9px] tracking-[0.5em] text-white/10 uppercase block">Survival
+                    Architecture</span>
                 <h2 class="font-serif text-3xl sm:text-5xl font-light text-white/50">Four Mechanisms</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg group" data-mechanism="isolation">
+                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg group"
+                    data-mechanism="isolation">
                     <div class="cursor-pointer" onclick="openModal('isolation')">
                         <div class="flex justify-between items-start">
-                            <h3 class="font-serif text-2xl text-white/70 mb-4 group-hover:text-white transition-colors">Isolation</h3>
-                            <i data-lucide="info" class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
+                            <h3 class="font-serif text-2xl text-white/70 mb-4 group-hover:text-white transition-colors">
+                                Isolation</h3>
+                            <i data-lucide="info"
+                                class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
                         </div>
-                        <p class="text-white/30 text-sm leading-relaxed mb-4">Remove tokens from circulation. Confine anxiety to manageable compartments.</p>
+                        <p class="text-white/30 text-sm leading-relaxed mb-4">Remove tokens from circulation. Confine
+                            anxiety to manageable compartments.</p>
                         <p class="text-[10px] text-white/20 font-mono uppercase">Suppression through reduction</p>
                     </div>
                     <div class="mt-6 pt-6 border-t border-white/5">
@@ -893,17 +1099,22 @@
                             <span class="text-xs text-white/30 font-mono">Global Votes</span>
                             <span class="vote-count font-mono text-lg text-white/50" data-count="0">0</span>
                         </div>
-                        <button onclick="handleVote('isolation')" class="vote-btn w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px]">Vote</button>
+                        <button onclick="handleVote('isolation')"
+                            class="vote-btn w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px]">Vote</button>
                     </div>
                 </div>
 
-                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg group" data-mechanism="anchoring">
+                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg group"
+                    data-mechanism="anchoring">
                     <div class="cursor-pointer" onclick="openModal('anchoring')">
                         <div class="flex justify-between items-start">
-                            <h3 class="font-serif text-2xl text-white/70 mb-4 group-hover:text-white transition-colors">Anchoring</h3>
-                            <i data-lucide="info" class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
+                            <h3 class="font-serif text-2xl text-white/70 mb-4 group-hover:text-white transition-colors">
+                                Anchoring</h3>
+                            <i data-lucide="info"
+                                class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
                         </div>
-                        <p class="text-white/30 text-sm leading-relaxed mb-4">Permanent liquidity. Fixed points preventing drift into the chaotic void.</p>
+                        <p class="text-white/30 text-sm leading-relaxed mb-4">Permanent liquidity. Fixed points
+                            preventing drift into the chaotic void.</p>
                         <p class="text-[10px] text-white/20 font-mono uppercase">Structure against entropy</p>
                     </div>
                     <div class="mt-6 pt-6 border-t border-white/5">
@@ -911,17 +1122,22 @@
                             <span class="text-xs text-white/30 font-mono">Global Votes</span>
                             <span class="vote-count font-mono text-lg text-white/50" data-count="0">0</span>
                         </div>
-                        <button onclick="handleVote('anchoring')" class="vote-btn w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px]">Vote</button>
+                        <button onclick="handleVote('anchoring')"
+                            class="vote-btn w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px]">Vote</button>
                     </div>
                 </div>
 
-                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg group" data-mechanism="distraction">
+                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg group"
+                    data-mechanism="distraction">
                     <div class="cursor-pointer" onclick="openModal('distraction')">
                         <div class="flex justify-between items-start">
-                            <h3 class="font-serif text-2xl text-white/70 mb-4 group-hover:text-white transition-colors">Distraction</h3>
-                            <i data-lucide="info" class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
+                            <h3 class="font-serif text-2xl text-white/70 mb-4 group-hover:text-white transition-colors">
+                                Distraction</h3>
+                            <i data-lucide="info"
+                                class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
                         </div>
-                        <p class="text-white/30 text-sm leading-relaxed mb-4">Marketing, raids, content. Keep the mind moving against the abyss.</p>
+                        <p class="text-white/30 text-sm leading-relaxed mb-4">Marketing, raids, content. Keep the mind
+                            moving against the abyss.</p>
                         <p class="text-[10px] text-white/20 font-mono uppercase">Motion against stillness</p>
                     </div>
                     <div class="mt-6 pt-6 border-t border-white/5">
@@ -929,17 +1145,22 @@
                             <span class="text-xs text-white/30 font-mono">Global Votes</span>
                             <span class="vote-count font-mono text-lg text-white/50" data-count="0">0</span>
                         </div>
-                        <button onclick="handleVote('distraction')" class="vote-btn w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px]">Vote</button>
+                        <button onclick="handleVote('distraction')"
+                            class="vote-btn w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px]">Vote</button>
                     </div>
                 </div>
 
-                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg group" data-mechanism="sublimation">
+                <div class="mechanism-card p-6 sm:p-8 min-h-[300px] flex flex-col justify-between rounded-lg group"
+                    data-mechanism="sublimation">
                     <div class="cursor-pointer" onclick="openModal('sublimation')">
                         <div class="flex justify-between items-start">
-                            <h3 class="font-serif text-2xl text-white/70 mb-4 group-hover:text-white transition-colors">Sublimation</h3>
-                            <i data-lucide="info" class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
+                            <h3 class="font-serif text-2xl text-white/70 mb-4 group-hover:text-white transition-colors">
+                                Sublimation</h3>
+                            <i data-lucide="info"
+                                class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
                         </div>
-                        <p class="text-white/30 text-sm leading-relaxed mb-4">Transform suffering into art. Philosophy as evolutionary bypass.</p>
+                        <p class="text-white/30 text-sm leading-relaxed mb-4">Transform suffering into art. Philosophy
+                            as evolutionary bypass.</p>
                         <p class="text-[10px] text-white/20 font-mono uppercase">Pain becomes meaning</p>
                     </div>
                     <div class="mt-6 pt-6 border-t border-white/5">
@@ -947,7 +1168,8 @@
                             <span class="text-xs text-white/30 font-mono">Global Votes</span>
                             <span class="vote-count font-mono text-lg text-white/50" data-count="0">0</span>
                         </div>
-                        <button onclick="handleVote('sublimation')" class="vote-btn w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px]">Vote</button>
+                        <button onclick="handleVote('sublimation')"
+                            class="vote-btn w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px]">Vote</button>
                     </div>
                 </div>
             </div>
@@ -960,19 +1182,26 @@
                 <div class="quote-bg"></div>
                 <div class="quote-container">
                     <div class="mb-6 w-full text-center relative z-10">
-                         <p class="font-mono text-[9px] tracking-[0.4em] text-white/20 uppercase">Echoes of the Present Void</p>
+                        <p class="font-mono text-[9px] tracking-[0.4em] text-white/20 uppercase">Echoes of the Present
+                            Void</p>
                     </div>
                     <div class="mode-selector mb-8 relative z-10">
-                        <button class="mode-btn active" onclick="setMode('existential', this)" aria-pressed="true">EXISTENTIAL</button>
+                        <button class="mode-btn active" onclick="setMode('existential', this)"
+                            aria-pressed="true">EXISTENTIAL</button>
                         <button class="mode-btn" onclick="setMode('degen', this)" aria-pressed="false">DEGEN</button>
                         <button class="mode-btn" onclick="setMode('elk', this)" aria-pressed="false">ELK WISDOM</button>
                     </div>
                     <div id="quote-display" class="quote-text visible px-4 relative z-10">
-                        "We built machines to save time, and now we kill time staring at them, waiting for something to happen."
+                        "We built machines to save time, and now we kill time staring at them, waiting for something to
+                        happen."
                     </div>
                     <div class="quote-btn-group mt-auto flex gap-4 relative z-10">
-                        <button onclick="generateQuote()" class="px-8 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 uppercase tracking-widest text-[10px] transition-all active:scale-95 touch-manipulation min-h-[44px]">Generate Echo</button>
-                        <button onclick="copyQuote()" class="px-4 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 text-white/50 hover:text-white transition-all active:scale-95 touch-manipulation min-h-[44px] min-w-[44px]" aria-label="Copy Quote"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                        <button onclick="generateQuote()"
+                            class="px-8 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 uppercase tracking-widest text-[10px] transition-all active:scale-95 touch-manipulation min-h-[44px]">Generate
+                            Echo</button>
+                        <button onclick="copyQuote()"
+                            class="px-4 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 text-white/50 hover:text-white transition-all active:scale-95 touch-manipulation min-h-[44px] min-w-[44px]"
+                            aria-label="Copy Quote"><i data-lucide="copy" class="w-4 h-4"></i></button>
                     </div>
                 </div>
             </div>
@@ -980,36 +1209,43 @@
     </section>
 
     <section id="soundscape" class="relative py-20 sm:py-32 px-4 sm:px-6 min-h-[800px] overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/50 pointer-events-none"></div>
-        
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/50 pointer-events-none">
+        </div>
+
         <div class="max-w-5xl mx-auto h-full flex flex-col relative z-10">
             <div class="text-center mb-12 sm:mb-20 space-y-4">
                 <span class="font-mono text-[9px] tracking-[0.5em] text-white/10 uppercase block">Auditory Space</span>
                 <h2 class="font-serif text-3xl sm:text-5xl font-light text-white/50">HYMNS FOR THE HERD</h2>
             </div>
 
-            <div id="audio-interface" class="audio-player-container blur-fade p-6 sm:p-12 rounded-xl border border-white/5 relative bg-black/60">
+            <div id="audio-interface"
+                class="audio-player-container blur-fade p-6 sm:p-12 rounded-xl border border-white/5 relative bg-black/60">
                 <canvas id="visualizer-canvas"></canvas>
-                
+
                 <div class="player-grid relative z-10">
-                    
+
                     <div class="vinyl-wrapper">
                         <div class="vinyl-record" id="vinyl-disc" onclick="togglePlay()">
                             <div class="vinyl-label">
-                                <img id="album-art-small" src="" alt="" class="w-full h-full object-cover opacity-80" decoding="async">
+                                <img id="album-art-small" src="" alt="" class="w-full h-full object-cover opacity-80"
+                                    decoding="async">
                             </div>
                             <div class="vinyl-hole"></div>
                         </div>
-                        
+
                         <div class="mt-6 text-center">
-                            <div id="track-status" class="font-mono text-[9px] tracking-widest text-white/20 uppercase">Paused</div>
+                            <div id="track-status" class="font-mono text-[9px] tracking-widest text-white/20 uppercase">
+                                Paused</div>
                         </div>
                     </div>
 
                     <div class="flex flex-col h-full justify-center space-y-6 w-full">
                         <div class="text-center md:text-left">
-                            <h3 id="track-title" class="font-serif text-xl sm:text-2xl text-white/80 mb-1 leading-tight truncate">Before the Clearing</h3>
-                            <p id="track-desc" class="text-white/30 text-xs sm:text-sm italic truncate">"The silence before revelation"</p>
+                            <h3 id="track-title"
+                                class="font-serif text-xl sm:text-2xl text-white/80 mb-1 leading-tight truncate">Before
+                                the Clearing</h3>
+                            <p id="track-desc" class="text-white/30 text-xs sm:text-sm italic truncate">"The silence
+                                before revelation"</p>
                         </div>
 
                         <div class="space-y-2">
@@ -1025,24 +1261,33 @@
                         </div>
 
                         <div class="controls-wrapper">
-                            <button onclick="toggleShuffle()" id="shuffle-btn" class="control-btn text-white" aria-label="Shuffle"><i data-lucide="shuffle"></i></button>
-                            <button onclick="prevTrack()" class="control-btn text-white" aria-label="Previous"><i data-lucide="skip-back" class="w-8 h-8"></i></button>
-                            <button onclick="togglePlay()" id="play-btn" class="play-btn-main" aria-label="Play/Pause"><i data-lucide="play" id="play-icon"></i></button>
-                            <button onclick="nextTrack()" class="control-btn text-white" aria-label="Next"><i data-lucide="skip-forward" class="w-8 h-8"></i></button>
-                            <button onclick="toggleRepeat()" id="repeat-btn" class="control-btn text-white" aria-label="Repeat"><i data-lucide="repeat"></i></button>
+                            <button onclick="toggleShuffle()" id="shuffle-btn" class="control-btn text-white"
+                                aria-label="Shuffle"><i data-lucide="shuffle"></i></button>
+                            <button onclick="prevTrack()" class="control-btn text-white" aria-label="Previous"><i
+                                    data-lucide="skip-back" class="w-8 h-8"></i></button>
+                            <button onclick="togglePlay()" id="play-btn" class="play-btn-main"
+                                aria-label="Play/Pause"><i data-lucide="play" id="play-icon"></i></button>
+                            <button onclick="nextTrack()" class="control-btn text-white" aria-label="Next"><i
+                                    data-lucide="skip-forward" class="w-8 h-8"></i></button>
+                            <button onclick="toggleRepeat()" id="repeat-btn" class="control-btn text-white"
+                                aria-label="Repeat"><i data-lucide="repeat"></i></button>
                         </div>
 
-                        <div class="flex-1 overflow-y-auto max-h-48 space-y-1 pr-2 custom-scrollbar border-t border-b border-white/5 py-2" id="playlist">
+                        <div class="flex-1 overflow-y-auto max-h-48 space-y-1 pr-2 custom-scrollbar border-t border-b border-white/5 py-2"
+                            id="playlist">
                         </div>
 
                         <div class="flex items-center gap-3 px-2 pt-2">
                             <i data-lucide="volume-2" class="w-4 h-4 text-white/20"></i>
-                            <input type="range" min="0" max="100" value="60" class="flex-1 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white/30 hover:accent-white/50" oninput="setVolume(this.value)" aria-label="Volume">
+                            <input type="range" min="0" max="100" value="60"
+                                class="flex-1 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white/30 hover:accent-white/50"
+                                oninput="setVolume(this.value)" aria-label="Volume">
                         </div>
                     </div>
                 </div>
 
-                <audio id="audio-player" preload="metadata" crossorigin="anonymous" playsinline webkit-playsinline></audio>
+                <audio id="audio-player" preload="metadata" crossorigin="anonymous" playsinline
+                    webkit-playsinline></audio>
             </div>
         </div>
     </section>
@@ -1050,13 +1295,22 @@
     <footer class="relative py-16 sm:py-24 px-6 border-t border-white/5 bg-black overflow-hidden">
         <div class="footer-bg-layer z-0"></div>
         <div class="relative z-10 max-w-2xl mx-auto text-center space-y-12">
-            <blockquote class="font-body text-white/60 text-sm sm:text-base leading-relaxed italic px-4">"The tragedy of man is that he is constituted to strive for goals he can never fully attain, and to seek answers he can never fully comprehend."</blockquote>
+            <blockquote class="font-body text-white/60 text-sm sm:text-base leading-relaxed italic px-4">"The tragedy of
+                man is that he is constituted to strive for goals he can never fully attain, and to seek answers he can
+                never fully comprehend."</blockquote>
             <div class="flex justify-center gap-12">
-                <a href="https://github.com/exelkonsol/elk" target="_blank" class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="GitHub"><i data-lucide="github" class="w-5 h-5"></i></a>
-                <a href="https://x.com/ElkBurden" target="_blank" class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Twitter"><i data-lucide="twitter" class="w-5 h-5"></i></a>
-                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Chart"><i data-lucide="activity" class="w-5 h-5"></i></a>
+                <a href="https://github.com/exelkonsol/elk" target="_blank"
+                    class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    aria-label="GitHub"><i data-lucide="github" class="w-5 h-5"></i></a>
+                <a href="https://x.com/ElkBurden" target="_blank"
+                    class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    aria-label="Twitter"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank"
+                    class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    aria-label="Chart"><i data-lucide="activity" class="w-5 h-5"></i></a>
             </div>
-            <p class="font-mono text-[8px] text-white/30 tracking-[0.4em] uppercase">The Antlers Are Heavy // We Carry Them Together</p>
+            <p class="font-mono text-[8px] text-white/30 tracking-[0.4em] uppercase">The Antlers Are Heavy // We Carry
+                Them Together</p>
         </div>
     </footer>
 
@@ -1079,19 +1333,26 @@
                 audioContextUnlocked = true;
             }
         }
-        document.addEventListener('touchstart', unlockAudioContext, { once: true, passive: true });
-        document.addEventListener('click', unlockAudioContext, { once: true });
-
-        document.addEventListener('visibilitychange', () => {
+        document.addEventListener('visibilitychange', async () => {
             if (!document.hidden) {
-                if (audioContext && audioContext.state === 'suspended') {
-                    audioContext.resume();
-                }
-                if (playing && !visualizerAnimationId) {
-                    drawVisualizer();
+                try {
+                    if (audioContext && audioContext.state === 'suspended') {
+                        await audioContext.resume();
+                    }
+
+                    if (audio && playing) {
+                        await audio.play();
+                    }
+
+                    if (playing && !visualizerAnimationId) {
+                        drawVisualizer();
+                    }
+                } catch (e) {
+                    console.log('Resume blocked by browser:', e);
                 }
             }
         });
+
 
         function showToast(msg) {
             const t = document.getElementById('toast');
@@ -1108,7 +1369,7 @@
                 fallbackCopy(text, msg);
             }
         }
-        
+
         function fallbackCopy(text, msg) {
             const textArea = document.createElement("textarea");
             textArea.value = text;
@@ -2169,22 +2430,22 @@
                 if (currentMode === 'existential') pool = quotesExistential;
                 else if (currentMode === 'degen') pool = quotesDegen;
                 else pool = quotesElk;
-                
+
                 // Smart non-repeating selection
                 let newIndex;
                 const maxHistory = Math.min(50, pool.length - 1); // Keep last 50 in memory
-                
+
                 if (quoteHistory.length >= pool.length) {
                     quoteHistory = []; // Reset if we've shown all
                 }
-                
+
                 do {
                     newIndex = Math.floor(Math.random() * pool.length);
                 } while (quoteHistory.includes(newIndex) && quoteHistory.length < pool.length);
-                
+
                 quoteHistory.push(newIndex);
                 if (quoteHistory.length > maxHistory) quoteHistory.shift();
-                
+
                 currentQuoteIndex = newIndex;
                 display.textContent = '"' + pool[currentQuoteIndex] + '"';
                 display.classList.add('visible');
@@ -2216,7 +2477,7 @@
 
         function openModal(mech) {
             const data = modalContent[mech];
-            if(!data) return;
+            if (!data) return;
             document.getElementById('modal-title').textContent = data.title;
             document.getElementById('modal-body').textContent = data.body;
             document.getElementById('modal-overlay').classList.add('open');
@@ -2251,7 +2512,7 @@
 
         let current = 0, playing = false, muted = false, shuffle = false, repeat = false;
         const audio = document.getElementById('audio-player');
-        
+
         let audioContext, analyser, dataArray, source, isVisualizerInitialized = false;
 
         function initAudioContext() {
@@ -2280,7 +2541,7 @@
             const canvas = document.getElementById('visualizer-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            
+
             const resize = () => {
                 const rect = canvas.getBoundingClientRect();
                 const dpr = window.devicePixelRatio || 1;
@@ -2294,21 +2555,21 @@
             function animate() {
                 visualizerAnimationId = requestAnimationFrame(animate);
                 if (!playing || !analyser) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                     return;
                 }
                 analyser.getByteFrequencyData(dataArray);
-                
+
                 const dpr = window.devicePixelRatio || 1;
                 const width = canvas.width / dpr;
                 const height = canvas.height / dpr;
 
                 ctx.clearRect(0, 0, width, height);
-                
+
                 const isMobile = window.matchMedia('(pointer: coarse)').matches;
                 const bars = isMobile ? 30 : 50;
                 const barWidth = width / bars;
-                
+
                 for (let i = 0; i < bars; i++) {
                     const idx = Math.floor(i * (dataArray.length / bars));
                     const barHeight = (dataArray[idx] / 255) * height * 0.5;
@@ -2331,7 +2592,7 @@
                 const d = document.createElement('div');
                 d.className = `track-item p-3 cursor-pointer flex items-center justify-between text-sm ${i === 0 ? 'active' : ''} rounded`;
                 d.onclick = () => loadTrack(i, true, true);
-                d.innerHTML = `<span class="text-white/40 truncate mr-2 font-mono text-xs">${t.title}</span><span class="text-[10px] text-white/20 shrink-0">${String(i+1).padStart(2,'0')}</span>`;
+                d.innerHTML = `<span class="text-white/40 truncate mr-2 font-mono text-xs">${t.title}</span><span class="text-[10px] text-white/20 shrink-0">${String(i + 1).padStart(2, '0')}</span>`;
                 pl.appendChild(d);
             });
             loadTrack(0, false, false);
@@ -2341,13 +2602,13 @@
             current = idx;
             const t = tracks[idx];
             const base = 'https://raw.githubusercontent.com/exelkonsol/elk/main/';
-            
+
             document.getElementById('track-title').textContent = t.title;
             document.getElementById('track-desc').textContent = '"' + t.desc + '"';
-            
+
             const cb = '?v=' + Date.now();
             audio.src = `${base}${encodeURIComponent(t.file)}.mp3${cb}`;
-            
+
             const artUrl = `${base}${encodeURIComponent(t.file)}.png`;
             document.getElementById('album-art-small').src = artUrl;
             document.getElementById('btn-art').src = artUrl;
@@ -2356,19 +2617,19 @@
             if (interfaceEl) {
                 interfaceEl.style.backgroundImage = `url('${artUrl}')`;
             }
-            
+
             document.querySelectorAll('.track-item').forEach((e, i) => {
                 e.classList.toggle('active', i === idx);
                 if (i === idx && scroll) e.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             });
-            
+
             document.getElementById('progress-fill').style.width = '0%';
-            
+
             const loadHandler = () => {
                 document.getElementById('time-total').textContent = fmt(audio.duration);
                 if (auto) playAudio();
             };
-            
+
             audio.removeEventListener('loadedmetadata', loadHandler);
             audio.addEventListener('loadedmetadata', loadHandler, { once: true });
             audio.load();
@@ -2385,13 +2646,13 @@
                 playing = true;
                 document.getElementById('vinyl-disc').classList.add('playing');
                 document.getElementById('mute-toggle-btn').classList.add('playing');
-                
+
                 const playIcon = document.getElementById('play-icon');
                 playIcon.setAttribute('data-lucide', 'pause');
-                
+
                 document.getElementById('track-status').textContent = "Playing";
                 lucide.createIcons();
-                
+
                 if (!visualizerAnimationId) drawVisualizer();
             }).catch(e => {
                 console.log('Playback prevented', e);
@@ -2404,10 +2665,10 @@
             playing = false;
             document.getElementById('vinyl-disc').classList.remove('playing');
             document.getElementById('mute-toggle-btn').classList.remove('playing');
-            
+
             const playIcon = document.getElementById('play-icon');
             playIcon.setAttribute('data-lucide', 'play');
-            
+
             document.getElementById('track-status').textContent = "Paused";
             lucide.createIcons();
         }
@@ -2503,14 +2764,14 @@
         function fmt(s) {
             if (isNaN(s) || !isFinite(s)) return '00:00';
             const m = Math.floor(s / 60), sec = Math.floor(s % 60);
-            return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+            return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
         }
 
         let lastTimeUpdate = 0;
         audio.addEventListener('timeupdate', () => {
             if (!isDragging) {
                 const now = Date.now();
-                if (now - lastTimeUpdate < 200) return; 
+                if (now - lastTimeUpdate < 200) return;
                 lastTimeUpdate = now;
                 const p = (audio.currentTime / audio.duration) * 100;
                 document.getElementById('progress-fill').style.width = p + '%';
@@ -2532,7 +2793,7 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT') return;
-            switch(e.code) {
+            switch (e.code) {
                 case 'Space': e.preventDefault(); togglePlay(); break;
                 case 'ArrowLeft': e.shiftKey ? prevTrack() : audio.currentTime -= 5; break;
                 case 'ArrowRight': e.shiftKey ? nextTrack() : audio.currentTime += 5; break;
@@ -2548,4 +2809,5 @@
         });
     </script>
 </body>
+
 </html>

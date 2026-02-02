@@ -23,7 +23,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -734,6 +733,7 @@
             .vinyl-record {
                 animation: vinyl-spin 8s linear infinite;
                 animation-play-state: paused;
+                will-change: transform; /* Added to fix reset on mobile */
             }
             .vinyl-record.playing {
                 animation-play-state: running;
@@ -742,6 +742,7 @@
             #mute-toggle-btn .btn-art {
                  animation: vinyl-spin 8s linear infinite;
                  animation-play-state: paused;
+                 will-change: transform; /* Added to fix reset on mobile */
             }
             #mute-toggle-btn.playing .btn-art {
                 animation-play-state: running;
@@ -809,11 +810,11 @@
     <nav class="fixed top-0 w-full z-40 blur-fade border-b-0 h-16 sm:h-20 flex items-center">
         <div class="w-full max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex justify-between items-center">
-                <a href="#" class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-white/60 hover:text-white/90 transition-colors touch-manipulation">$ELK</a>
+                <a href="#" target="_self" class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-white/60 hover:text-white/90 transition-colors touch-manipulation">$ELK</a>
                 <div class="hidden md:flex items-center gap-8 lg:gap-12 font-mono text-[10px] tracking-[0.3em] uppercase">
-                    <a href="#mechanisms" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Mechanisms</a>
-                    <a href="#manifesto" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Manifesto</a>
-                    <a href="#soundscape" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Soundscape</a>
+                    <a href="#mechanisms" target="_self" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Mechanisms</a>
+                    <a href="#manifesto" target="_self" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Manifesto</a>
+                    <a href="#soundscape" target="_self" class="text-white/20 hover:text-white/60 transition-colors duration-300 py-2">Soundscape</a>
                 </div>
                 <button onclick="copyToClipboard('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump', 'CA COPIED')" 
                         class="font-mono text-[8px] sm:text-[9px] text-white/60 hover:text-white/90 transition-all duration-500 tracking-wider uppercase border border-white/5 px-3 py-1.5 rounded hover:bg-white/5 active:scale-95 touch-manipulation min-h-[44px]">
@@ -1838,7 +1839,7 @@
             "The burden is not carried; it is worn like a coat.",
             "In the silence, the antlers speak of years.",
             "The mountain does not remember the Elk, but the Elk remembers the mountain.",
-            "To migrate is to be loyal to the future.",
+            "To migrate is to write a letter to the future.",
             "The antlers are the handlebars on the bicycle of survival.",
             "We are the punctuation marks in the sentence of the wilderness.",
             "The snow is the great equalizer; it covers all tracks.",
@@ -1885,7 +1886,7 @@
             "We do not hurry the grass to grow.",
             "The antlers are the hands we cannot use to hold.",
             "The herd is a democracy where everyone votes with their feet.",
-            "We carry the sky so it does not fall.",
+            "We carry the sky on our heads so it does not fall.",
             "The wolf is the question; the herd is the answer.",
             "In the rut, we remember we are mortal.",
             "The mountain teaches that up and down are the same direction.",
@@ -1936,7 +1937,7 @@
             "We do not fear the descent; we fear only the falling alone.",
             "The burden is the shape of our commitment.",
             "The Elk stands and becomes the axis of the world.",
-            "To migrate is to be loyal to the grass.",
+            "To migrate is to trust in the unknown.",
             "We are the shadow that the mountain casts on itself.",
             "The antlers are the price of being seen.",
             "In the herd, we are anonymous; in the rut, we are named.",

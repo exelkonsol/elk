@@ -2,9 +2,12 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no, viewport-fit=cover">
     <meta name="description" content="$ELK - A Solana memecoin rooted in existential philosophy. The antlers are heavy. We carry them together.">
     <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
 
     <meta property="og:title" content="$ELK - The Burden We Carry Together">
     <meta property="og:description" content="We are carried through life by a series of sublimations—fleeting release valves for the pressure of being.">
@@ -22,12 +25,25 @@
     <style>
         * { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
 
+        html {
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             background-color: #000000;
             color: #e5e5e5;
             overflow-x: hidden;
             position: relative;
             font-family: 'Crimson Text', serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* iOS Momentum Scrolling */
+        .overflow-y-auto {
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Global Background */
@@ -39,6 +55,8 @@
             background-position: center;
             filter: grayscale(100%) opacity(0.3) contrast(1.1);
             z-index: -10;
+            transform: translateZ(0);
+            will-change: transform;
         }
 
         .vignette {
@@ -48,6 +66,7 @@
                         linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 80%, rgba(0,0,0,0.9) 100%);
             pointer-events: none;
             z-index: -5;
+            transform: translateZ(0);
         }
 
         .bg-overlay {
@@ -56,6 +75,7 @@
             background: rgba(0, 0, 0, 0.6);
             pointer-events: none;
             z-index: -4;
+            transform: translateZ(0);
         }
 
         .noise {
@@ -65,12 +85,15 @@
             z-index: 50;
             opacity: 0.04;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            transform: translateZ(0);
         }
 
         .blur-fade {
             backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             background: rgba(5, 5, 5, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            contain: layout style paint;
         }
 
         .buy-btn {
@@ -78,6 +101,9 @@
             border: 1px solid rgba(220, 38, 38, 0.3);
             color: rgba(255, 100, 100, 0.8);
             transition: all 0.5s ease;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         .buy-btn:hover {
@@ -88,10 +114,16 @@
             box-shadow: 0 10px 40px rgba(139, 0, 0, 0.3);
         }
 
-        .buy-btn:active { transform: scale(0.98); }
+        .buy-btn:active { 
+            transform: scale(0.98); 
+        }
 
         /* Quote Section */
-        .quote-section { position: relative; overflow: hidden; }
+        .quote-section { 
+            position: relative; 
+            overflow: hidden; 
+            contain: layout style paint;
+        }
         
         .quote-bg {
             position: absolute;
@@ -103,6 +135,8 @@
             filter: blur(0px) contrast(1.1);
             z-index: 0;
             mix-blend-mode: screen;
+            transform: translateZ(0);
+            will-change: transform;
         }
 
         .quote-container {
@@ -128,12 +162,17 @@
             transform: translateY(10px);
             transition: all 0.8s ease;
             text-shadow: 0 4px 30px rgba(0,0,0,1);
+            will-change: opacity, transform;
         }
 
-        .quote-text.visible { opacity: 1; transform: translateY(0); }
+        .quote-text.visible { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
 
         .quote-btn-group button {
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.5);
             font-family: 'JetBrains Mono', monospace;
@@ -143,6 +182,13 @@
             cursor: pointer;
             transition: all 0.3s ease;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            min-height: 44px;
+            min-width: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .quote-btn-group button:hover {
@@ -151,7 +197,9 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-        .quote-btn-group button:active { transform: scale(0.95); }
+        .quote-btn-group button:active { 
+            transform: scale(0.95); 
+        }
 
         .mode-selector {
             display: flex;
@@ -172,6 +220,10 @@
             cursor: pointer;
             transition: all 0.3s ease;
             background: transparent;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            min-height: 44px;
         }
 
         .mode-btn:hover, .mode-btn.active {
@@ -208,13 +260,17 @@
             object-fit: contain;
             mix-blend-mode: soft-light;
             opacity: 0.9;
+            transform: translateZ(0);
+            will-change: transform;
         }
 
         .mechanism-card {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.04);
             transition: all 0.6s ease;
+            contain: layout style;
         }
 
         .mechanism-card:hover {
@@ -228,7 +284,12 @@
             border-color: rgba(139, 0, 0, 0.2);
         }
 
-        .mechanism-card button { touch-action: manipulation; }
+        .mechanism-card button { 
+            touch-action: manipulation; 
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px;
+            min-width: 44px;
+        }
 
         /* Footer Background */
         .footer-bg-layer {
@@ -246,12 +307,14 @@
             pointer-events: none;
             z-index: 0;
             filter: grayscale(0%) contrast(1.2);
+            will-change: transform;
         }
 
         /* Audio Player */
         .audio-player-container {
             position: relative;
             overflow: hidden;
+            contain: layout style paint;
         }
 
         #visualizer-canvas {
@@ -283,10 +346,13 @@
                 0 0 0 1px rgba(255,255,255,0.1),
                 0 10px 30px rgba(0,0,0,0.8),
                 inset 0 0 30px rgba(0,0,0,0.9);
-            animation: spin 25s linear infinite;  /* Slowed to 25s */
+            animation: spin 25s linear infinite;
             animation-play-state: paused;
             will-change: transform;
             cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            transform: translateZ(0);
         }
 
         .vinyl-record.playing { 
@@ -319,6 +385,7 @@
             background: #000;
             border: 1px solid rgba(255,255,255,0.2);
             z-index: 2;
+            pointer-events: none;
         }
 
         @keyframes spin {
@@ -333,6 +400,7 @@
             border-radius: 2px;
             cursor: pointer;
             overflow: visible;
+            touch-action: none;
         }
 
         .progress-fill {
@@ -341,6 +409,7 @@
             width: 0%;
             position: relative;
             border-radius: 2px;
+            pointer-events: none;
         }
 
         .progress-handle {
@@ -354,15 +423,24 @@
             border-radius: 50%;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             transition: transform 0.2s;
+            pointer-events: none;
         }
 
-        .progress-container:hover .progress-handle { transform: translateY(-50%) scale(1); }
+        .progress-container:hover .progress-handle, 
+        .progress-container:active .progress-handle { 
+            transform: translateY(-50%) scale(1); 
+        }
 
         .track-item {
             transition: all 0.3s ease;
             border-left: 2px solid transparent;
             position: relative;
             overflow: hidden;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
         }
 
         .track-item::before {
@@ -387,15 +465,30 @@
             border-left-color: rgba(139, 0, 0, 0.5);
         }
 
-        .track-item.active::before { transform: scaleY(1); }
+        .track-item.active::before { 
+            transform: scaleY(1); 
+        }
 
         .control-btn {
             transition: all 0.2s;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px;
+            min-width: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
         }
 
-        .control-btn:hover { transform: scale(1.1); color: rgba(255,255,255,0.9); }
-        .control-btn:active { transform: scale(0.95); }
+        .control-btn:hover { 
+            transform: scale(1.1); 
+            color: rgba(255,255,255,0.9); 
+        }
+        
+        .control-btn:active { 
+            transform: scale(0.95); 
+        }
 
         .play-btn-main {
             width: 60px;
@@ -409,6 +502,9 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         .play-btn-main:hover {
@@ -435,6 +531,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            transform: translateZ(0);
+            will-change: transform;
         }
 
         #mute-toggle-btn:hover {
@@ -449,10 +550,11 @@
             height: 100%;
             object-fit: cover;
             opacity: 0.6;
-            animation: spin 25s linear infinite;  /* Matched to 25s */
+            animation: spin 25s linear infinite;
             animation-play-state: paused;
             pointer-events: none;
             will-change: transform;
+            transform: translateZ(0);
         }
         
         #mute-toggle-btn.playing img.btn-art { 
@@ -466,15 +568,30 @@
             background: rgba(0,0,0,0.6);
             border-radius: 50%;
             padding: 4px;
+            pointer-events: none;
         }
 
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        ::-webkit-scrollbar { 
+            width: 4px; 
+        }
+        
+        ::-webkit-scrollbar-track { 
+            background: transparent; 
+        }
+        
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 2px; 
+        }
+        
+        ::-webkit-scrollbar-thumb:hover { 
+            background: rgba(255,255,255,0.2); 
+        }
 
-        .text-balance { text-wrap: balance; }
+        .text-balance { 
+            text-wrap: balance; 
+        }
 
         button:focus-visible, a:focus-visible {
             outline: 1px solid rgba(139, 0, 0, 0.5);
@@ -482,30 +599,97 @@
         }
 
         @media (max-width: 640px) {
-            .vinyl-record { width: 160px; height: 160px; }
-            .vinyl-label { width: 60px; height: 60px; }
-            .quote-container { min-height: 400px; }
+            .vinyl-record { 
+                width: 160px; 
+                height: 160px; 
+            }
+            
+            .vinyl-label { 
+                width: 60px; 
+                height: 60px; 
+            }
+            
+            .quote-container { 
+                min-height: 400px; 
+            }
+            
             #mute-toggle-btn {
                 bottom: 16px;
                 right: 16px;
                 width: 50px;
                 height: 50px;
             }
+            
             .hero-image {
                 width: 180px !important;
                 height: 180px !important;
             }
         }
 
+        @media (pointer: coarse) {
+            /* Touch-specific optimizations */
+            .progress-container {
+                height: 20px;
+                margin: -8px 0;
+                background: transparent;
+            }
+            
+            .progress-container::before {
+                content: '';
+                position: absolute;
+                top: 8px;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 2px;
+            }
+            
+            .progress-fill {
+                position: absolute;
+                top: 8px;
+                left: 0;
+                height: 4px;
+            }
+            
+            .progress-handle {
+                right: -8px;
+                width: 16px;
+                height: 16px;
+                transform: translateY(-50%) scale(1);
+            }
+            
+            .track-item {
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
-            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-            .hero-content { opacity: 1; transform: none; filter: none; }
+            * { 
+                animation-duration: 0.01ms !important; 
+                transition-duration: 0.01ms !important; 
+            }
+            
+            .hero-content { 
+                opacity: 1; 
+                transform: none; 
+                filter: none; 
+            }
+            
+            .vinyl-record, #mute-toggle-btn img.btn-art {
+                animation: none !important;
+            }
+        }
+        
+        /* Content visibility for performance */
+        section {
+            content-visibility: auto;
+            contain-intrinsic-size: 0 500px;
         }
     </style>
-<base target="_blank">
-<base target="_blank">
 </head>
-<body class="font-body antialiased selection:bg-white/10 selection:text-white relative">
+<body class="font-body antialiased selection:bg-white/10 selection:text-white relative" ontouchstart="">
     <div class="noise"></div>
     <div class="global-bg"></div>
     <div class="vignette"></div>
@@ -522,14 +706,14 @@
     <nav class="fixed top-0 w-full z-40 blur-fade border-b-0 h-16 sm:h-20 flex items-center">
         <div class="w-full max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex justify-between items-center">
-                <a href="#" class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-white/60 hover:text-white/90 transition-colors">$ELK</a>
+                <a href="#" class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-white/60 hover:text-white/90 transition-colors touch-manipulation">$ELK</a>
                 <div class="hidden md:flex items-center gap-8 lg:gap-12 font-mono text-[10px] tracking-[0.3em] uppercase">
                     <a href="#mechanisms" class="text-white/20 hover:text-white/60 transition-all duration-700 py-2">Mechanisms</a>
                     <a href="#manifesto" class="text-white/20 hover:text-white/60 transition-all duration-700 py-2">Manifesto</a>
                     <a href="#soundscape" class="text-white/20 hover:text-white/60 transition-all duration-700 py-2">Soundscape</a>
                 </div>
                 <button onclick="copyToClipboard('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump', 'CA COPIED')" 
-                        class="font-mono text-[8px] sm:text-[9px] text-white/20 hover:text-white/50 transition-all duration-500 tracking-wider uppercase border border-white/5 px-3 py-1.5 rounded hover:bg-white/5 active:scale-95">
+                        class="font-mono text-[8px] sm:text-[9px] text-white/20 hover:text-white/50 transition-all duration-500 tracking-wider uppercase border border-white/5 px-3 py-1.5 rounded hover:bg-white/5 active:scale-95 touch-manipulation min-h-[44px]">
                     <span class="hidden sm:inline">8DaLP...Gpump</span>
                     <span class="sm:hidden">CA</span>
                 </button>
@@ -539,7 +723,7 @@
 
     <!-- Floating Mute Button -->
     <div id="mute-toggle-btn" onclick="toggleMute()" role="button" aria-label="Toggle mute">
-        <img id="btn-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/Before%20the%20Clearing.png" alt="Album Art" class="btn-art">
+        <img id="btn-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/Before%20the%20Clearing.png" alt="Album Art" class="btn-art" decoding="async">
         <div class="mute-icon-overlay">
             <i id="mute-icon" data-lucide="volume-2" class="w-5 h-5"></i>
         </div>
@@ -554,6 +738,9 @@
                 <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 pointer-events-none z-10"></div>
                 <img src="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" 
                      alt="$ELK Stag" 
+                     width="400" 
+                     height="400"
+                     decoding="async"
                      class="hero-image w-[180px] h-[180px] sm:w-[240px] sm:h-[240px] md:w-[320px] md:h-[320px] lg:w-[400px] lg:h-[400px] mx-auto object-contain select-none">
             </div>
 
@@ -569,15 +756,15 @@
 
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-8 relative z-20">
                 <a href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" 
-                   class="buy-btn w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] uppercase text-center rounded">
+                   class="buy-btn w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] uppercase text-center rounded touch-manipulation">
                     BUY
                 </a>
                 <a href="https://x.com/i/communities/2014904566983094598" 
-                   class="blur-fade w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] text-white/40 hover:text-white/80 uppercase transition-all hover:scale-105 text-center rounded">
+                   class="blur-fade w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-[10px] font-mono tracking-[0.2em] text-white/40 hover:text-white/80 uppercase transition-all hover:scale-105 text-center rounded touch-manipulation">
                     Join The Silence
                 </a>
                 <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" 
-                   class="blur-fade w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-[9px] font-mono tracking-[0.2em] text-white/30 hover:text-white/70 uppercase transition-all hover:scale-105 text-center rounded">
+                   class="blur-fade w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-[9px] font-mono tracking-[0.2em] text-white/30 hover:text-white/70 uppercase transition-all hover:scale-105 text-center rounded touch-manipulation">
                     Chart
                 </a>
             </div>
@@ -607,7 +794,7 @@
                             <span class="vote-count font-mono text-lg text-white/50" data-count="0">0</span>
                         </div>
                         <button onclick="vote('isolation')" 
-                                class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100 focus:opacity-100">
+                                class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100 focus:opacity-100 touch-manipulation min-h-[44px]">
                             Vote
                         </button>
                     </div>
@@ -627,7 +814,7 @@
                             <span class="vote-count font-mono text-lg text-white/50" data-count="0">0</span>
                         </div>
                         <button onclick="vote('anchoring')" 
-                                class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100 focus:opacity-100">
+                                class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100 focus:opacity-100 touch-manipulation min-h-[44px]">
                             Vote
                         </button>
                     </div>
@@ -647,7 +834,7 @@
                             <span class="vote-count font-mono text-lg text-white/50" data-count="0">0</span>
                         </div>
                         <button onclick="vote('distraction')" 
-                                class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100 focus:opacity-100">
+                                class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100 focus:opacity-100 touch-manipulation min-h-[44px]">
                             Vote
                         </button>
                     </div>
@@ -667,7 +854,7 @@
                             <span class="vote-count font-mono text-lg text-white/50" data-count="0">0</span>
                         </div>
                         <button onclick="vote('sublimation')" 
-                                class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100 focus:opacity-100">
+                                class="w-full py-2 text-[10px] font-mono tracking-wider uppercase text-white/20 hover:text-white/60 border border-white/5 hover:border-white/20 transition-all opacity-0 hover:opacity-100 focus:opacity-100 touch-manipulation min-h-[44px]">
                             Vote
                         </button>
                     </div>
@@ -698,11 +885,11 @@
                     
                     <div class="quote-btn-group mt-12 flex gap-4 relative z-10">
                         <button onclick="generateQuote()" 
-                                class="px-8 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 uppercase tracking-widest text-[10px] transition-all active:scale-95">
+                                class="px-8 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 uppercase tracking-widest text-[10px] transition-all active:scale-95 touch-manipulation min-h-[44px]">
                             Generate Echo
                         </button>
                         <button onclick="copyQuote()" 
-                                class="px-4 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 text-white/50 hover:text-white transition-all active:scale-95" 
+                                class="px-4 py-3 hover:bg-white/5 rounded border border-white/10 hover:border-white/30 text-white/50 hover:text-white transition-all active:scale-95 touch-manipulation min-h-[44px] min-w-[44px]" 
                                 aria-label="Copy Quote">
                             <i data-lucide="copy" class="w-4 h-4"></i>
                         </button>
@@ -733,7 +920,7 @@
                         <!-- Vinyl Record with synchronized slow rotation -->
                         <div class="vinyl-record" id="vinyl-disc" onclick="togglePlay()">
                             <div class="vinyl-label">
-                                <img id="album-art-small" src="" alt="" class="w-full h-full object-cover opacity-80">
+                                <img id="album-art-small" src="" alt="" class="w-full h-full object-cover opacity-80" decoding="async">
                             </div>
                             <div class="vinyl-hole"></div>
                         </div>
@@ -803,7 +990,7 @@
                     </div>
                 </div>
 
-                <audio id="audio-player" preload="metadata" crossorigin="anonymous"></audio>
+                <audio id="audio-player" preload="metadata" crossorigin="anonymous" playsinline webkit-playsinline x5-playsinline></audio>
             </div>
         </div>
     </section>
@@ -818,13 +1005,13 @@
             </blockquote>
 
             <div class="flex justify-center gap-12">
-                <a href="https://github.com/exelkonsol/elk" target="_blank" class="text-white/20 hover:text-white/60 transition-all duration-700 hover:scale-110" aria-label="GitHub">
+                <a href="https://github.com/exelkonsol/elk" target="_blank" class="text-white/20 hover:text-white/60 transition-all duration-700 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="GitHub">
                     <i data-lucide="github" class="w-5 h-5"></i>
                 </a>
-                <a href="https://x.com/ElkBurden" target="_blank" class="text-white/20 hover:text-white/60 transition-all duration-700 hover:scale-110" aria-label="Twitter">
+                <a href="https://x.com/ElkBurden" target="_blank" class="text-white/20 hover:text-white/60 transition-all duration-700 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Twitter">
                     <i data-lucide="twitter" class="w-5 h-5"></i>
                 </a>
-                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" class="text-white/20 hover:text-white/60 transition-all duration-700 hover:scale-110" aria-label="Chart">
+                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" class="text-white/20 hover:text-white/60 transition-all duration-700 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Chart">
                     <i data-lucide="activity" class="w-5 h-5"></i>
                 </a>
             </div>
@@ -836,6 +1023,40 @@
     <script>
         // Initialize Icons
         lucide.createIcons();
+
+        // iOS Audio Context Unlock
+        let audioContextUnlocked = false;
+        
+        function unlockAudioContext() {
+            if (audioContextUnlocked) return;
+            
+            const audio = document.getElementById('audio-player');
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audioContextUnlocked = true;
+                }).catch(() => {
+                    // Autoplay prevented, will unlock on first user interaction
+                });
+            }
+            
+            // Create and resume AudioContext if needed
+            if (typeof AudioContext !== 'undefined' && AudioContext.state === 'suspended') {
+                AudioContext.resume();
+            } else if (typeof webkitAudioContext !== 'undefined') {
+                const ctx = new webkitAudioContext();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+            }
+        }
+
+        // Unlock on first touch/click anywhere
+        document.addEventListener('touchstart', unlockAudioContext, { once: true, passive: true });
+        document.addEventListener('click', unlockAudioContext, { once: true });
 
         // Toast System
         function showToast(msg) {
@@ -850,7 +1071,30 @@
         }
 
         function copyToClipboard(text, msg) {
-            navigator.clipboard.writeText(text).then(() => showToast(msg));
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => showToast(msg)).catch(() => fallbackCopy(text, msg));
+            } else {
+                fallbackCopy(text, msg);
+            }
+        }
+        
+        function fallbackCopy(text, msg) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast(msg);
+            } catch (err) {
+                console.error('Fallback copy failed', err);
+            }
+            
+            document.body.removeChild(textArea);
         }
 
         // Quote Systems
@@ -974,51 +1218,95 @@
         
         // Audio Context for Visualizer
         let audioContext, analyser, dataArray, source;
+        let isVisualizerInitialized = false;
         
         function initAudioContext() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (isVisualizerInitialized) {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                return;
+            }
+            
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                
+                audioContext = new AudioContext();
                 analyser = audioContext.createAnalyser();
+                
+                // Lower FFT size for mobile performance
+                const isMobile = window.matchMedia('(pointer: coarse)').matches;
+                analyser.fftSize = isMobile ? 128 : 256;
+                
                 source = audioContext.createMediaElementSource(audio);
                 source.connect(analyser);
                 analyser.connect(audioContext.destination);
-                analyser.fftSize = 256;
+                
                 const bufferLength = analyser.frequencyBinCount;
                 dataArray = new Uint8Array(bufferLength);
+                isVisualizerInitialized = true;
                 drawVisualizer();
+            } catch (e) {
+                console.log('Audio context init failed:', e);
             }
         }
 
+        let visualizerAnimationId;
+        let lastDrawTime = 0;
+        
         function drawVisualizer() {
             const canvas = document.getElementById('visualizer-canvas');
+            if (!canvas) return;
+            
             const ctx = canvas.getContext('2d');
             
             function resize() {
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
+                ctx.scale(dpr, dpr);
             }
+            
             resize();
-            window.addEventListener('resize', resize);
+            
+            const resizeObserver = new ResizeObserver(() => {
+                resize();
+            });
+            resizeObserver.observe(canvas);
 
-            function animate() {
-                requestAnimationFrame(animate);
-                if (!playing) {
+            function animate(timestamp) {
+                visualizerAnimationId = requestAnimationFrame(animate);
+                
+                // Throttle to 30fps on mobile for battery
+                const isMobile = window.matchMedia('(pointer: coarse)').matches;
+                if (isMobile && timestamp - lastDrawTime < 33) return;
+                lastDrawTime = timestamp;
+                
+                if (!playing || !analyser) {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     return;
                 }
                 
                 analyser.getByteFrequencyData(dataArray);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                const bars = 50;
-                const barWidth = canvas.width / bars;
+                const dpr = window.devicePixelRatio || 1;
+                const width = canvas.width / dpr;
+                const height = canvas.height / dpr;
+                
+                ctx.clearRect(0, 0, width, height);
+                
+                const bars = isMobile ? 30 : 50;
+                const barWidth = width / bars;
                 
                 for (let i = 0; i < bars; i++) {
-                    const barHeight = (dataArray[i] / 255) * canvas.height * 0.5;
+                    const dataIndex = Math.floor(i * (dataArray.length / bars));
+                    const barHeight = (dataArray[dataIndex] / 255) * height * 0.5;
                     const x = i * barWidth;
-                    const y = canvas.height - barHeight;
+                    const y = height - barHeight;
                     
-                    const gradient = ctx.createLinearGradient(0, y, 0, canvas.height);
+                    const gradient = ctx.createLinearGradient(0, y, 0, height);
                     gradient.addColorStop(0, 'rgba(139, 0, 0, 0.3)');
                     gradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
                     
@@ -1026,7 +1314,8 @@
                     ctx.fillRect(x, y, barWidth - 2, barHeight);
                 }
             }
-            animate();
+            
+            animate(0);
         }
 
         function initPlaylist() {
@@ -1053,7 +1342,9 @@
             document.getElementById('track-title').textContent = t.title;
             document.getElementById('track-desc').textContent = '"' + t.desc + '"';
             
-            audio.src = `${base}${encodeURIComponent(t.file)}.mp3`;
+            // Cache-busting for iOS
+            const cacheBuster = '?v=' + Date.now();
+            audio.src = `${base}${encodeURIComponent(t.file)}.mp3${cacheBuster}`;
             
             const artUrl = `${base}${encodeURIComponent(t.file)}.png`;
             document.getElementById('album-art-small').src = artUrl;
@@ -1066,44 +1357,55 @@
             
             document.getElementById('progress-fill').style.width = '0%';
             
-            if (auto) {
-                audio.addEventListener('loadedmetadata', () => {
-                    document.getElementById('time-total').textContent = fmt(audio.duration);
-                    playAudio();
-                }, { once: true });
-            } else {
-                audio.addEventListener('loadedmetadata', () => {
-                    document.getElementById('time-total').textContent = fmt(audio.duration);
-                }, { once: true });
-            }
+            const loadHandler = () => {
+                document.getElementById('time-total').textContent = fmt(audio.duration);
+                if (auto) playAudio();
+            };
+            
+            audio.removeEventListener('loadedmetadata', loadHandler);
+            audio.addEventListener('loadedmetadata', loadHandler, { once: true });
+            
+            // iOS buffering fix
+            audio.load();
         }
 
         function togglePlay() {
+            // Ensure audio context is ready (required for iOS)
+            initAudioContext();
+            
             if (audioContext && audioContext.state === 'suspended') {
                 audioContext.resume();
             }
+            
             playing ? pauseAudio() : playAudio();
         }
 
         function playAudio() {
-            initAudioContext();
-            audio.play().catch(e => console.log("Interaction required"));
-            playing = true;
+            // Mobile requires user interaction to play
+            const playPromise = audio.play();
             
-            // Sync both vinyls - add playing class to trigger animation
-            document.getElementById('vinyl-disc').classList.add('playing');
-            document.getElementById('mute-toggle-btn').classList.add('playing');
-            
-            document.getElementById('play-icon').setAttribute('data-lucide', 'pause');
-            document.getElementById('track-status').textContent = "Playing";
-            lucide.createIcons();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    playing = true;
+                    
+                    document.getElementById('vinyl-disc').classList.add('playing');
+                    document.getElementById('mute-toggle-btn').classList.add('playing');
+                    
+                    document.getElementById('play-icon').setAttribute('data-lucide', 'pause');
+                    document.getElementById('track-status').textContent = "Playing";
+                    lucide.createIcons();
+                }).catch(error => {
+                    console.log('Playback prevented:', error);
+                    // Show visual feedback that interaction is needed
+                    showToast("TAP TO PLAY");
+                });
+            }
         }
 
         function pauseAudio() {
             audio.pause();
             playing = false;
             
-            // Sync both vinyls - remove playing class to pause animation
             document.getElementById('vinyl-disc').classList.remove('playing');
             document.getElementById('mute-toggle-btn').classList.remove('playing');
             
@@ -1128,7 +1430,11 @@
 
         function nextTrack() {
             if (shuffle) {
-                loadTrack(Math.floor(Math.random() * tracks.length));
+                let next;
+                do {
+                    next = Math.floor(Math.random() * tracks.length);
+                } while (next === current && tracks.length > 1);
+                loadTrack(next);
             } else {
                 loadTrack((current + 1) % tracks.length);
             }
@@ -1169,42 +1475,54 @@
             showToast(repeat ? "REPEAT ON" : "REPEAT OFF");
         }
 
-        // Progress Bar Interaction
+        // Progress Bar Interaction - Optimized for Touch
         let isDragging = false;
         const progressContainer = document.getElementById('progress-container');
 
-        function updateProgress(e) {
+        function updateProgress(clientX) {
             const rect = progressContainer.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
+            const pos = (clientX - rect.left) / rect.width;
             const clampedPos = Math.max(0, Math.min(1, pos));
-            audio.currentTime = clampedPos * audio.duration;
+            
+            if (audio.duration) {
+                audio.currentTime = clampedPos * audio.duration;
+                document.getElementById('progress-fill').style.width = (clampedPos * 100) + '%';
+            }
         }
 
+        // Mouse events
         progressContainer.addEventListener('mousedown', (e) => {
             isDragging = true;
-            updateProgress(e);
-        });
+            updateProgress(e.clientX);
+        }, { passive: true });
 
         document.addEventListener('mousemove', (e) => {
-            if (isDragging) updateProgress(e);
+            if (isDragging) {
+                e.preventDefault();
+                updateProgress(e.clientX);
+            }
         });
 
         document.addEventListener('mouseup', () => {
             isDragging = false;
         });
 
+        // Touch events - Passive where possible
         progressContainer.addEventListener('touchstart', (e) => {
             isDragging = true;
-            updateProgress(e.touches[0]);
+            updateProgress(e.touches[0].clientX);
         }, { passive: true });
 
         document.addEventListener('touchmove', (e) => {
-            if (isDragging) updateProgress(e.touches[0]);
-        }, { passive: true });
+            if (isDragging) {
+                e.preventDefault(); // Prevent scroll while dragging
+                updateProgress(e.touches[0].clientX);
+            }
+        }, { passive: false });
 
         document.addEventListener('touchend', () => {
             isDragging = false;
-        });
+        }, { passive: true });
 
         function setVolume(v) {
             audio.volume = v / 100;
@@ -1212,21 +1530,40 @@
         }
 
         function fmt(s) {
-            if (isNaN(s)) return '00:00';
+            if (isNaN(s) || !isFinite(s)) return '00:00';
             const m = Math.floor(s / 60), sec = Math.floor(s % 60);
             return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
         }
 
+        // Throttled timeupdate for performance
+        let lastTimeUpdate = 0;
         audio.addEventListener('timeupdate', () => {
-            if (!isDragging) {
-                const p = (audio.currentTime / audio.duration) * 100;
-                document.getElementById('progress-fill').style.width = p + '%';
-            }
+            if (isDragging) return;
+            
+            const now = Date.now();
+            if (now - lastTimeUpdate < 250) return; // Update max 4 times per second
+            lastTimeUpdate = now;
+            
+            const p = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progress-fill').style.width = p + '%';
             document.getElementById('time-current').textContent = fmt(audio.currentTime);
         });
 
         audio.addEventListener('ended', () => {
             if (!repeat) nextTrack();
+        });
+
+        // Handle iOS audio interruptions (calls, notifications)
+        audio.addEventListener('pause', () => {
+            if (playing && audio.currentTime !== audio.duration) {
+                // External pause (not our code)
+                playing = false;
+                document.getElementById('vinyl-disc').classList.remove('playing');
+                document.getElementById('mute-toggle-btn').classList.remove('playing');
+                document.getElementById('play-icon').setAttribute('data-lucide', 'play');
+                document.getElementById('track-status').textContent = "Paused";
+                lucide.createIcons();
+            }
         });
 
         // Keyboard Shortcuts
@@ -1252,7 +1589,27 @@
             }
         });
 
+        // Visibility change handling (pause when tab hidden to save battery)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && playing) {
+                // Optional: pause automatically when tab hidden
+                // pauseAudio();
+            }
+        });
+
+        // Initialize
         initPlaylist();
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (visualizerAnimationId) {
+                cancelAnimationFrame(visualizerAnimationId);
+            }
+            if (audio) {
+                audio.pause();
+                audio.src = '';
+            }
+        });
     </script>
 </body>
 </html>

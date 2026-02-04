@@ -10,9 +10,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
-    
+
     <!-- Security: Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com  https://unpkg.com  https://www.gstatic.com  https://*.firebaseio.com https://*.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com ; font-src https://fonts.gstatic.com ; img-src 'self' data: https: blob:; connect-src https: wss:; media-src https: blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com  https://unpkg.com  https://www.gstatic.com  https://*.firebaseio.com https://*.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com ; font-src https://fonts.gstatic.com ; img-src 'self' data: https: blob:; connect-src https: wss:; media-src https: blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
 
     <meta property="og:title" content="$ELK - The Burden We Carry Together">
     <meta property="og:description"
@@ -46,13 +47,14 @@
         // =================================================================
         // 🔴 IMPORTANT: PASTE YOUR FIREBASE KEYS HERE FOR PRODUCTION 🔴
         // =================================================================
-        const USER_FIREBASE_CONFIG = {
-            apiKey: "YOUR_API_KEY_HERE",           // <--- Replace this
-            authDomain: "YOUR_AUTH_DOMAIN",        // <--- Replace this
-            projectId: "YOUR_PROJECT_ID",          // <--- Replace this
-            storageBucket: "YOUR_STORAGE_BUCKET",  // <--- Replace this
-            messagingSenderId: "YOUR_SENDER_ID",   // <--- Replace this
-            appId: "YOUR_APP_ID"                   // <--- Replace this
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQlPbhC2Z5ds_15u7wWlBvPjhvkPox-9s",
+            authDomain: "elkonsol-79134.firebaseapp.com",
+            projectId: "elkonsol-79134",
+            storageBucket: "elkonsol-79134.firebasestorage.app",
+            messagingSenderId: "509530069362",
+            appId: "1:509530069362:web:602aadc0112f0e2724a5eb",
+            measurementId: "G-L0XV40MZWB"
         };
 
         // Security Constants
@@ -85,12 +87,12 @@
                 if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                     console.info('[ELK] Using Environment Config');
                     config = JSON.parse(__firebase_config);
-                } 
+                }
                 // 2. Otherwise use the User's Hardcoded Config
                 else if (USER_FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY_HERE") {
                     console.info('[ELK] Using User Config');
                     config = USER_FIREBASE_CONFIG;
-                } 
+                }
                 // 3. Fallback: Config is missing
                 else {
                     throw new Error('MISSING_KEYS');
@@ -99,15 +101,15 @@
                 app = initializeApp(config);
                 auth = getAuth(app);
                 db = getFirestore(app);
-                
+
                 // Auth Flow
                 const initAuth = async () => {
                     // Try Custom Token first (Gemini Env)
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                         await signInWithCustomToken(auth, __initial_auth_token);
+                        await signInWithCustomToken(auth, __initial_auth_token);
                     } else {
-                         // Fallback to Anonymous (Production)
-                         await signInAnonymously(auth);
+                        // Fallback to Anonymous (Production)
+                        await signInAnonymously(auth);
                     }
                 };
 
@@ -141,7 +143,7 @@
             // FIX: Ensure path has 6 segments (Document Reference)
             // Path: artifacts/{appId}/public/data/mechanisms/current
             const docRef = doc(db, 'artifacts', (typeof __app_id !== 'undefined' ? __app_id : 'elk-default'), 'public', 'data', 'mechanisms', 'current');
-            
+
             unsubscribeVotes = onSnapshot(docRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.data();
@@ -164,7 +166,7 @@
         // Vote Handler
         window.handleVote = async (mechanism) => {
             if (!ALLOWED_MECHANISMS.includes(mechanism)) return;
-            
+
             // Local Lock Check
             const hasVoted = localStorage.getItem(STORAGE_KEYS.HAS_VOTED);
             if (hasVoted === 'true' && localStorage.getItem(STORAGE_KEYS.VOTED_CYCLE) == currentCycle) {
@@ -174,7 +176,7 @@
 
             // Visual Update (Optimistic UI)
             const countEl = document.querySelector(`[data-mechanism="${mechanism}"] .vote-count`);
-            if(countEl) countEl.innerText = parseInt(countEl.innerText) + 1;
+            if (countEl) countEl.innerText = parseInt(countEl.innerText) + 1;
             applyVoteLock(mechanism);
 
             // If Firebase is active, save it
@@ -185,7 +187,7 @@
                     await updateDoc(docRef, {
                         [mechanism]: increment(1)
                     });
-                    
+
                     // Save Local State
                     localStorage.setItem(STORAGE_KEYS.HAS_VOTED, 'true');
                     localStorage.setItem(STORAGE_KEYS.VOTED_MECH, mechanism);
@@ -214,13 +216,13 @@
                 btn.classList.add('opacity-50');
             });
             const card = document.querySelector(`[data-mechanism="${mechanism}"]`);
-            if(card) card.classList.add('voted');
+            if (card) card.classList.add('voted');
         };
 
         const syncVoteLock = () => {
             const hasVoted = localStorage.getItem(STORAGE_KEYS.HAS_VOTED) === 'true';
             const savedCycle = localStorage.getItem(STORAGE_KEYS.VOTED_CYCLE);
-            
+
             if (hasVoted && savedCycle == currentCycle) {
                 const mech = localStorage.getItem(STORAGE_KEYS.VOTED_MECH);
                 applyVoteLock(mech);
@@ -228,7 +230,7 @@
                 // Reset local lock if cycle changed
                 localStorage.removeItem(STORAGE_KEYS.HAS_VOTED);
                 document.querySelectorAll('.vote-btn').forEach(b => {
-                    b.disabled = false; 
+                    b.disabled = false;
                     b.textContent = "Vote";
                     b.classList.remove('opacity-50');
                 });
@@ -467,6 +469,7 @@
                 transform: scale(1.15) translateY(40px);
                 filter: blur(12px);
             }
+
             100% {
                 opacity: 1;
                 transform: scale(1) translateY(0);
@@ -658,8 +661,13 @@
         }
 
         @keyframes vinyl-spin {
-            from { transform: translateZ(0) rotate(0deg); }
-            to { transform: translateZ(0) rotate(360deg); }
+            from {
+                transform: translateZ(0) rotate(0deg);
+            }
+
+            to {
+                transform: translateZ(0) rotate(360deg);
+            }
         }
 
         .vinyl-label {
@@ -961,7 +969,7 @@
                 width: 20px;
                 height: 20px;
             }
-            
+
             .modal-content {
                 padding: 1.5rem;
                 margin: 1rem;
@@ -975,11 +983,13 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
+
             .hero-content {
                 opacity: 1;
                 transform: none;
                 filter: none;
             }
+
             .vinyl-record {
                 animation: none !important;
             }
@@ -1019,7 +1029,7 @@
             }
         }
     </style>
-<base target="_blank">
+    <base target="_blank">
 </head>
 
 <body class="font-body antialiased selection:bg-white/10 selection:text-white relative">
@@ -1029,9 +1039,12 @@
     <div class="bg-overlay"></div>
 
     <!-- Modal -->
-    <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)" role="dialog" aria-modal="true"
+        aria-labelledby="modal-title">
         <div class="modal-content relative" onclick="event.stopPropagation()">
-            <button onclick="closeModal(null, true)" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors" aria-label="Close modal">
+            <button onclick="closeModal(null, true)"
+                class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+                aria-label="Close modal">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
             <h3 id="modal-title" class="font-serif text-2xl sm:text-3xl text-white/90 mb-4 tracking-wide"></h3>
@@ -1053,7 +1066,8 @@
             <div class="flex justify-between items-center">
                 <a href="#" target="_self"
                     class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-white/60 hover:text-white/90 transition-colors touch-manipulation">$ELK</a>
-                <div class="hidden md:flex items-center gap-8 lg:gap-12 font-mono text-[10px] tracking-[0.3em] uppercase">
+                <div
+                    class="hidden md:flex items-center gap-8 lg:gap-12 font-mono text-[10px] tracking-[0.3em] uppercase">
                     <a href="#mechanisms" target="_self"
                         class="text-white/30 hover:text-white/70 transition-colors duration-300 py-2">Mechanisms</a>
                     <a href="#manifesto" target="_self"
@@ -1072,14 +1086,16 @@
 
     <!-- Floating Audio Toggle -->
     <button id="mute-toggle-btn" onclick="togglePlay()" role="button" aria-label="Toggle Play/Pause">
-        <img id="btn-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/Before%20the%20Clearing.png" alt="Album Art" class="btn-art" decoding="async">
+        <img id="btn-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/Before%20the%20Clearing.png"
+            alt="Album Art" class="btn-art" decoding="async">
     </button>
 
     <!-- Hero Section -->
     <section class="relative min-h-screen flex items-center justify-center py-20 px-4 overflow-hidden">
         <div class="hero-content relative z-10 max-w-4xl mx-auto text-center w-full flex flex-col items-center">
             <div class="mb-8 w-full flex justify-center items-center relative">
-                <img src="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" alt="$ELK Stag" width="400" height="400" decoding="async"
+                <img src="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" alt="$ELK Stag" width="400"
+                    height="400" decoding="async"
                     class="hero-image w-[200px] h-[200px] sm:w-[280px] sm:h-[280px] md:w-[360px] md:h-[360px] lg:w-[400px] lg:h-[400px] mx-auto object-contain select-none">
             </div>
 
@@ -1088,7 +1104,8 @@
                     Peter Wessel Zapffe // On The Tragic
                 </p>
 
-                <h1 id="hero-quote" class="font-serif text-2xl sm:text-4xl md:text-5xl font-light text-white/60 leading-normal sm:leading-relaxed tracking-wide text-balance">
+                <h1 id="hero-quote"
+                    class="font-serif text-2xl sm:text-4xl md:text-5xl font-light text-white/60 leading-normal sm:leading-relaxed tracking-wide text-balance">
                     <!-- Injected by JS -->
                 </h1>
             </div>
@@ -1114,27 +1131,33 @@
     <section id="mechanisms" class="relative py-20 sm:py-32 px-4 sm:px-6">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 sm:mb-20 space-y-4">
-                <span class="font-mono text-[9px] tracking-[0.5em] text-white/20 uppercase block">Survival Architecture</span>
+                <span class="font-mono text-[9px] tracking-[0.5em] text-white/20 uppercase block">Survival
+                    Architecture</span>
                 <h2 class="font-serif text-3xl sm:text-5xl font-light text-white/50">Four Mechanisms</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Isolation -->
-                <div class="mechanism-card p-6 sm:p-8 min-h-[320px] flex flex-col justify-between rounded-lg group" data-mechanism="isolation">
+                <div class="mechanism-card p-6 sm:p-8 min-h-[320px] flex flex-col justify-between rounded-lg group"
+                    data-mechanism="isolation">
                     <div class="cursor-pointer" onclick="openModal('isolation')">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="font-serif text-2xl text-white/70 group-hover:text-white transition-colors">Isolation</h3>
-                            <i data-lucide="info" class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
+                            <h3 class="font-serif text-2xl text-white/70 group-hover:text-white transition-colors">
+                                Isolation</h3>
+                            <i data-lucide="info"
+                                class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
                         </div>
-                        <p class="text-white/40 text-sm leading-relaxed mb-4">Remove tokens from circulation. Confine anxiety to manageable compartments.</p>
-                        <p class="text-[10px] text-white/25 font-mono uppercase tracking-wider">Suppression through reduction</p>
+                        <p class="text-white/40 text-sm leading-relaxed mb-4">Remove tokens from circulation. Confine
+                            anxiety to manageable compartments.</p>
+                        <p class="text-[10px] text-white/25 font-mono uppercase tracking-wider">Suppression through
+                            reduction</p>
                     </div>
                     <div class="mt-6 pt-6 border-t border-white/5">
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xs text-white/30 font-mono uppercase tracking-wider">Global Votes</span>
                             <span class="vote-count font-mono text-xl text-white/60" data-count="0">0</span>
                         </div>
-                        <button onclick="handleVote('isolation')" 
+                        <button onclick="handleVote('isolation')"
                             class="vote-btn w-full py-3 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px] bg-transparent">
                             Vote
                         </button>
@@ -1142,21 +1165,26 @@
                 </div>
 
                 <!-- Anchoring -->
-                <div class="mechanism-card p-6 sm:p-8 min-h-[320px] flex flex-col justify-between rounded-lg group" data-mechanism="anchoring">
+                <div class="mechanism-card p-6 sm:p-8 min-h-[320px] flex flex-col justify-between rounded-lg group"
+                    data-mechanism="anchoring">
                     <div class="cursor-pointer" onclick="openModal('anchoring')">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="font-serif text-2xl text-white/70 group-hover:text-white transition-colors">Anchoring</h3>
-                            <i data-lucide="info" class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
+                            <h3 class="font-serif text-2xl text-white/70 group-hover:text-white transition-colors">
+                                Anchoring</h3>
+                            <i data-lucide="info"
+                                class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
                         </div>
-                        <p class="text-white/40 text-sm leading-relaxed mb-4">Permanent liquidity. Fixed points preventing drift into the chaotic void.</p>
-                        <p class="text-[10px] text-white/25 font-mono uppercase tracking-wider">Structure against entropy</p>
+                        <p class="text-white/40 text-sm leading-relaxed mb-4">Permanent liquidity. Fixed points
+                            preventing drift into the chaotic void.</p>
+                        <p class="text-[10px] text-white/25 font-mono uppercase tracking-wider">Structure against
+                            entropy</p>
                     </div>
                     <div class="mt-6 pt-6 border-t border-white/5">
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xs text-white/30 font-mono uppercase tracking-wider">Global Votes</span>
                             <span class="vote-count font-mono text-xl text-white/60" data-count="0">0</span>
                         </div>
-                        <button onclick="handleVote('anchoring')" 
+                        <button onclick="handleVote('anchoring')"
                             class="vote-btn w-full py-3 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px] bg-transparent">
                             Vote
                         </button>
@@ -1164,21 +1192,26 @@
                 </div>
 
                 <!-- Distraction -->
-                <div class="mechanism-card p-6 sm:p-8 min-h-[320px] flex flex-col justify-between rounded-lg group" data-mechanism="distraction">
+                <div class="mechanism-card p-6 sm:p-8 min-h-[320px] flex flex-col justify-between rounded-lg group"
+                    data-mechanism="distraction">
                     <div class="cursor-pointer" onclick="openModal('distraction')">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="font-serif text-2xl text-white/70 group-hover:text-white transition-colors">Distraction</h3>
-                            <i data-lucide="info" class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
+                            <h3 class="font-serif text-2xl text-white/70 group-hover:text-white transition-colors">
+                                Distraction</h3>
+                            <i data-lucide="info"
+                                class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
                         </div>
-                        <p class="text-white/40 text-sm leading-relaxed mb-4">Marketing, raids, content. Keep the mind moving against the abyss.</p>
-                        <p class="text-[10px] text-white/25 font-mono uppercase tracking-wider">Motion against stillness</p>
+                        <p class="text-white/40 text-sm leading-relaxed mb-4">Marketing, raids, content. Keep the mind
+                            moving against the abyss.</p>
+                        <p class="text-[10px] text-white/25 font-mono uppercase tracking-wider">Motion against stillness
+                        </p>
                     </div>
                     <div class="mt-6 pt-6 border-t border-white/5">
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xs text-white/30 font-mono uppercase tracking-wider">Global Votes</span>
                             <span class="vote-count font-mono text-xl text-white/60" data-count="0">0</span>
                         </div>
-                        <button onclick="handleVote('distraction')" 
+                        <button onclick="handleVote('distraction')"
                             class="vote-btn w-full py-3 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px] bg-transparent">
                             Vote
                         </button>
@@ -1186,13 +1219,17 @@
                 </div>
 
                 <!-- Sublimation -->
-                <div class="mechanism-card p-6 sm:p-8 min-h-[320px] flex flex-col justify-between rounded-lg group" data-mechanism="sublimation">
+                <div class="mechanism-card p-6 sm:p-8 min-h-[320px] flex flex-col justify-between rounded-lg group"
+                    data-mechanism="sublimation">
                     <div class="cursor-pointer" onclick="openModal('sublimation')">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="font-serif text-2xl text-white/70 group-hover:text-white transition-colors">Sublimation</h3>
-                            <i data-lucide="info" class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
+                            <h3 class="font-serif text-2xl text-white/70 group-hover:text-white transition-colors">
+                                Sublimation</h3>
+                            <i data-lucide="info"
+                                class="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors"></i>
                         </div>
-                        <p class="text-white/40 text-sm leading-relaxed mb-4">Transform suffering into art. Philosophy as evolutionary bypass.</p>
+                        <p class="text-white/40 text-sm leading-relaxed mb-4">Transform suffering into art. Philosophy
+                            as evolutionary bypass.</p>
                         <p class="text-[10px] text-white/25 font-mono uppercase tracking-wider">Pain becomes meaning</p>
                     </div>
                     <div class="mt-6 pt-6 border-t border-white/5">
@@ -1200,7 +1237,7 @@
                             <span class="text-xs text-white/30 font-mono uppercase tracking-wider">Global Votes</span>
                             <span class="vote-count font-mono text-xl text-white/60" data-count="0">0</span>
                         </div>
-                        <button onclick="handleVote('sublimation')" 
+                        <button onclick="handleVote('sublimation')"
                             class="vote-btn w-full py-3 text-[10px] font-mono tracking-wider uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/50 transition-all touch-manipulation min-h-[44px] bg-transparent">
                             Vote
                         </button>
@@ -1217,15 +1254,18 @@
                 <div class="quote-bg"></div>
                 <div class="quote-container">
                     <div class="mb-6 w-full text-center relative z-10">
-                        <p class="font-mono text-[9px] tracking-[0.4em] text-white/30 uppercase">Echoes of the Present Void</p>
+                        <p class="font-mono text-[9px] tracking-[0.4em] text-white/30 uppercase">Echoes of the Present
+                            Void</p>
                     </div>
                     <div class="mode-selector mb-8 relative z-10">
-                        <button class="mode-btn active" onclick="setMode('existential', this)" aria-pressed="true">Existential</button>
+                        <button class="mode-btn active" onclick="setMode('existential', this)"
+                            aria-pressed="true">Existential</button>
                         <button class="mode-btn" onclick="setMode('degen', this)" aria-pressed="false">Degen</button>
                         <button class="mode-btn" onclick="setMode('elk', this)" aria-pressed="false">Elk Wisdom</button>
                     </div>
                     <div id="quote-display" class="quote-text visible px-4 relative z-10">
-                        "We built machines to save time, and now we kill time staring at them, waiting for something to happen."
+                        "We built machines to save time, and now we kill time staring at them, waiting for something to
+                        happen."
                     </div>
                     <div class="quote-btn-group mt-auto flex gap-4 relative z-10">
                         <button onclick="nextQuote()"
@@ -1245,7 +1285,8 @@
 
     <!-- Audio Player Section -->
     <section id="soundscape" class="relative py-20 sm:py-32 px-4 sm:px-6 min-h-[800px] overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/50 pointer-events-none"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/50 pointer-events-none">
+        </div>
 
         <div class="max-w-5xl mx-auto h-full flex flex-col relative z-10">
             <div class="text-center mb-12 sm:mb-20 space-y-4">
@@ -1253,30 +1294,38 @@
                 <h2 class="font-serif text-3xl sm:text-5xl font-light text-white/50">HYMNS FOR THE HERD</h2>
             </div>
 
-            <div id="audio-interface" class="audio-player-container blur-fade p-6 sm:p-10 rounded-xl border border-white/5 relative bg-black/60">
+            <div id="audio-interface"
+                class="audio-player-container blur-fade p-6 sm:p-10 rounded-xl border border-white/5 relative bg-black/60">
                 <canvas id="visualizer-canvas"></canvas>
 
                 <div class="player-grid relative z-10">
                     <div class="vinyl-wrapper">
-                        <div class="vinyl-record" id="vinyl-disc" onclick="togglePlay()" role="button" aria-label="Play/Pause">
+                        <div class="vinyl-record" id="vinyl-disc" onclick="togglePlay()" role="button"
+                            aria-label="Play/Pause">
                             <div class="vinyl-label">
-                                <img id="album-art-small" src="" alt="" class="w-full h-full object-cover opacity-80" decoding="async">
+                                <img id="album-art-small" src="" alt="" class="w-full h-full object-cover opacity-80"
+                                    decoding="async">
                             </div>
                             <div class="vinyl-hole"></div>
                         </div>
                         <div class="mt-6 text-center">
-                            <div id="track-status" class="font-mono text-[9px] tracking-widest text-white/30 uppercase">Paused</div>
+                            <div id="track-status" class="font-mono text-[9px] tracking-widest text-white/30 uppercase">
+                                Paused</div>
                         </div>
                     </div>
 
                     <div class="flex flex-col h-full justify-center space-y-6 w-full">
                         <div class="text-center md:text-left min-h-[60px]">
-                            <h3 id="track-title" class="font-serif text-xl sm:text-2xl text-white/80 mb-1 leading-tight truncate">Before the Clearing</h3>
-                            <p id="track-desc" class="text-white/30 text-xs sm:text-sm italic truncate">"The silence before revelation"</p>
+                            <h3 id="track-title"
+                                class="font-serif text-xl sm:text-2xl text-white/80 mb-1 leading-tight truncate">Before
+                                the Clearing</h3>
+                            <p id="track-desc" class="text-white/30 text-xs sm:text-sm italic truncate">"The silence
+                                before revelation"</p>
                         </div>
 
                         <div class="space-y-2">
-                            <div class="progress-container" id="progress-container" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+                            <div class="progress-container" id="progress-container" role="slider" aria-label="Seek"
+                                aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
                                 <div class="progress-fill" id="progress-fill">
                                     <div class="progress-handle"></div>
                                 </div>
@@ -1288,7 +1337,8 @@
                         </div>
 
                         <div class="controls-wrapper">
-                            <button onclick="toggleShuffle()" id="shuffle-btn" class="control-btn text-white/60" aria-label="Shuffle">
+                            <button onclick="toggleShuffle()" id="shuffle-btn" class="control-btn text-white/60"
+                                aria-label="Shuffle">
                                 <i data-lucide="shuffle" class="w-5 h-5"></i>
                             </button>
                             <button onclick="prevTrack()" class="control-btn text-white/80" aria-label="Previous">
@@ -1300,25 +1350,28 @@
                             <button onclick="nextTrack()" class="control-btn text-white/80" aria-label="Next">
                                 <i data-lucide="skip-forward" class="w-7 h-7"></i>
                             </button>
-                            <button onclick="toggleRepeat()" id="repeat-btn" class="control-btn text-white/60" aria-label="Repeat">
+                            <button onclick="toggleRepeat()" id="repeat-btn" class="control-btn text-white/60"
+                                aria-label="Repeat">
                                 <i data-lucide="repeat" class="w-5 h-5"></i>
                             </button>
                         </div>
 
-                        <div class="flex-1 overflow-y-auto max-h-48 space-y-1 pr-2 custom-scrollbar border-t border-b border-white/5 py-2" id="playlist">
+                        <div class="flex-1 overflow-y-auto max-h-48 space-y-1 pr-2 custom-scrollbar border-t border-b border-white/5 py-2"
+                            id="playlist">
                             <!-- Tracks injected here -->
                         </div>
 
                         <div class="flex items-center gap-3 px-2 pt-2">
                             <i data-lucide="volume-2" class="w-4 h-4 text-white/30"></i>
-                            <input type="range" min="0" max="100" value="60" 
-                                class="flex-1 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white/30 hover:accent-white/50" 
+                            <input type="range" min="0" max="100" value="60"
+                                class="flex-1 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white/30 hover:accent-white/50"
                                 oninput="setVolume(this.value)" aria-label="Volume">
                         </div>
                     </div>
                 </div>
 
-                <audio id="audio-player" preload="metadata" crossorigin="anonymous" playsinline webkit-playsinline></audio>
+                <audio id="audio-player" preload="metadata" crossorigin="anonymous" playsinline
+                    webkit-playsinline></audio>
             </div>
         </div>
     </section>
@@ -1328,7 +1381,8 @@
         <div class="footer-bg-layer"></div>
         <div class="relative z-10 max-w-2xl mx-auto text-center space-y-10">
             <blockquote class="font-body text-white/50 text-sm sm:text-base leading-relaxed italic px-4">
-                "The tragedy of man is that he is constituted to strive for goals he can never fully attain, and to seek answers he can never fully comprehend."
+                "The tragedy of man is that he is constituted to strive for goals he can never fully attain, and to seek
+                answers he can never fully comprehend."
             </blockquote>
             <div class="flex justify-center gap-10">
                 <a href="https://github.com/exelkonsol/elk" target="_blank" rel="noopener noreferrer"
@@ -1341,13 +1395,15 @@
                     aria-label="Twitter">
                     <i data-lucide="twitter" class="w-5 h-5"></i>
                 </a>
-                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" rel="noopener noreferrer"
+                <a href="https://birdeye.so/solana/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank"
+                    rel="noopener noreferrer"
                     class="text-white/20 hover:text-white/60 transition-colors duration-300 hover:scale-110 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
                     aria-label="Chart">
                     <i data-lucide="activity" class="w-5 h-5"></i>
                 </a>
             </div>
-            <p class="font-mono text-[9px] text-white/30 tracking-[0.4em] uppercase">The Antlers Are Heavy // We Carry Them Together</p>
+            <p class="font-mono text-[9px] text-white/30 tracking-[0.4em] uppercase">The Antlers Are Heavy // We Carry
+                Them Together</p>
         </div>
     </footer>
 
@@ -1421,7 +1477,7 @@
         }
 
         let heroQuoteBag = [];
-        
+
         function renderHeroQuote() {
             if (heroQuoteBag.length === 0) {
                 heroQuoteBag = shuffleArray([...heroQuotes]);
@@ -1429,10 +1485,10 @@
             const choice = heroQuoteBag.pop();
             const target = document.getElementById('hero-quote');
             if (!target) return;
-            
+
             const pattern = new RegExp(`\\b(${choice.mechanism})\\b`, 'i');
             const highlighted = choice.text.replace(pattern, '<span class="hero-quote-highlight">$1</span>');
-            
+
             // Fade effect
             target.style.opacity = '0';
             setTimeout(() => {
@@ -1440,7 +1496,7 @@
                 target.style.opacity = '1';
             }, 300);
         }
-        
+
         // Initial render
         renderHeroQuote();
         // Rotate hero quote every 8 seconds
@@ -1813,7 +1869,7 @@
         ];
 
         let currentMode = 'existential';
-        
+
         // Shuffle Bags for each mode
         let bags = {
             existential: [],
@@ -1835,10 +1891,10 @@
         function nextQuote() {
             const display = document.getElementById('quote-display');
             display.classList.remove('visible');
-            
+
             setTimeout(() => {
                 let pool;
-                switch(currentMode) {
+                switch (currentMode) {
                     case 'existential': pool = quotesExistential; break;
                     case 'degen': pool = quotesDegen; break;
                     case 'elk': pool = quotesElk; break;
@@ -1890,7 +1946,7 @@
         let repeat = false;
         let audioContext, analyser, dataArray, source;
         let isVisualizerInit = false;
-        
+
         const audio = document.getElementById('audio-player');
         const baseUrl = 'https://raw.githubusercontent.com/exelkonsol/elk/main/';
 
@@ -1902,15 +1958,15 @@
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if (!AudioContext) return;
-                
+
                 audioContext = new AudioContext();
                 analyser = audioContext.createAnalyser();
                 analyser.fftSize = window.matchMedia('(pointer: coarse)').matches ? 128 : 256;
-                
+
                 source = audioContext.createMediaElementSource(audio);
                 source.connect(analyser);
                 analyser.connect(audioContext.destination);
-                
+
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
                 isVisualizerInit = true;
                 drawVisualizer();
@@ -1932,7 +1988,7 @@
                 canvas.height = rect.height * dpr;
                 ctx.scale(dpr, dpr);
             };
-            
+
             new ResizeObserver(resize).observe(canvas);
             resize();
 
@@ -1942,14 +1998,14 @@
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     return;
                 }
-                
+
                 analyser.getByteFrequencyData(dataArray);
                 const dpr = window.devicePixelRatio || 1;
                 const width = canvas.width / dpr;
                 const height = canvas.height / dpr;
-                
+
                 ctx.clearRect(0, 0, width, height);
-                
+
                 const bars = window.matchMedia('(pointer: coarse)').matches ? 30 : 50;
                 const barWidth = width / bars;
 
@@ -1958,11 +2014,11 @@
                     const barHeight = (dataArray[idx] / 255) * height * 0.6;
                     const x = i * barWidth;
                     const y = height - barHeight;
-                    
+
                     const gradient = ctx.createLinearGradient(0, y, 0, height);
                     gradient.addColorStop(0, 'rgba(139, 0, 0, 0.4)');
                     gradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
-                    
+
                     ctx.fillStyle = gradient;
                     ctx.fillRect(x, y, barWidth - 2, barHeight);
                 }
@@ -1990,19 +2046,19 @@
             if (idx < 0 || idx >= tracks.length) return;
             currentTrack = idx;
             const t = tracks[idx];
-            
+
             document.getElementById('track-title').textContent = t.title;
             document.getElementById('track-desc').textContent = '"' + t.desc + '"';
-            
+
             const artUrl = `${baseUrl}${encodeURIComponent(t.file)}.png`;
             const audioUrl = `${baseUrl}${encodeURIComponent(t.file)}.mp3`;
-            
+
             document.getElementById('album-art-small').src = artUrl;
             document.getElementById('btn-art').src = artUrl;
             document.getElementById('audio-interface').style.backgroundImage = `url('${artUrl}')`;
-            
+
             audio.src = audioUrl;
-            
+
             document.querySelectorAll('.track-item').forEach((e, i) => {
                 e.classList.toggle('active', i === idx);
             });
@@ -2011,7 +2067,7 @@
                 document.getElementById('time-total').textContent = fmt(audio.duration);
                 if (autoPlay) playAudio();
             };
-            
+
             audio.load();
         }
 
@@ -2027,11 +2083,11 @@
                 document.getElementById('vinyl-disc').classList.add('playing');
                 document.getElementById('mute-toggle-btn').classList.add('playing');
                 document.getElementById('track-status').textContent = "Playing";
-                
+
                 const icon = document.getElementById('play-icon');
                 icon.setAttribute('data-lucide', 'pause');
                 lucide.createIcons();
-                
+
                 if (!visualizerId) drawVisualizer();
             }).catch(e => {
                 console.log('Playback prevented:', e);
@@ -2045,7 +2101,7 @@
             document.getElementById('vinyl-disc').classList.remove('playing');
             document.getElementById('mute-toggle-btn').classList.remove('playing');
             document.getElementById('track-status').textContent = "Paused";
-            
+
             const icon = document.getElementById('play-icon');
             icon.setAttribute('data-lucide', 'play');
             lucide.createIcons();
@@ -2111,9 +2167,9 @@
         progressContainer.addEventListener('mousedown', (e) => { isDragging = true; updateProgress(e.clientX); });
         document.addEventListener('mousemove', (e) => { if (isDragging) updateProgress(e.clientX); });
         document.addEventListener('mouseup', () => { isDragging = false; });
-        
-        progressContainer.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0].clientX); }, {passive: true});
-        document.addEventListener('touchmove', (e) => { if (isDragging) updateProgress(e.touches[0].clientX); }, {passive: true});
+
+        progressContainer.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0].clientX); }, { passive: true });
+        document.addEventListener('touchmove', (e) => { if (isDragging) updateProgress(e.touches[0].clientX); }, { passive: true });
         document.addEventListener('touchend', () => { isDragging = false; });
 
         audio.addEventListener('timeupdate', () => {
@@ -2130,7 +2186,7 @@
         // Keyboard Controls
         document.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT') return;
-            switch(e.code) {
+            switch (e.code) {
                 case 'Space': e.preventDefault(); togglePlay(); break;
                 case 'ArrowLeft': e.shiftKey ? prevTrack() : (audio.currentTime -= 5); break;
                 case 'ArrowRight': e.shiftKey ? nextTrack() : (audio.currentTime += 5); break;
@@ -2145,7 +2201,7 @@
                 try {
                     if (audioContext && audioContext.state === 'suspended') await audioContext.resume();
                     await audio.play();
-                } catch(e) {}
+                } catch (e) { }
             }
         });
 
@@ -2160,4 +2216,5 @@
         });
     </script>
 </body>
+
 </html>

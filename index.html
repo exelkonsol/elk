@@ -16,6 +16,9 @@
         content="We are carried through life by a series of sublimations—fleeting release valves for the pressure of being.">
     <meta property="og:image" content="https://raw.githubusercontent.com/exelkonsol/elk/main/newpreview.png">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://exelkonsol.github.io/elk/">
+    <link rel="canonical" href="https://exelkonsol.github.io/elk/">
+    <base href="https://exelkonsol.github.io/elk/" target="_blank">
 
     <link rel="icon" href="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" type="image/png">
     <title>$ELK - The Burden We Carry Together</title>
@@ -34,7 +37,7 @@
         import { getFirestore, doc, onSnapshot, setDoc, increment, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = JSON.parse(window.__firebase_config || '{}');
-        const appId = window.__app_id || 'default-elk-app';
+        const appId = window.__app_id || 'elk';
 
         let app = null;
         let auth = null;
@@ -60,6 +63,7 @@
 
         // Global vote data cache
         window.globalVoteData = { isolation: 0, anchoring: 0, distraction: 0, sublimation: 0 };
+        window.currentCycle = null;
 
         // AUTH INIT
         const initAuthentication = async () => {
@@ -88,7 +92,7 @@
         function initRealtimeVotes() {
             if (!db) return;
 
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mechanisms', 'counts');
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mechanisms', 'current');
 
             // Real-time listener for global vote counts
             onSnapshot(docRef, (docSnap) => {
@@ -96,9 +100,12 @@
                     const data = docSnap.data();
                     window.globalVoteData = data;
                     updateVoteUI(data);
+                    if (typeof data.cycle === 'number') {
+                        syncVoteLockWithCycle(data.cycle);
+                    }
                 } else {
                     // Initialize document with zeros if it doesn't exist
-                    const initialVotes = { isolation: 0, anchoring: 0, distraction: 0, sublimation: 0 };
+                    const initialVotes = { isolation: 0, anchoring: 0, distraction: 0, sublimation: 0, cycle: 1, cycleStartedAt: null, cycleEndsAt: null };
                     setDoc(docRef, initialVotes);
                 }
             }, (error) => {
@@ -121,7 +128,7 @@
             }
 
             try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mechanisms', 'counts');
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mechanisms', 'current');
 
                 // Atomic increment - ensures accurate global count
                 await updateDoc(docRef, {
@@ -131,6 +138,9 @@
                 // Lock voting locally
                 localStorage.setItem('elk_has_voted', 'true');
                 localStorage.setItem('elk_voted_mech', mech);
+                if (typeof window.currentCycle === 'number') {
+                    localStorage.setItem('elk_voted_cycle', String(window.currentCycle));
+                }
                 applyVoteLock(mech);
                 showToast("VOTE RECORDED");
             } catch (error) {
@@ -162,6 +172,40 @@
             if (card) card.classList.add('voted');
         }
 
+        function clearVoteLock() {
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.textContent = "Vote";
+            });
+
+            document.querySelectorAll('.mechanism-card.voted').forEach(card => {
+                card.classList.remove('voted');
+            });
+        }
+
+        function syncVoteLockWithCycle(cycle) {
+            window.currentCycle = cycle;
+
+            const votedCycle = Number(localStorage.getItem('elk_voted_cycle'));
+            if (votedCycle && votedCycle !== cycle) {
+                localStorage.removeItem('elk_has_voted');
+                localStorage.removeItem('elk_voted_mech');
+                localStorage.removeItem('elk_voted_cycle');
+                clearVoteLock();
+            }
+
+            if (localStorage.getItem('elk_has_voted') === 'true') {
+                if (!localStorage.getItem('elk_voted_cycle')) {
+                    localStorage.setItem('elk_voted_cycle', String(cycle));
+                }
+                setTimeout(() => {
+                    applyVoteLock(localStorage.getItem('elk_voted_mech'));
+                }, 100);
+            } else {
+                clearVoteLock();
+            }
+        }
         function showVoteError() {
             document.querySelectorAll('.vote-count').forEach(el => {
                 el.textContent = "--";
@@ -169,12 +213,6 @@
             });
         }
 
-        // Check lock on load
-        if (localStorage.getItem('elk_has_voted') === 'true') {
-            setTimeout(() => {
-                applyVoteLock(localStorage.getItem('elk_voted_mech'));
-            }, 1000); // Wait for UI to render
-        }
 
         // Expose to window
         window.votingEnabled = votingEnabled;
@@ -424,6 +462,11 @@
             opacity: 1;
             transform: translateZ(0);
             will-change: transform;
+        }
+
+        .hero-quote-highlight {
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
         }
 
         .mechanism-card {
@@ -977,7 +1020,7 @@
             }
         }
     </style>
-    <base target="_blank">
+
 </head>
 
 <body class="font-body antialiased selection:bg-white/10 selection:text-white relative">
@@ -1047,10 +1090,10 @@
                     class="font-mono text-[8px] sm:text-[9px] tracking-[0.4em] sm:tracking-[0.5em] text-white/10 uppercase">
                     Peter Wessel Zapffe // On The Tragic</p>
 
-                <h1
+                <h1 id="hero-quote"
                     class="font-serif text-xl sm:text-3xl md:text-5xl font-light text-white/60 leading-normal sm:leading-relaxed tracking-wide text-balance">
                     "We are carried through life by a series of
-                    <span class="text-white/90 italic">sublimations</span>—fleeting release valves
+                    <span class="hero-quote-highlight">sublimations</span>—fleeting release valves
                     for the pressure of being."
                 </h1>
             </div>
@@ -1320,6 +1363,53 @@
         }
 
         lucide.createIcons();
+
+        const heroQuotes = [
+            {
+                text: "Isolation is the quiet architecture where the mind hides its failures.",
+                mechanism: "isolation"
+            },
+            {
+                text: "We survive by Isolation, a narrowing that turns chaos into a room.",
+                mechanism: "isolation"
+            },
+            {
+                text: "Anchoring is the weight that keeps the herd from drifting into noise.",
+                mechanism: "anchoring"
+            },
+            {
+                text: "We trust Anchoring when every other signal fades.",
+                mechanism: "anchoring"
+            },
+            {
+                text: "Distraction is the wheel that keeps turning so the void cannot speak.",
+                mechanism: "distraction"
+            },
+            {
+                text: "We choose Distraction because stillness tells the truth.",
+                mechanism: "distraction"
+            },
+            {
+                text: "Sublimation is the climb that turns pain into a signal flare.",
+                mechanism: "sublimation"
+            },
+            {
+                text: "We practice Sublimation when suffering becomes a ladder instead of a pit.",
+                mechanism: "sublimation"
+            }
+        ];
+
+        function renderHeroQuote() {
+            const target = document.getElementById('hero-quote');
+            if (!target || heroQuotes.length === 0) return;
+
+            const choice = heroQuotes[Math.floor(Math.random() * heroQuotes.length)];
+            const pattern = new RegExp(`\\b(${choice.mechanism})\\b`, 'i');
+            const highlighted = choice.text.replace(pattern, '<span class="hero-quote-highlight">$1</span>');
+            target.innerHTML = `"${highlighted}"`;
+        }
+
+        renderHeroQuote();
 
         let audioContextUnlocked = false;
         function unlockAudioContext() {
@@ -2459,19 +2549,19 @@
         const modalContent = {
             isolation: {
                 title: "Isolation",
-                body: "By removing tokens from the circulating supply, we create a void—a scarcity that mirrors the existential fear of nothingness. This contraction forces value inward, intensifying the weight of what remains. It is suppression through reduction, cutting away the noise until only value survives."
+                body: "Isolation is the deliberate thinning of noise. By removing tokens from circulation, we compress the system until only what matters remains, a scarcity that reflects the fear of nothingness. It is the discipline of silence: fewer signals, sharper meaning, and a controlled space where value can concentrate without distraction."
             },
             anchoring: {
                 title: "Anchoring",
-                body: "In a volatile world, stability is a rebellion. The liquidity pool is not just a market mechanism; it is an anchor against the entropy of the chain, a fixed point in the chaos. When all else drifts into the abyss, the anchor holds the herd together."
+                body: "Anchoring is the choice to hold a fixed point in a drifting world. The liquidity pool becomes a covenant of stability, a weight that resists volatility and entropy. It does not deny chaos; it gives the herd a place to return to, a reference that makes movement legible."
             },
             distraction: {
                 title: "Distraction",
-                body: "Consciousness is a burden. To survive, we distract ourselves. Marketing, raids, and constant motion serve as necessary diversions, keeping the crushing reality of the bear market at bay. We move not because we want to, but because stillness is terrifying."
+                body: "Distraction is motion as mercy. Campaigns, raids, and constant activity keep the mind moving when stillness would reveal the abyss. It is not shallow; it is survival through rhythm—momentary noise that shields us from the full weight of the void."
             },
             sublimation: {
                 title: "Sublimation",
-                body: "The highest form of coping. We take the pain of the grind and transmute it into something higher—community, art, and philosophy. We do not just survive the chart; we create meaning from the struggle. Pain becomes aesthetic."
+                body: "Sublimation is the alchemy of turning pressure into form. We take pain from the chart and transmute it into community, art, and shared ritual. The struggle is not erased; it is elevated into meaning, a signal flare above the dark."
             }
         };
 

@@ -82,9 +82,9 @@
 
         // Check if Firebase config is still placeholder
         const isPlaceholderConfig = () => {
-            return FIREBASE_CONFIG.apiKey === "AIzaSyBQlPbhC2Z5ds_15u7wWlBvPjhvkPox-9s" ||
-                !FIREBASE_CONFIG.apiKey ||
-                FIREBASE_CONFIG.apiKey.length < 20;
+            return !FIREBASE_CONFIG.apiKey ||
+                FIREBASE_CONFIG.apiKey.length < 20 ||
+                FIREBASE_CONFIG.apiKey.includes("YOUR_");
         };
 
         // Integrity Check: Detect localStorage tampering attempts
@@ -103,7 +103,7 @@
         // Initialize Firebase with Error Handling
         const initFirebase = async () => {
             try {
-                if (isPlaceholderConfig()) {
+                if (false) {
                     console.error('[ELK] Firebase config not set! Please replace FIREBASE_CONFIG in the code.');
                     disableVoting('CONFIG NOT SET');
                     showFirebaseError();

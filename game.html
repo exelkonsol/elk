@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>$ELK Mountain Ascent — Climb the Summit of Consciousness</title>
+<meta name="description" content="A philosophical mountain climbing quiz game. Guide the elk from base camp to the summit by answering questions inspired by Zapffe's existential philosophy.">
+<meta property="og:title" content="$ELK Mountain Ascent">
+<meta property="og:description" content="Carry the antlers to the summit. A philosophical climbing game.">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080810;
+  --mountain-dark:#0d1117;
+  --mountain-mid:#141e2a;
+  --mountain-light:#1a2634;
+  --green-deep:#0f2918;
+  --green-mid:#1a3d24;
+  --purple-deep:#1a0f2e;
+  --purple-mid:#2d1b4e;
+  --fog:#8899aa;
+  --gold:#d4a843;
+  --gold-bright:#f0c75e;
+  --campfire:#e8712a;
+  --campfire-glow:rgba(232,113,42,0.3);
+  --text-primary:rgba(255,255,255,0.9);
+  --text-secondary:rgba(255,255,255,0.6);
+  --text-dim:rgba(255,255,255,0.35);
+  --glass:rgba(255,255,255,0.05);
+  --glass-border:rgba(255,255,255,0.08);
+}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  font-family:'Crimson Text',Georgia,serif;
+  background:var(--bg);color:var(--text-primary);
+}
+body{display:flex;flex-direction:column;position:relative}
+
+/* ── Mountain Scene ── */
+.scene{position:relative;flex:1;overflow:hidden;min-height:0}
+
+/* Sky gradient */
+.sky{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,#05050f 0%,#0a0a1e 30%,#0f1628 60%,#131d2d 100%);
+  transition:background 2s ease;
+}
+.sky.high{
+  background:linear-gradient(180deg,#020208 0%,#050510 20%,#080818 50%,#0a0f20 100%);
+}
+
+/* Stars */
+.stars{position:absolute;inset:0;opacity:0;transition:opacity 3s ease}
+.stars.visible{opacity:1}
+.star{
+  position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;
+  animation:twinkle var(--d,3s) ease-in-out infinite alternate;
+  opacity:var(--o,0.6);
+}
+@keyframes twinkle{0%{opacity:var(--o,0.4);transform:scale(1)}100%{opacity:1;transform:scale(1.3)}}
+
+/* Background peaks */
+.bg-peaks{
+  position:absolute;bottom:0;left:0;right:0;height:70%;
+  opacity:0.3;
+}
+.bg-peak{position:absolute;bottom:0}
+.bg-peak svg{display:block}
+
+/* Main mountain */
+.mountain-wrap{position:absolute;bottom:0;left:0;right:0;height:85%}
+.mountain-svg{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:140%;max-width:900px;height:100%}
+
+/* Trail and stations */
+.trail{position:absolute;bottom:0;left:0;right:0;height:85%}
+.station{
+  position:absolute;transform:translate(-50%,-50%);
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid var(--glass-border);
+  background:var(--glass);
+  transition:all 0.6s ease;
+  cursor:default;
+  z-index:5;
+}
+.station.reached{
+  border-color:var(--campfire);
+  background:var(--campfire-glow);
+  box-shadow:0 0 20px var(--campfire-glow),0 0 40px rgba(232,113,42,0.15);
+}
+.station.reached::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,113,42,0.2) 0%,transparent 70%);
+  animation:fire-pulse 2s ease-in-out infinite alternate;
+}
+.station.summit.reached{
+  border-color:var(--gold);
+  background:rgba(212,168,67,0.3);
+  box-shadow:0 0 30px rgba(212,168,67,0.4),0 0 60px rgba(212,168,67,0.15);
+}
+.station-num{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  color:var(--text-dim);transition:color 0.6s;
+}
+.station.reached .station-num{color:var(--text-primary)}
+@keyframes fire-pulse{0%{opacity:0.5;transform:scale(1)}100%{opacity:1;transform:scale(1.3)}}
+
+/* Trail line */
+.trail-line{
+  position:absolute;z-index:2;
+}
+.trail-line line{
+  stroke:rgba(255,255,255,0.06);stroke-width:2;
+  stroke-dasharray:4 6;
+}
+.trail-line line.active{
+  stroke:rgba(232,113,42,0.3);
+  transition:stroke 1s ease;
+}
+
+/* Elk character */
+.elk{
+  position:absolute;transform:translate(-50%,-50%);
+  font-size:32px;z-index:10;
+  transition:left 1.2s cubic-bezier(0.34,1.56,0.64,1),
+             top 1.2s cubic-bezier(0.34,1.56,0.64,1);
+  filter:drop-shadow(0 0 12px rgba(232,113,42,0.4));
+  line-height:1;
+}
+.elk.slip{
+  animation:slip 0.6s ease;
+}
+@keyframes slip{
+  0%{transform:translate(-50%,-50%) rotate(0)}
+  25%{transform:translate(-50%,-50%) rotate(-15deg) translateY(8px)}
+  50%{transform:translate(-50%,-50%) rotate(10deg) translateY(4px)}
+  100%{transform:translate(-50%,-50%) rotate(0)}
+}
+.elk.celebrate{
+  animation:elk-celebrate 1s ease infinite alternate;
+}
+@keyframes elk-celebrate{
+  0%{transform:translate(-50%,-50%) scale(1)}
+  100%{transform:translate(-50%,-50%) scale(1.15) translateY(-6px)}
+}
+
+/* Fog layers */
+.fog{position:absolute;bottom:0;left:0;right:0;pointer-events:none;z-index:6}
+.fog-layer{
+  position:absolute;bottom:0;left:-20%;width:140%;
+  height:100px;
+  background:linear-gradient(180deg,transparent 0%,rgba(100,120,140,0.08) 40%,rgba(80,100,120,0.15) 100%);
+  animation:fog-drift var(--speed,40s) linear infinite;
+  opacity:var(--opacity,0.6);
+  transition:opacity 3s ease;
+}
+.fog-layer:nth-child(2){animation-direction:reverse;bottom:5%}
+.fog-layer:nth-child(3){bottom:10%;animation-duration:55s}
+@keyframes fog-drift{
+  0%{transform:translateX(-10%)}50%{transform:translateX(10%)}100%{transform:translateX(-10%)}
+}
+
+/* ── UI Overlay ── */
+.ui-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-end;align-items:center;
+  padding:16px;z-index:20;pointer-events:none;
+}
+
+/* Top bar */
+.top-bar{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 16px;pointer-events:auto;
+  background:linear-gradient(180deg,rgba(0,0,0,0.7) 0%,transparent 100%);
+}
+.game-title{
+  font-family:'Cinzel',serif;font-size:14px;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;color:var(--text-secondary);
+}
+.level-display{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:var(--text-dim);letter-spacing:0.08em;
+}
+.home-link{
+  color:var(--text-dim);text-decoration:none;font-size:12px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:0.05em;
+  transition:color 0.3s;
+}
+.home-link:hover{color:var(--text-primary)}
+
+/* Question panel */
+.question-panel{
+  pointer-events:auto;
+  width:100%;max-width:560px;
+  background:linear-gradient(135deg,rgba(10,15,25,0.92) 0%,rgba(15,20,35,0.95) 100%);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border);
+  border-radius:16px;
+  padding:24px;
+  transform:translateY(0);
+  transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1),opacity 0.4s ease;
+  opacity:1;
+  margin-bottom:env(safe-area-inset-bottom,0);
+}
+.question-panel.hidden{
+  transform:translateY(30px);opacity:0;pointer-events:none;
+}
+.question-level{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--campfire);letter-spacing:0.15em;text-transform:uppercase;
+  margin-bottom:8px;
+}
+.question-text{
+  font-family:'Crimson Text',serif;font-size:18px;line-height:1.5;
+  color:var(--text-primary);margin-bottom:20px;
+  font-style:italic;
+}
+.options{display:flex;flex-direction:column;gap:8px}
+.option-btn{
+  display:flex;align-items:flex-start;gap:12px;
+  width:100%;padding:12px 16px;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:10px;
+  color:var(--text-secondary);
+  font-family:'Crimson Text',serif;font-size:16px;line-height:1.4;
+  text-align:left;cursor:pointer;
+  transition:all 0.25s ease;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  min-height:44px;
+}
+.option-btn:hover{
+  background:rgba(255,255,255,0.08);
+  border-color:rgba(255,255,255,0.15);
+  color:var(--text-primary);
+}
+.option-btn:active{transform:scale(0.98)}
+.option-btn .opt-letter{
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+  color:var(--text-dim);min-width:20px;padding-top:2px;
+}
+.option-btn.correct{
+  background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);
+  color:#6ee7a0;
+}
+.option-btn.wrong{
+  background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);
+  color:#fca5a5;
+}
+.option-btn.disabled{pointer-events:none;opacity:0.6}
+
+/* Feedback toast */
+.feedback{
+  position:absolute;left:50%;transform:translateX(-50%);
+  bottom:calc(100% + 12px);
+  background:rgba(10,15,25,0.95);
+  border:1px solid var(--glass-border);
+  border-radius:12px;
+  padding:14px 20px;
+  font-family:'Crimson Text',serif;font-size:15px;font-style:italic;
+  color:var(--text-secondary);line-height:1.4;
+  text-align:center;
+  opacity:0;transform:translateX(-50%) translateY(10px);
+  transition:all 0.5s ease;
+  pointer-events:none;
+  white-space:nowrap;
+  max-width:90vw;
+  white-space:normal;
+}
+.feedback.visible{
+  opacity:1;transform:translateX(-50%) translateY(0);
+}
+
+/* ── Start Screen ── */
+.screen-overlay{
+  position:absolute;inset:0;z-index:50;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;
+  background:rgba(5,5,10,0.95);
+  transition:opacity 0.8s ease;
+  text-align:center;
+}
+.screen-overlay.hidden{opacity:0;pointer-events:none}
+.start-elk{font-size:64px;margin-bottom:16px;line-height:1}
+.start-title{
+  font-family:'Cinzel',serif;font-size:28px;font-weight:700;
+  letter-spacing:0.08em;margin-bottom:8px;
+}
+.start-sub{
+  font-family:'Crimson Text',serif;font-size:17px;font-style:italic;
+  color:var(--text-secondary);margin-bottom:32px;max-width:400px;line-height:1.5;
+}
+.start-btn,.summit-btn{
+  font-family:'Cinzel',serif;font-size:14px;font-weight:600;
+  letter-spacing:0.15em;text-transform:uppercase;
+  padding:14px 40px;
+  background:linear-gradient(135deg,rgba(232,113,42,0.2),rgba(212,168,67,0.2));
+  border:1px solid rgba(232,113,42,0.4);
+  border-radius:10px;
+  color:var(--gold);cursor:pointer;
+  transition:all 0.3s ease;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  min-height:44px;
+}
+.start-btn:hover,.summit-btn:hover{
+  background:linear-gradient(135deg,rgba(232,113,42,0.3),rgba(212,168,67,0.3));
+  box-shadow:0 0 30px rgba(232,113,42,0.2);
+  transform:translateY(-1px);
+}
+.start-btn:active,.summit-btn:active{transform:scale(0.97)}
+
+/* ── Summit Screen ── */
+.summit-screen{
+  position:absolute;inset:0;z-index:60;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;text-align:center;
+  background:radial-gradient(ellipse at 50% 40%,rgba(212,168,67,0.1) 0%,rgba(5,5,10,0.97) 60%);
+  opacity:0;pointer-events:none;
+  transition:opacity 1.2s ease;
+}
+.summit-screen.visible{opacity:1;pointer-events:auto}
+.summit-stars{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+}
+.summit-burst{
+  position:absolute;width:4px;height:4px;border-radius:50%;
+  background:var(--gold);
+  animation:burst var(--d,2s) ease-out infinite;
+  opacity:0;
+}
+@keyframes burst{
+  0%{opacity:0;transform:translate(0,0) scale(0)}
+  20%{opacity:1;transform:translate(var(--tx),var(--ty)) scale(1)}
+  100%{opacity:0;transform:translate(calc(var(--tx)*2),calc(var(--ty)*2)) scale(0)}
+}
+.summit-elk{font-size:72px;margin-bottom:16px;line-height:1;position:relative;z-index:1}
+.summit-crown{
+  position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+  font-size:28px;animation:float 2s ease-in-out infinite alternate;
+}
+@keyframes float{0%{transform:translateX(-50%) translateY(0)}100%{transform:translateX(-50%) translateY(-6px)}}
+.summit-title{
+  font-family:'Cinzel',serif;font-size:24px;font-weight:700;
+  color:var(--gold);letter-spacing:0.08em;margin-bottom:12px;
+  position:relative;z-index:1;
+}
+.summit-msg{
+  font-family:'Crimson Text',serif;font-size:17px;font-style:italic;
+  color:var(--text-secondary);margin-bottom:24px;max-width:420px;line-height:1.5;
+  position:relative;z-index:1;
+}
+.summit-stats{
+  display:flex;gap:24px;margin-bottom:28px;position:relative;z-index:1;
+  flex-wrap:wrap;justify-content:center;
+}
+.stat{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.stat-val{
+  font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;
+  color:var(--gold-bright);
+}
+.stat-label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;
+}
+.summit-actions{
+  display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+  position:relative;z-index:1;
+}
+.summit-btn.share{
+  background:linear-gradient(135deg,rgba(212,168,67,0.25),rgba(240,199,94,0.25));
+  border-color:var(--gold);
+}
+.summit-btn.replay{
+  background:var(--glass);border-color:var(--glass-border);color:var(--text-secondary);
+}
+.summit-btn.replay:hover{color:var(--text-primary)}
+.share-toast{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--gold);margin-top:8px;opacity:0;transition:opacity 0.3s;
+  position:relative;z-index:1;
+}
+.share-toast.visible{opacity:1}
+
+/* Progress bar */
+.progress-wrap{
+  position:absolute;top:48px;left:16px;right:16px;
+  height:3px;background:rgba(255,255,255,0.05);border-radius:2px;
+  overflow:hidden;z-index:25;
+}
+.progress-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--campfire),var(--gold));
+  border-radius:2px;
+  transition:width 1s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* Golden glow at summit */
+.summit-glow{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(212,168,67,0.15) 0%,transparent 70%);
+  border-radius:50%;opacity:0;
+  transition:opacity 2s ease;
+  z-index:3;pointer-events:none;
+}
+.summit-glow.visible{opacity:1}
+
+/* Responsive */
+@media(max-width:480px){
+  .question-text{font-size:16px}
+  .option-btn{font-size:15px;padding:10px 14px}
+  .start-title{font-size:22px}
+  .summit-title{font-size:20px}
+  .station{width:22px;height:22px}
+  .station-num{font-size:8px}
+  .elk{font-size:26px}
+  .question-panel{padding:18px;border-radius:14px}
+  .top-bar{padding:10px 12px}
+  .summit-stats{gap:16px}
+}
+@media(max-width:360px){
+  .question-panel{padding:14px}
+  .question-text{font-size:15px}
+  .option-btn{font-size:14px;padding:10px 12px;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<!-- Start Screen -->
+<div class="screen-overlay" id="startScreen">
+  <div class="start-elk">🦌</div>
+  <h1 class="start-title">Mountain Ascent</h1>
+  <p class="start-sub">"Man is a tragic animal. Not because of his smallness, but because he is too well endowed." — Peter Wessel Zapffe</p>
+  <button class="start-btn" id="startBtn" onclick="startGame()">Begin the Climb</button>
+</div>
+
+<!-- Summit Screen -->
+<div class="summit-screen" id="summitScreen">
+  <div class="summit-stars" id="summitStars"></div>
+  <div style="position:relative;display:inline-block">
+    <div class="summit-crown">👑</div>
+    <div class="summit-elk">🦌</div>
+  </div>
+  <h2 class="summit-title">Summit Reached</h2>
+  <p class="summit-msg">You have carried the antlers to the summit. The burden becomes beautiful when shared. 🦌</p>
+  <div class="summit-stats" id="summitStats"></div>
+  <div class="summit-actions">
+    <button class="summit-btn share" onclick="shareResult()">Share Your Climb</button>
+    <button class="summit-btn replay" onclick="restartGame()">Climb Again</button>
+  </div>
+  <div class="share-toast" id="shareToast">Copied to clipboard</div>
+  <div style="margin-top:18px;position:relative;z-index:1">
+    <a href="index.html" class="home-link" style="font-size:13px">← Return to $ELK</a>
+  </div>
+</div>
+
+<!-- Game Scene -->
+<div class="scene" id="scene">
+  <div class="sky" id="sky"></div>
+  <div class="stars" id="starsContainer"></div>
+  <div class="summit-glow" id="summitGlow"></div>
+
+  <!-- Background peaks SVG -->
+  <svg class="bg-peaks" viewBox="0 0 1000 500" preserveAspectRatio="none" style="position:absolute;bottom:0;left:0;width:100%;height:60%;opacity:0.15">
+    <polygon points="0,500 150,180 300,500" fill="#0f1a28"/>
+    <polygon points="200,500 400,120 600,500" fill="#0c1520"/>
+    <polygon points="500,500 700,150 900,500" fill="#0e1825"/>
+    <polygon points="750,500 950,200 1000,500" fill="#0b1320"/>
+  </svg>
+
+  <!-- Main mountain SVG -->
+  <svg id="mountainSvg" viewBox="0 0 800 700" preserveAspectRatio="xMidYMax meet"
+       style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:130%;max-width:850px;height:88%">
+    <defs>
+      <linearGradient id="mtGrad" x1="0.5" y1="0" x2="0.5" y2="1">
+        <stop offset="0%" stop-color="#1a1530"/>
+        <stop offset="30%" stop-color="#151d2b"/>
+        <stop offset="60%" stop-color="#122218"/>
+        <stop offset="100%" stop-color="#0d1a12"/>
+      </linearGradient>
+      <linearGradient id="snowGrad" x1="0.5" y1="0" x2="0.5" y2="1">
+        <stop offset="0%" stop-color="rgba(200,210,230,0.12)"/>
+        <stop offset="100%" stop-color="rgba(200,210,230,0)"/>
+      </linearGradient>
+    </defs>
+    <!-- Mountain body -->
+    <polygon points="400,30 100,700 700,700" fill="url(#mtGrad)"/>
+    <!-- Snow cap -->
+    <polygon points="400,30 340,130 460,130" fill="url(#snowGrad)"/>
+    <!-- Ridgelines for texture -->
+    <line x1="400" y1="30" x2="250" y2="400" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    <line x1="400" y1="30" x2="550" y2="400" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    <line x1="400" y1="30" x2="180" y2="600" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+    <line x1="400" y1="30" x2="620" y2="600" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+  </svg>
+
+  <!-- Trail lines SVG (positioned over mountain) -->
+  <svg class="trail-line" id="trailLines" viewBox="0 0 800 700" preserveAspectRatio="xMidYMax meet"
+       style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:130%;max-width:850px;height:88%">
+  </svg>
+
+  <!-- Stations, elk, fog are positioned absolutely -->
+  <div id="stationsContainer"></div>
+  <div class="elk" id="elk">🦌</div>
+
+  <div class="fog" id="fogContainer">
+    <div class="fog-layer" style="--speed:38s;--opacity:0.7;height:80px"></div>
+    <div class="fog-layer" style="--speed:52s;--opacity:0.5;height:60px;bottom:8%"></div>
+    <div class="fog-layer" style="--speed:65s;--opacity:0.3;height:50px;bottom:15%"></div>
+  </div>
+
+  <!-- UI Overlay -->
+  <div class="ui-overlay">
+    <div class="top-bar">
+      <a href="index.html" class="home-link">$ELK</a>
+      <span class="game-title">Mountain Ascent</span>
+      <span class="level-display" id="levelDisplay">Camp 0/10</span>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+    <div class="question-panel hidden" id="questionPanel">
+      <div class="feedback" id="feedback"></div>
+      <div class="question-level" id="questionLevel">Base Camp</div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsContainer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Question Database ──
+const QUESTIONS = {
+  1: [
+    { q: "What does 'existentialism' broadly deal with?", opts: ["The meaning of individual existence and freedom", "Economic systems and class struggle", "The classification of living organisms", "Mathematical logic and proofs"], ans: 0 },
+    { q: "Peter Wessel Zapffe was from which country?", opts: ["Denmark", "Norway", "Sweden", "Germany"], ans: 1 },
+    { q: "What animal symbolizes the burden of consciousness in $ELK?", opts: ["The bear", "The whale", "The elk", "The wolf"], ans: 2 },
+    { q: "Zapffe's most famous essay is called:", opts: ["Being and Nothingness", "The Last Messiah", "The Myth of Sisyphus", "Fear and Trembling"], ans: 1 },
+  ],
+  2: [
+    { q: "In Zapffe's view, what makes humans unique among animals?", opts: ["Opposable thumbs", "An over-developed consciousness", "The ability to use fire", "Social hierarchies"], ans: 1 },
+    { q: "Existential philosophy is primarily concerned with:", opts: ["How to build wealth", "The nature of human existence and meaning", "Predicting the future", "The laws of physics"], ans: 1 },
+    { q: "The elk's antlers in $ELK symbolize:", opts: ["Wealth and prosperity", "The weight of awareness we all carry", "Physical strength", "Seasonal change"], ans: 1 },
+    { q: "Which century was Zapffe born in?", opts: ["18th century", "19th century", "20th century", "17th century"], ans: 1 },
+  ],
+  3: [
+    { q: "Zapffe believed that human suffering arises primarily from:", opts: ["Poverty and inequality", "Knowing more than we can bear", "Physical illness", "Lack of education"], ans: 1 },
+    { q: "Which philosopher is known for the phrase 'existence precedes essence'?", opts: ["Immanuel Kant", "Jean-Paul Sartre", "Peter Zapffe", "Friedrich Nietzsche"], ans: 1 },
+    { q: "In the $ELK community, 'carrying the antlers' means:", opts: ["Making a profit", "Sharing the burden of existential awareness together", "Growing a social media following", "Mining cryptocurrency"], ans: 1 },
+    { q: "Zapffe's work is often categorized under which philosophical tradition?", opts: ["Rationalism", "Pessimistic existentialism", "Utilitarianism", "Pragmatism"], ans: 1 },
+  ],
+  4: [
+    { q: "Which of these is NOT one of Zapffe's four defense mechanisms?", opts: ["Isolation", "Anchoring", "Transcendence", "Sublimation"], ans: 2 },
+    { q: "Zapffe's 'Anchoring' refers to:", opts: ["Dropping anchor on a ship", "Fixing one's life to stable values, goals, or beliefs to avoid despair", "Refusing to move from one place", "A psychological test"], ans: 1 },
+    { q: "'The Last Messiah' was published in which decade?", opts: ["1913", "1933", "1953", "1973"], ans: 1 },
+    { q: "What role does community play in the $ELK philosophy?", opts: ["It is irrelevant", "We carry the burden together — shared consciousness lightens the weight", "Community should be avoided", "Only leaders matter"], ans: 1 },
+  ],
+  5: [
+    { q: "Zapffe's 'Distraction' mechanism involves:", opts: ["Focusing intensely on tasks or entertainment to avoid existential dread", "Becoming physically lost", "A magic trick", "Sleeping longer hours"], ans: 0 },
+    { q: "According to Zapffe, consciousness is humanity's:", opts: ["Greatest gift without downsides", "Tragic biological overdevelopment", "Path to guaranteed happiness", "Least important trait"], ans: 1 },
+    { q: "What connects Zapffe's philosophy to the elk as a symbol?", opts: ["Elks are Norwegian animals and Zapffe was Norwegian", "Both the elk and conscious humans carry magnificent but heavy burdens", "There is no connection", "Zapffe owned pet elk"], ans: 1 },
+    { q: "Zapffe argued that most human activity is ultimately a form of:", opts: ["Progress", "Coping with the terror of existence", "Pure rationality", "Divine purpose"], ans: 1 },
+  ],
+  6: [
+    { q: "What did Zapffe mean by 'Isolation' as a defense mechanism?", opts: ["Living alone in the wilderness", "Mentally compartmentalizing disturbing thoughts away from daily life", "National borders and separation", "Internet privacy"], ans: 1 },
+    { q: "In Zapffe's framework, religion would most likely be an example of:", opts: ["Sublimation", "Anchoring", "Distraction", "Isolation"], ans: 1 },
+    { q: "The $ELK mountain metaphor suggests that:", opts: ["Life is about reaching the top at any cost", "The climb itself — shared struggle and meaning-making — is what matters", "Mountains should be avoided", "Only the strongest survive"], ans: 1 },
+    { q: "How does Zapffe's pessimism differ from simple nihilism?", opts: ["It doesn't — they are identical", "Zapffe acknowledges meaning-making as a coping mechanism, not as nonexistent", "Zapffe was actually an optimist", "Nihilism is more extreme"], ans: 1 },
+  ],
+  7: [
+    { q: "If Zapffe observed modern social media, he would most likely classify it as:", opts: ["Pure sublimation", "A vast engine of Distraction", "A form of Isolation", "Completely outside his framework"], ans: 1 },
+    { q: "How does 'Sublimation' transform existential suffering in Zapffe's view?", opts: ["It eliminates suffering entirely", "It channels pain into creative and artistic expression, giving it form", "It suppresses all emotion", "It converts suffering into physical energy"], ans: 1 },
+    { q: "Zapffe's philosophy suggests the 'correct' response to existence is:", opts: ["Blind optimism", "There is no single correct response — only mechanisms for bearing it", "Absolute despair", "Ignoring reality completely"], ans: 1 },
+    { q: "Which statement best captures the tension in Zapffe's thought?", opts: ["Humans should stop thinking", "Consciousness is both our defining feature and our deepest wound", "Knowledge is always liberating", "Nature is fundamentally good"], ans: 1 },
+  ],
+  8: [
+    { q: "A Zapffean reading of art would suggest that great works are:", opts: ["Merely entertainment", "Acts of sublimation — transforming unbearable awareness into beauty", "Economically motivated", "Purely technical achievements"], ans: 1 },
+    { q: "If an elk could comprehend its own mortality, Zapffe would say it has:", opts: ["Evolved perfectly", "Crossed the threshold into human-like tragic consciousness", "Become irrational", "Gained an advantage for survival"], ans: 1 },
+    { q: "The phrase 'the antlers are heavy' in $ELK philosophy most deeply means:", opts: ["Elk antlers weigh a lot physically", "The gift of consciousness comes with inescapable existential weight", "Cryptocurrency is difficult", "Antlers slow the elk down"], ans: 1 },
+    { q: "Zapffe's view on human reproduction was:", opts: ["Enthusiastically pro-natalist", "Skeptical — bringing new consciousness into being means creating new suffering", "Indifferent to the topic", "Focused only on population statistics"], ans: 1 },
+  ],
+  9: [
+    { q: "Which modern phenomenon would Zapffe most likely see as confirming his thesis?", opts: ["Space exploration", "The global rise of anxiety and depression despite material progress", "Improved agricultural yields", "Faster internet speeds"], ans: 1 },
+    { q: "In Zapffe's framework, someone who devotes their life to a cause (career, nation, ideology) is primarily engaging in:", opts: ["Sublimation", "Distraction", "Anchoring", "Isolation"], ans: 2 },
+    { q: "The deepest paradox in Zapffe's philosophy is:", opts: ["Money can't buy happiness", "We must use consciousness to defend against the pain that consciousness creates", "Education is overrated", "Nature is beautiful but dangerous"], ans: 1 },
+    { q: "Why might a memecoin community resonate with Zapffe's ideas?", opts: ["Because memes are meaningless", "Because collective absurdist humor is itself a coping mechanism — Distraction and Sublimation merged", "Because cryptocurrency solves existential problems", "It doesn't resonate at all"], ans: 1 },
+  ],
+  10: [
+    { q: "The mountain has no true summit. The climb IS the meaning. What does the elk do?", opts: ["Anchoring — declares 'this peak is the real summit' and stops climbing, satisfied", "Distraction — races ever faster up the slope, never looking down", "Sublimation — turns the climb itself into a song that echoes through the valley", "Isolation — forgets there was ever a mountain at all"], ans: 2 },
+    { q: "If consciousness is the wound, and we cannot un-know what we know, the most authentically Zapffean response is:", opts: ["Refuse to participate in life", "Acknowledge the wound openly while creating beauty from it — carrying the antlers with grace", "Pretend the wound doesn't exist", "Seek a technological cure for awareness"], ans: 1 },
+    { q: "The elk reaches the summit and sees only more mountains beyond. This moment represents:", opts: ["Failure — the journey was pointless", "The core truth — meaning is not a destination but the shared act of continuing to climb", "A reason to give up", "Proof that maps are unreliable"], ans: 1 },
+  ]
+};
+
+// ── Philosophical quotes ──
+const QUOTES = [
+  "\"Man is a tragic animal.\" — Zapffe",
+  "\"The antlers are heavy. We carry them together.\"",
+  "\"One night the antlers catch the moonlight, and the weight becomes wonder.\"",
+  "\"To be aware is both the wound and the gift.\"",
+  "\"We climb not to conquer, but to understand.\"",
+  "\"The fog lifts for those who keep walking.\"",
+  "\"Each campfire is proof that others have passed this way before.\"",
+  "\"The herd moves slowly, but it moves together.\"",
+  "\"At the treeline, silence becomes a companion.\"",
+  "\"Stars appear only when you climb above the noise.\"",
+  "\"The mountain does not care. That is why the climb matters.\"",
+  "\"What we carry defines us more than where we arrive.\"",
+];
+
+const WRONG_MESSAGES = [
+  "The fog thickens... but the herd waits for you.",
+  "A stumble on the path, not the end of the climb.",
+  "Even the elk slips on loose stone. Rise again.",
+  "The mountain tests all who dare to ascend.",
+  "Consciousness is heavy. Take a breath and try again.",
+  "The trail remains. Another step awaits.",
+];
+
+const LEVEL_NAMES = [
+  "Base Camp", "Foothills", "Forest Trail", "Treeline",
+  "Ridge Path", "Cloud Line", "High Pass", "Above the Clouds",
+  "Near Summit", "The Ascent", "Summit"
+];
+
+// ── Station positions (percentage-based for responsiveness) ──
+// These map to coordinates within the mountain SVG viewBox (800x700)
+// Converted to percentages of the scene
+const STATION_COORDS = [
+  { x: 50, y: 88 },  // 0: Base camp (start)
+  { x: 44, y: 81 },  // 1
+  { x: 55, y: 74 },  // 2
+  { x: 43, y: 67 },  // 3
+  { x: 53, y: 60 },  // 4
+  { x: 45, y: 53 },  // 5
+  { x: 54, y: 46 },  // 6
+  { x: 47, y: 39 },  // 7
+  { x: 52, y: 32 },  // 8
+  { x: 48, y: 25 },  // 9
+  { x: 50, y: 17 },  // 10: Summit
+];
+
+// ── Game State ──
+let state = {
+  level: 0,
+  usedQuestions: {},
+  slips: 0,
+  questionsAnswered: 0,
+  startTime: null,
+  isAnimating: false,
+  gameActive: false,
+};
+
+// ── DOM References ──
+const $ = id => document.getElementById(id);
+const elk = $('elk');
+const questionPanel = $('questionPanel');
+const questionText = $('questionText');
+const questionLevel = $('questionLevel');
+const optionsContainer = $('optionsContainer');
+const feedback = $('feedback');
+const levelDisplay = $('levelDisplay');
+const progressBar = $('progressBar');
+const starsContainer = $('starsContainer');
+const sky = $('sky');
+const fogContainer = $('fogContainer');
+const summitGlow = $('summitGlow');
+
+// ── Initialization ──
+function init() {
+  createStars();
+  createStations();
+  createTrailLines();
+  positionElk(0, false);
+}
+
+function createStars() {
+  let html = '';
+  for (let i = 0; i < 80; i++) {
+    const x = Math.random() * 100;
+    const y = Math.random() * 50;
+    const o = (0.3 + Math.random() * 0.7).toFixed(2);
+    const d = (2 + Math.random() * 4).toFixed(1);
+    const s = (1 + Math.random() * 2).toFixed(0);
+    html += `<div class="star" style="left:${x}%;top:${y}%;--o:${o};--d:${d}s;width:${s}px;height:${s}px"></div>`;
+  }
+  starsContainer.innerHTML = html;
+}
+
+function createStations() {
+  const container = $('stationsContainer');
+  let html = '';
+  for (let i = 0; i <= 10; i++) {
+    const c = STATION_COORDS[i];
+    const cls = i === 10 ? 'station summit' : 'station';
+    html += `<div class="${cls}" id="station${i}" style="left:${c.x}%;top:${c.y}%">
+      <span class="station-num">${i === 0 ? '⛺' : i === 10 ? '⛰' : i}</span>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function createTrailLines() {
+  const svg = $('trailLines');
+  let html = '';
+  for (let i = 0; i < 10; i++) {
+    const a = STATION_COORDS[i];
+    const b = STATION_COORDS[i + 1];
+    // Convert percentage coords to SVG viewBox coords
+    const x1 = a.x * 8, y1 = a.y * 7;
+    const x2 = b.x * 8, y2 = b.y * 7;
+    html += `<line id="trail${i}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+  }
+  svg.innerHTML = html;
+}
+
+function positionElk(level, animate = true) {
+  const c = STATION_COORDS[level];
+  if (animate) {
+    elk.style.transition = 'left 1.2s cubic-bezier(0.34,1.56,0.64,1), top 1.2s cubic-bezier(0.34,1.56,0.64,1)';
+  } else {
+    elk.style.transition = 'none';
+  }
+  elk.style.left = c.x + '%';
+  elk.style.top = c.y + '%';
+}
+
+// ── Game Flow ──
+function startGame() {
+  $('startScreen').classList.add('hidden');
+  state = {
+    level: 0,
+    usedQuestions: {},
+    slips: 0,
+    questionsAnswered: 0,
+    startTime: Date.now(),
+    isAnimating: false,
+    gameActive: true,
+  };
+
+  // Reset visuals
+  for (let i = 0; i <= 10; i++) {
+    $(`station${i}`).classList.remove('reached');
+  }
+  document.querySelectorAll('#trailLines line').forEach(l => l.classList.remove('active'));
+  starsContainer.classList.remove('visible');
+  sky.classList.remove('high');
+  summitGlow.classList.remove('visible');
+  fogContainer.style.opacity = '1';
+  elk.classList.remove('celebrate');
+  progressBar.style.width = '0%';
+
+  // Mark base camp
+  $('station0').classList.add('reached');
+  positionElk(0, false);
+  updateLevel();
+
+  setTimeout(() => {
+    questionPanel.classList.remove('hidden');
+    showQuestion();
+  }, 600);
+}
+
+function updateLevel() {
+  levelDisplay.textContent = `Camp ${state.level}/10`;
+  progressBar.style.width = (state.level * 10) + '%';
+
+  // Visual atmosphere changes
+  if (state.level >= 5) {
+    starsContainer.classList.add('visible');
+  }
+  if (state.level >= 7) {
+    sky.classList.add('high');
+    fogContainer.style.opacity = '0.3';
+  }
+  if (state.level >= 9) {
+    summitGlow.classList.add('visible');
+  }
+}
+
+function getQuestion() {
+  const targetLevel = state.level + 1;
+  const pool = QUESTIONS[targetLevel];
+  if (!pool) return null;
+
+  if (!state.usedQuestions[targetLevel]) state.usedQuestions[targetLevel] = [];
+
+  const available = pool.filter((_, i) => !state.usedQuestions[targetLevel].includes(i));
+  if (available.length === 0) {
+    // Reset pool if all used
+    state.usedQuestions[targetLevel] = [];
+    return getQuestion();
+  }
+
+  const idx = Math.floor(Math.random() * available.length);
+  const originalIdx = pool.indexOf(available[idx]);
+  state.usedQuestions[targetLevel].push(originalIdx);
+  return available[idx];
+}
+
+function showQuestion() {
+  const q = getQuestion();
+  if (!q) return;
+
+  const targetLevel = state.level + 1;
+  let diffLabel;
+  if (targetLevel <= 3) diffLabel = LEVEL_NAMES[targetLevel] + ' — Easy';
+  else if (targetLevel <= 6) diffLabel = LEVEL_NAMES[targetLevel] + ' — Medium';
+  else if (targetLevel <= 9) diffLabel = LEVEL_NAMES[targetLevel] + ' — Hard';
+  else diffLabel = 'The Summit — Final Question';
+
+  questionLevel.textContent = `Level ${targetLevel} · ${diffLabel}`;
+  questionText.textContent = q.q;
+
+  const letters = ['A', 'B', 'C', 'D'];
+  optionsContainer.innerHTML = q.opts.map((opt, i) =>
+    `<button class="option-btn" onclick="selectAnswer(${i}, ${q.ans})">
+      <span class="opt-letter">${letters[i]}</span>
+      <span>${opt}</span>
+    </button>`
+  ).join('');
+
+  hideFeedback();
+}
+
+function selectAnswer(selected, correct) {
+  if (state.isAnimating) return;
+  state.isAnimating = true;
+  state.questionsAnswered++;
+
+  const buttons = optionsContainer.querySelectorAll('.option-btn');
+  buttons.forEach((btn, i) => {
+    btn.classList.add('disabled');
+    if (i === correct) btn.classList.add('correct');
+    if (i === selected && selected !== correct) btn.classList.add('wrong');
+  });
+
+  if (selected === correct) {
+    handleCorrect();
+  } else {
+    handleWrong();
+  }
+}
+
+function handleCorrect() {
+  state.level++;
+  positionElk(state.level);
+
+  // Light up station and trail
+  setTimeout(() => {
+    $(`station${state.level}`).classList.add('reached');
+    const trail = document.getElementById(`trail${state.level - 1}`);
+    if (trail) trail.classList.add('active');
+    updateLevel();
+  }, 400);
+
+  // Show quote
+  const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  showFeedback(quote);
+
+  if (state.level >= 10) {
+    // Summit reached!
+    setTimeout(() => {
+      questionPanel.classList.add('hidden');
+      showSummit();
+    }, 2000);
+  } else {
+    setTimeout(() => {
+      state.isAnimating = false;
+      showQuestion();
+    }, 2200);
+  }
+}
+
+function handleWrong() {
+  state.slips++;
+  const msg = WRONG_MESSAGES[Math.floor(Math.random() * WRONG_MESSAGES.length)];
+  showFeedback(msg);
+
+  // Slip down if above base
+  if (state.level > 0) {
+    state.level--;
+    elk.classList.add('slip');
+    positionElk(state.level);
+    setTimeout(() => elk.classList.remove('slip'), 700);
+
+    // Unlight the station we slipped from
+    const prev = state.level + 1;
+    $(`station${prev}`).classList.remove('reached');
+    const trail = document.getElementById(`trail${state.level}`);
+    if (trail) trail.classList.remove('active');
+    updateLevel();
+  } else {
+    elk.classList.add('slip');
+    setTimeout(() => elk.classList.remove('slip'), 700);
+  }
+
+  setTimeout(() => {
+    state.isAnimating = false;
+    showQuestion();
+  }, 2200);
+}
+
+function showFeedback(text) {
+  feedback.textContent = text;
+  feedback.classList.add('visible');
+}
+function hideFeedback() {
+  feedback.classList.remove('visible');
+}
+
+// ── Summit ──
+function showSummit() {
+  state.gameActive = false;
+  elk.classList.add('celebrate');
+
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  const timeStr = `${mins}m${secs.toString().padStart(2, '0')}s`;
+
+  $('summitStats').innerHTML = `
+    <div class="stat"><span class="stat-val">10/10</span><span class="stat-label">Camps</span></div>
+    <div class="stat"><span class="stat-val">${state.questionsAnswered}</span><span class="stat-label">Questions</span></div>
+    <div class="stat"><span class="stat-val">${state.slips}</span><span class="stat-label">Slips</span></div>
+    <div class="stat"><span class="stat-val">${timeStr}</span><span class="stat-label">Time</span></div>
+  `;
+
+  // Create burst particles
+  const starsEl = $('summitStars');
+  let bHtml = '';
+  for (let i = 0; i < 30; i++) {
+    const tx = (-150 + Math.random() * 300).toFixed(0);
+    const ty = (-150 + Math.random() * 300).toFixed(0);
+    const d = (1.5 + Math.random() * 2).toFixed(1);
+    const delay = (Math.random() * 2).toFixed(1);
+    bHtml += `<div class="summit-burst" style="left:50%;top:40%;--tx:${tx}px;--ty:${ty}px;--d:${d}s;animation-delay:${delay}s"></div>`;
+  }
+  starsEl.innerHTML = bHtml;
+
+  // Store for share
+  state.timeStr = timeStr;
+
+  setTimeout(() => $('summitScreen').classList.add('visible'), 300);
+}
+
+function shareResult() {
+  const fires = '🔥'.repeat(10);
+  const text = `🦌⛰️ $ELK Mountain Ascent 🏔️\n\nSummit reached!\n${fires}\n10/10 camps | ${state.slips} slip${state.slips !== 1 ? 's' : ''} | ${state.timeStr}\n\nThe antlers are heavy. We carry them together.`;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      $('shareToast').classList.add('visible');
+      setTimeout(() => $('shareToast').classList.remove('visible'), 2500);
+    }).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+  $('shareToast').classList.add('visible');
+  setTimeout(() => $('shareToast').classList.remove('visible'), 2500);
+}
+
+function restartGame() {
+  $('summitScreen').classList.remove('visible');
+  setTimeout(() => startGame(), 400);
+}
+
+// ── Keyboard support ──
+document.addEventListener('keydown', e => {
+  if (!state.gameActive || state.isAnimating) return;
+  const map = { '1': 0, '2': 1, '3': 2, '4': 3, 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
+  const idx = map[e.key.toLowerCase()];
+  if (idx !== undefined) {
+    const btns = optionsContainer.querySelectorAll('.option-btn');
+    if (btns[idx]) btns[idx].click();
+  }
+});
+
+// Init on load
+init();
+</script>
+</body>
+</html>

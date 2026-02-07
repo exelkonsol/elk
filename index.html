@@ -22,12 +22,12 @@
 
     <meta property="og:title" content="$ELK - The Burden We Carry Together">
     <meta property="og:description" content="We are carried through life by a series of sublimations—fleeting release valves for the pressure of being.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/exelkonsol/elk/main/newpreview.png">
+    <meta property="og:image" content="https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://exelkonsol.github.io/elk/">
     <link rel="canonical" href="https://exelkonsol.github.io/elk/">
 
-    <link rel="icon" href="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" type="image/png">
+    <link rel="icon" href="https://raw.githubusercontent.com/exelkonsol/elk/main/images/pumpfun.png" type="image/png">
     <title>$ELK - The Burden We Carry Together</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -350,7 +350,7 @@
         :root { --elk-crimson: rgba(139, 0, 0, 0.3); --elk-crimson-bright: rgba(220, 38, 38, 0.6); }
         html { touch-action: manipulation; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; scroll-padding-top: 80px; }
         body { background-color: #000000; color: #e5e5e5; overflow-x: hidden; position: relative; font-family: 'Crimson Text', serif; overscroll-behavior-y: none; }
-        .global-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/elk2.png'); background-size: cover; background-position: center; filter: grayscale(100%) opacity(0.38) contrast(1.1); z-index: -10; transform: translateZ(0); }
+        .global-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/elk2.png'); background-size: cover; background-position: center; filter: grayscale(100%) opacity(0.38) contrast(1.1); z-index: -10; transform: translateZ(0); }
         .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.95) 100%); pointer-events: none; z-index: -5; }
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); pointer-events: none; z-index: -4; }
         .noise { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; opacity: 0.04; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
@@ -359,7 +359,7 @@
         .buy-btn:hover { background: rgba(139, 0, 0, 0.4); border-color: var(--elk-crimson-bright); color: rgba(255, 150, 150, 1); transform: translateY(-2px); box-shadow: 0 10px 40px rgba(139, 0, 0, 0.3); }
         .buy-btn:active { transform: scale(0.98); }
         .quote-section { position: relative; overflow: hidden; }
-        .quote-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/generatewisdom.png'); background-size: cover; background-position: center; opacity: 0.25; filter: blur(0px) contrast(1.1); z-index: 0; mix-blend-mode: screen; }
+        .quote-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/generatewisdom.png'); background-size: cover; background-position: center; opacity: 0.25; filter: blur(0px) contrast(1.1); z-index: 0; mix-blend-mode: screen; }
         .quote-container { position: relative; z-index: 1; min-height: 500px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem 1.5rem; text-align: center; }
         .quote-text { font-family: 'Crimson Text', serif; font-style: italic; font-size: clamp(1.5rem, 5vw, 2.75rem); line-height: 1.4; color: rgba(255, 255, 255, 0.95); max-width: 900px; opacity: 0; transform: translateY(10px); transition: all 0.8s ease; text-shadow: 0 4px 30px rgba(0, 0, 0, 1); margin: 2rem 0; flex: 1; display: flex; align-items: center; justify-content: center; }
         .quote-text.visible { opacity: 1; transform: translateY(0); }
@@ -379,7 +379,7 @@
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal-content { background: #0a0a0a; border: 1px solid rgba(255, 255, 255, 0.1); max-width: 600px; width: 100%; padding: 2.5rem; border-radius: 8px; transform: scale(0.95) translateY(10px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8); max-height: 90vh; overflow-y: auto; }
         .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
-        .footer-bg-layer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/newpreview.png'); background-size: contain; background-position: center bottom; background-repeat: no-repeat; opacity: 0.15; pointer-events: none; z-index: 0; filter: grayscale(0%) contrast(1.15); }
+        .footer-bg-layer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png'); background-size: contain; background-position: center bottom; background-repeat: no-repeat; opacity: 0.15; pointer-events: none; z-index: 0; filter: grayscale(0%) contrast(1.15); }
         .audio-player-container { position: relative; overflow: hidden; container-type: inline-size; background-size: cover; background-position: center; transition: background-image 0.5s ease; filter: grayscale(30%); }
         .audio-player-container::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 0; pointer-events: none; }
         #visualizer-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.25; z-index: 1; }
@@ -452,13 +452,13 @@
     </nav>
 
     <button id="mute-toggle-btn" onclick="togglePlay()" role="button" aria-label="Toggle Play/Pause">
-        <img id="btn-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/Before%20the%20Clearing.png" alt="Album Art" class="btn-art" decoding="async">
+        <img id="btn-art" src="https://raw.githubusercontent.com/exelkonsol/elk/main/images/Before%20the%20Clearing.png" alt="Album Art" class="btn-art" decoding="async">
     </button>
 
     <section class="relative min-h-screen flex items-center justify-center py-20 px-4 overflow-hidden">
         <div class="hero-content relative z-10 max-w-4xl mx-auto text-center w-full flex flex-col items-center">
             <div class="mb-8 w-full flex justify-center items-center relative">
-                <img id="hero-logo" src="https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png" alt="$ELK Stag" class="hero-image w-[200px] h-[200px] sm:w-[280px] sm:h-[280px] md:w-[360px] md:h-[360px] lg:w-[400px] lg:h-[400px] mx-auto object-contain select-none" loading="eager" decoding="async" fetchpriority="high">
+                <img id="hero-logo" src="https://raw.githubusercontent.com/exelkonsol/elk/main/images/pumpfun.png" alt="$ELK Stag" class="hero-image w-[200px] h-[200px] sm:w-[280px] sm:h-[280px] md:w-[360px] md:h-[360px] lg:w-[400px] lg:h-[400px] mx-auto object-contain select-none" loading="eager" decoding="async" fetchpriority="high">
             </div>
             <div class="space-y-6 sm:space-y-8 mb-12 sm:mb-16 max-w-4xl px-4 relative z-20">
                 <p class="font-mono text-[9px] tracking-[0.4em] sm:tracking-[0.5em] text-white/20 uppercase">Peter Wessel Zapffe // On The Tragic</p>
@@ -615,11 +615,11 @@
             if (heroLogo) {
                 heroLogo.onerror = function() {
                     // Retry with cache-busting
-                    this.src = 'https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png?' + Date.now();
+                    this.src = 'https://raw.githubusercontent.com/exelkonsol/elk/main/images/pumpfun.png?' + Date.now();
                 };
                 // Force reload on mobile if image appears broken
                 if (heroLogo.complete && heroLogo.naturalHeight === 0) {
-                    heroLogo.src = 'https://raw.githubusercontent.com/exelkonsol/elk/main/pumpfun.png?' + Date.now();
+                    heroLogo.src = 'https://raw.githubusercontent.com/exelkonsol/elk/main/images/pumpfun.png?' + Date.now();
                 }
             }
         })();
@@ -840,7 +840,8 @@
         let isVisualizerInit = false;
 
         const audio = document.getElementById('audio-player');
-        const baseUrl = 'https://raw.githubusercontent.com/exelkonsol/elk/main/';
+        const imageBaseUrl = 'https://raw.githubusercontent.com/exelkonsol/elk/main/images/';
+        const musicBaseUrl = 'https://raw.githubusercontent.com/exelkonsol/elk/main/music/';
 
         function initAudioContext() {
             if (isVisualizerInit) {
@@ -919,8 +920,8 @@
             const t = tracks[idx];
             document.getElementById('track-title').textContent = t.title;
             document.getElementById('track-desc').textContent = '"' + t.desc + '"';
-            const artUrl = `${baseUrl}${encodeURIComponent(t.file)}.png`;
-            const audioUrl = `${baseUrl}${encodeURIComponent(t.file)}.mp3`;
+            const artUrl = `${imageBaseUrl}${encodeURIComponent(t.file)}.png`;
+            const audioUrl = `${musicBaseUrl}${encodeURIComponent(t.file)}.mp3`;
             document.getElementById('album-art-small').src = artUrl;
             document.getElementById('btn-art').src = artUrl;
             document.getElementById('audio-interface').style.backgroundImage = `url('${artUrl}')`;

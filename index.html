@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="description" content="$ELK - A Solana memecoin rooted in existential philosophy. The antlers are heavy. We carry them together.">
     <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
 
@@ -36,165 +36,103 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, increment, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // FIREBASE CONFIG
-        const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyBQlPbhC2Z5ds_15u7wWlBvPjhvkPox-9s",
-            authDomain: "elkonsol-79134.firebaseapp.com",
-            projectId: "elkonsol-79134",
-            storageBucket: "elkonsol-79134.firebasestorage.app",
-            messagingSenderId: "509530069362",
-            appId: "1:509530069362:web:602aadc0112f0e2724a5eb",
-            measurementId: "G-L0XV40MZWB"
-        };
+    <script>
+        // ============================================
+        // PURE LOCALSTORAGE VOTING SYSTEM
+        // No external dependencies - works offline
+        // ============================================
 
         const ALLOWED_MECHANISMS = ['isolation', 'anchoring', 'distraction', 'sublimation'];
-        const APP_ID = 'elk';
+        const CYCLE_LENGTH_DAYS = 14;
+        const CYCLE_LENGTH_MS = CYCLE_LENGTH_DAYS * 24 * 60 * 60 * 1000;
+
+        // Storage keys
         const STORAGE_KEYS = {
-            HAS_VOTED: 'elk_has_voted',
-            VOTED_MECH: 'elk_voted_mech',
-            VOTED_CYCLE: 'elk_voted_cycle'
+            VOTES: 'elk_votes',           // Vote counts: { isolation: 0, anchoring: 0, ... }
+            HAS_VOTED: 'elk_has_voted',   // User voted this cycle
+            VOTED_MECH: 'elk_voted_mech', // Which mechanism user voted for
+            CYCLE_START: 'elk_cycle_start' // When current cycle started
         };
 
-        let app, auth, db, currentUser;
-        let votingEnabled = false;
+        let votingEnabled = true;
         let isVoting = false;
-        let currentCycle = 1;
 
-        const initFirebase = async () => {
-            try {
-                app = initializeApp(FIREBASE_CONFIG);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                votingEnabled = true;
-
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        currentUser = user;
-                        updateConnectionStatus('connected');
-                        initRealtimeVotes();
-                    } else {
-                        signInAnonymously(auth).catch(err => {
-                            console.error('Auth failed:', err);
-                            updateConnectionStatus('error');
-                        });
-                    }
-                });
-            } catch (error) {
-                console.error('Firebase init error:', error);
-                votingEnabled = false;
-                updateConnectionStatus('error');
+        // Get or initialize cycle start time
+        const getCycleStart = () => {
+            let cycleStart = localStorage.getItem(STORAGE_KEYS.CYCLE_START);
+            if (!cycleStart) {
+                // Initialize first cycle to start now
+                cycleStart = Date.now().toString();
+                localStorage.setItem(STORAGE_KEYS.CYCLE_START, cycleStart);
             }
+            return parseInt(cycleStart);
         };
 
-        const updateConnectionStatus = (status) => {
-            const indicator = document.getElementById('vote-status-indicator');
-            if (!indicator) return;
-            const colors = { connected: 'bg-green-500/50', error: 'bg-red-500/50', loading: 'bg-yellow-500/50' };
-            indicator.className = `w-2 h-2 rounded-full ${colors[status] || colors.loading} animate-pulse`;
+        // Check if we need to start a new cycle
+        const checkCycleReset = () => {
+            const cycleStart = getCycleStart();
+            const now = Date.now();
+            const elapsed = now - cycleStart;
+
+            if (elapsed >= CYCLE_LENGTH_MS) {
+                // Start new cycle - reset everything
+                localStorage.setItem(STORAGE_KEYS.CYCLE_START, now.toString());
+                localStorage.setItem(STORAGE_KEYS.VOTES, JSON.stringify({
+                    isolation: 0,
+                    anchoring: 0,
+                    distraction: 0,
+                    sublimation: 0
+                }));
+                localStorage.removeItem(STORAGE_KEYS.HAS_VOTED);
+                localStorage.removeItem(STORAGE_KEYS.VOTED_MECH);
+                return true; // Cycle was reset
+            }
+            return false;
         };
 
-        const initRealtimeVotes = () => {
-            if (!db) return;
-            const docRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'mechanisms', 'current');
-
-            onSnapshot(docRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.data();
-                    updateVoteUI(data);
-                    if (data.cycle) currentCycle = data.cycle;
-                    syncVoteLock();
-                } else if (!snapshot.metadata.fromCache) {
-                    // Only initialize document when we have server confirmation it doesn't exist
-                    // This prevents cache-miss from overwriting existing votes
-                    const now = Date.now();
-                    const cycleLength = 14 * 24 * 60 * 60 * 1000; // 14 days
-                    setDoc(docRef, {
-                        isolation: 0,
-                        anchoring: 0,
-                        distraction: 0,
-                        sublimation: 0,
-                        cycle: 1,
-                        cycleStartedAt: serverTimestamp(),
-                        cycleEndsAt: new Date(now + cycleLength),
-                        updatedAt: serverTimestamp()
-                    });
+        // Get current vote counts
+        const getVotes = () => {
+            const stored = localStorage.getItem(STORAGE_KEYS.VOTES);
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    console.error('Failed to parse votes:', e);
                 }
-            }, (error) => console.error("Vote sync error:", error));
+            }
+            // Initialize with zeros
+            const initial = { isolation: 0, anchoring: 0, distraction: 0, sublimation: 0 };
+            localStorage.setItem(STORAGE_KEYS.VOTES, JSON.stringify(initial));
+            return initial;
         };
 
-        const updateVoteUI = (data) => {
+        // Save vote counts
+        const saveVotes = (votes) => {
+            localStorage.setItem(STORAGE_KEYS.VOTES, JSON.stringify(votes));
+        };
+
+        // Update the UI with current votes
+        const updateVoteUI = () => {
+            const votes = getVotes();
             ALLOWED_MECHANISMS.forEach(mech => {
                 const el = document.querySelector(`[data-mechanism="${mech}"] .vote-count`);
-                if (el) el.textContent = (data[mech] || 0).toLocaleString();
+                if (el) el.textContent = (votes[mech] || 0).toLocaleString();
             });
         };
 
-        const syncVoteLock = () => {
-            const votedCycle = parseInt(localStorage.getItem(STORAGE_KEYS.VOTED_CYCLE) || '0');
-            const hasVoted = localStorage.getItem(STORAGE_KEYS.HAS_VOTED) === 'true';
-
-            if (votedCycle !== currentCycle) {
-                localStorage.removeItem(STORAGE_KEYS.HAS_VOTED);
-                localStorage.removeItem(STORAGE_KEYS.VOTED_MECH);
-                localStorage.removeItem(STORAGE_KEYS.VOTED_CYCLE);
-                resetButtons();
-            } else if (hasVoted) {
-                const mech = localStorage.getItem(STORAGE_KEYS.VOTED_MECH);
-                if (mech) lockButtons(mech);
-            }
+        // Update connection status indicator
+        const updateConnectionStatus = (status) => {
+            const indicator = document.getElementById('vote-status-indicator');
+            if (!indicator) return;
+            const colors = {
+                connected: 'bg-green-500/50',
+                error: 'bg-red-500/50',
+                loading: 'bg-yellow-500/50'
+            };
+            indicator.className = `w-2 h-2 rounded-full ${colors[status] || colors.loading} animate-pulse`;
         };
 
-        window.handleVote = async (mechanism) => {
-            if (!votingEnabled) {
-                showToast("VOTING UNAVAILABLE");
-                return;
-            }
-            if (!currentUser) {
-                showToast("CONNECTING... TRY AGAIN");
-                return;
-            }
-            if (isVoting) {
-                showToast("PROCESSING...");
-                return;
-            }
-
-            const hasVoted = localStorage.getItem(STORAGE_KEYS.HAS_VOTED) === 'true';
-            const votedCycle = parseInt(localStorage.getItem(STORAGE_KEYS.VOTED_CYCLE) || '0');
-
-            if (hasVoted && votedCycle === currentCycle) {
-                showToast("ALREADY VOTED THIS CYCLE");
-                return;
-            }
-
-            isVoting = true;
-            showToast("VOTING...");
-            try {
-                const docRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'mechanisms', 'current');
-                // Use setDoc with merge to handle case where document doesn't exist
-                await setDoc(docRef, {
-                    [mechanism]: increment(1),
-                    updatedAt: serverTimestamp()
-                }, { merge: true });
-
-                localStorage.setItem(STORAGE_KEYS.HAS_VOTED, 'true');
-                localStorage.setItem(STORAGE_KEYS.VOTED_MECH, mechanism);
-                localStorage.setItem(STORAGE_KEYS.VOTED_CYCLE, String(currentCycle));
-
-                lockButtons(mechanism);
-                showToast("VOTE RECORDED");
-            } catch (error) {
-                console.error("Voting failed:", error);
-                showToast("VOTE FAILED - RETRY");
-            } finally {
-                isVoting = false;
-            }
-        };
-
+        // Lock buttons after voting
         const lockButtons = (votedMech) => {
             document.querySelectorAll('.vote-btn').forEach(btn => {
                 btn.disabled = true;
@@ -205,6 +143,7 @@
             if (card) card.classList.add('voted');
         };
 
+        // Reset buttons for new cycle
         const resetButtons = () => {
             document.querySelectorAll('.vote-btn').forEach(btn => {
                 btn.disabled = false;
@@ -214,7 +153,87 @@
             document.querySelectorAll('.mechanism-card').forEach(card => card.classList.remove('voted'));
         };
 
-        initFirebase();
+        // Sync vote lock state with localStorage
+        const syncVoteLock = () => {
+            const hasVoted = localStorage.getItem(STORAGE_KEYS.HAS_VOTED) === 'true';
+            if (hasVoted) {
+                const mech = localStorage.getItem(STORAGE_KEYS.VOTED_MECH);
+                if (mech) lockButtons(mech);
+            } else {
+                resetButtons();
+            }
+        };
+
+        // Handle vote action
+        window.handleVote = (mechanism) => {
+            if (!votingEnabled) {
+                showToast("VOTING UNAVAILABLE");
+                return;
+            }
+            if (isVoting) {
+                showToast("PROCESSING...");
+                return;
+            }
+            if (!ALLOWED_MECHANISMS.includes(mechanism)) {
+                showToast("INVALID MECHANISM");
+                return;
+            }
+
+            // Check if already voted this cycle
+            const hasVoted = localStorage.getItem(STORAGE_KEYS.HAS_VOTED) === 'true';
+            if (hasVoted) {
+                showToast("ALREADY VOTED THIS CYCLE");
+                return;
+            }
+
+            isVoting = true;
+            showToast("VOTING...");
+
+            try {
+                // Get current votes and increment
+                const votes = getVotes();
+                votes[mechanism] = (votes[mechanism] || 0) + 1;
+
+                // Save updated votes
+                saveVotes(votes);
+
+                // Mark as voted
+                localStorage.setItem(STORAGE_KEYS.HAS_VOTED, 'true');
+                localStorage.setItem(STORAGE_KEYS.VOTED_MECH, mechanism);
+
+                // Update UI
+                updateVoteUI();
+                lockButtons(mechanism);
+                showToast("VOTE RECORDED");
+            } catch (error) {
+                console.error("Voting failed:", error);
+                showToast("VOTE FAILED - RETRY");
+            } finally {
+                isVoting = false;
+            }
+        };
+
+        // Initialize voting system
+        const initVoting = () => {
+            // Check if cycle needs reset
+            const wasReset = checkCycleReset();
+
+            // Update UI with current votes
+            updateVoteUI();
+
+            // Sync button lock state
+            syncVoteLock();
+
+            // Update status indicator
+            updateConnectionStatus('connected');
+
+            if (wasReset) {
+                console.log('New voting cycle started');
+            }
+        };
+
+        // Initialize on page load
+        initVoting();
         window.votingEnabled = votingEnabled;
     </script>
 

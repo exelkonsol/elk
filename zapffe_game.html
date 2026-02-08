@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>$ELK - The Last Hodler: Chart Runner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&family=VT323&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --terminal-bg: #050505;
+            --terminal-green: #00ff41;
+            --terminal-red: #ff0055;
+            --terminal-dim: rgba(0, 255, 65, 0.2);
+            --scanline: rgba(18, 16, 16, 0.5);
+            --elk-gold: #D4A843;
+        }
+
+        body {
+            background-color: var(--terminal-bg);
+            color: var(--terminal-green);
+            font-family: 'VT323', monospace;
+            overflow: hidden;
+            text-shadow: 0 0 5px var(--terminal-dim);
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0), rgba(0, 255, 65, 0.04), rgba(0, 0, 0, 0));
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scanline 10s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanline {
+            0% {
+                bottom: 100%;
+            }
+
+            100% {
+                bottom: -100%;
+            }
+        }
+
+        .crt-overlay {
+            background: rgba(18, 16, 16, 0.1);
+            animation: flicker 0.15s infinite;
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9;
+            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+        }
+
+        .btn-action {
+            border: 1px solid var(--terminal-green);
+            color: var(--terminal-green);
+            background: rgba(0, 50, 0, 0.3);
+            transition: all 0.2s;
+            cursor: pointer;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action:hover {
+            background: var(--terminal-green);
+            color: black;
+            box-shadow: 0 0 15px var(--terminal-green);
+        }
+
+        #gameCanvas {
+            image-rendering: pixelated;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hud-panel {
+            position: absolute;
+            z-index: 20;
+            user-select: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-full flex flex-col relative">
+
+    <div class="crt-overlay"></div>
+    <div class="scanline"></div>
+
+    <!-- Unified Consistent Navigation -->
+    <nav
+        class="fixed top-0 w-full z-[100] border-b border-white/10 h-16 sm:h-20 flex items-center bg-black/80 backdrop-blur-md">
+        <div class="w-full max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center">
+                <a href="index.html"
+                    class="font-serif text-base sm:text-lg font-bold tracking-[0.3em] text-[#D4A843] hover:text-white transition-colors touch-manipulation relative z-50">$ELK</a>
+                <!-- Absolute Centered Links -->
+                <div
+                    class="hidden md:flex items-center gap-8 lg:gap-12 font-mono text-[10px] tracking-[0.3em] uppercase absolute left-1/2 transform -translate-x-1/2">
+                    <a href="index.html"
+                        class="text-white/50 hover:text-white transition-colors duration-300 py-2">Home</a>
+                    <a href="game.html"
+                        class="text-white/50 hover:text-white transition-colors duration-300 py-2">Ascent</a>
+                    <a href="zapffe_game.html"
+                        class="text-red-500 hover:text-red-400 border-b border-red-500/50 transition-colors duration-300 py-2">The
+                        Void</a>
+                </div>
+                <div class="flex items-center gap-3 relative z-50">
+                    <button onclick="navigator.clipboard.writeText('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump')"
+                        class="font-mono text-[9px] sm:text-[10px] text-white/60 hover:text-white/90 transition-all duration-500 tracking-wider uppercase border border-white/10 hover:border-white/30 px-3 py-2 rounded hover:bg-white/5 active:scale-95 touch-manipulation min-h-[44px]">
+                        <span class="hidden sm:inline">8DaLP...Gpump</span><span class="sm:hidden">CA</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Game Container -->
+    <main class="w-full h-full relative bg-[#050505]">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Start Screen -->
+        <div id="start-screen"
+            class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-30 transition-opacity duration-500 px-4">
+            <h1 class="text-5xl sm:text-6xl md:text-8xl font-bold text-[#D4A843] mb-4 text-center tracking-tighter"
+                style="text-shadow: 0 0 20px rgba(212, 168, 67, 0.4)">CHART RUNNER</h1>
+            <p class="text-lg md:text-xl text-green-500 font-mono mb-8 brightness-125 text-center">OBJECTIVE: SURVIVE
+                THE CANDLES</p>
+            <div class="flex flex-col gap-4 items-center w-full max-w-sm">
+                <button id="start-btn"
+                    class="btn-action w-full py-4 text-2xl font-bold tracking-widest animate-pulse">INITIATE
+                    RUN</button>
+                <div class="text-white/40 text-xs font-mono mt-2 flex gap-4">
+                    <span>WEB: [SPACE] TO JUMP</span>
+                    <span>MOBILE: [TAP] TO JUMP</span>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center" id="high-score-display">
+                <div class="text-white/60 text-xs tracking-widest uppercase mb-2">High Scores</div>
+                <div id="leaderboard-list" class="flex flex-col gap-1 font-mono text-base text-green-400 font-bold">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+        </div>
+
+        <!-- HUD -->
+        <div id="hud" class="hud-panel top-20 left-4 md:left-8 opacity-0 transition-opacity duration-500">
+            <div class="flex flex-col gap-1">
+                <div class="text-2xl font-bold text-white shadow-black drop-shadow-md">NW: <span id="score-val"
+                        class="text-green-400">$0</span></div>
+                <div class="w-32 md:w-48 h-3 md:h-4 bg-gray-900 border border-gray-700 relative overflow-hidden">
+                    <div id="sanity-bar" class="absolute top-0 left-0 h-full bg-blue-500 transition-all duration-200"
+                        style="width: 100%"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-[8px] md:text-[10px] text-white font-bold tracking-widest z-10"
+                        style="text-shadow:0 0 2px black">SANITY</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over -->
+        <div id="game-over-screen"
+            class="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-40 hidden px-4 text-center">
+            <h2 class="text-5xl md:text-7xl text-red-600 font-bold mb-2 glitch-text">LIQUIDATED</h2>
+            <p id="death-msg" class="text-lg md:text-xl text-white/70 italic mb-6 font-serif max-w-lg">"The market can
+                remain irrational longer than you can remain sane."</p>
+            <div class="text-2xl md:text-3xl text-white mb-8">FINAL NET WORTH: <span id="final-score"
+                    class="text-green-500">$0</span></div>
+            <button id="restart-btn" class="btn-action px-8 py-3 text-xl w-full max-w-xs">TRY AGAIN</button>
+            <button onclick="window.location.href='index.html'"
+                class="mt-6 text-white/30 hover:text-white underline text-sm">Return Home</button>
+        </div>
+
+    </main>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Settings
+        const GRAVITY = 0.5;
+        const JUMP_FORCE = -11;
+        const SPEED_BASE = 5;
+        const CANDLE_WIDTH = 40;
+
+        let animationId;
+        let lastTime = 0;
+        let gameSpeed = SPEED_BASE;
+
+        // Colors
+        const COL_GREEN = '#00ff41';
+        const COL_RED = '#ff0055';
+        const COL_DARK_GREEN = '#004411';
+        const COL_DARK_RED = '#440011';
+        const COL_GOLD = '#D4A843';
+
+        const state = {
+            running: false,
+            score: 0,
+            sanity: 100,
+            frame: 0,
+            player: { x: 100, y: 0, w: 30, h: 30, dy: 0, grounded: false, jumping: false, rot: 0 },
+            candles: [],
+            obstacles: [],
+            particles: [],
+            bgStars: []
+        };
+
+        // --- RESIZE & INIT ---
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if (!state.running) state.player.y = canvas.height / 2;
+        }
+        window.addEventListener('resize', resize);
+
+        function initStars() {
+            state.bgStars = [];
+            for (let i = 0; i < 100; i++) {
+                state.bgStars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    s: Math.random() * 2,
+                    speed: Math.random() * 0.5 + 0.1
+                });
+            }
+        }
+        resize();
+        initStars();
+
+        // --- CONTROLS ---
+        function jump() {
+            if (!state.running) return;
+            if (state.player.grounded) {
+                state.player.dy = JUMP_FORCE;
+                state.player.grounded = false;
+                state.player.jumping = true;
+                // Jump particles
+                spawnParticles(state.player.x + state.player.w / 2, state.player.y + state.player.h, 8, '#fff');
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                jump();
+            }
+        });
+
+        // Touch handling (prevent accidental zooms/scrolls)
+        const touchHandler = (e) => {
+            if (e.target.tagName !== 'BUTTON') {
+                e.preventDefault();
+                jump();
+            }
+        };
+        document.addEventListener('touchstart', touchHandler, { passive: false });
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.tagName !== 'BUTTON') jump();
+        });
+
+        // --- GAME LOOP ---
+        function startGame() {
+            state.running = true;
+            state.score = 0;
+            state.sanity = 100;
+            state.gameSpeed = SPEED_BASE;
+            state.player.y = canvas.height / 2;
+            state.player.dy = 0;
+            state.candles = [];
+            state.obstacles = [];
+            state.particles = [];
+
+            // Generate initial ground
+            let startY = canvas.height - 200;
+            for (let i = 0; i < (canvas.width / CANDLE_WIDTH) + 2; i++) {
+                state.candles.push({
+                    x: i * CANDLE_WIDTH,
+                    y: startY,
+                    w: CANDLE_WIDTH + 1,
+                    h: 400,
+                    type: 'green',
+                    wickTop: 15,
+                    wickBottom: 15
+                });
+            }
+
+            document.getElementById('start-screen').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('hud').classList.remove('opacity-0');
+            document.getElementById('game-over-screen').classList.add('hidden');
+
+            lastTime = performance.now();
+            if (animationId) cancelAnimationFrame(animationId);
+            requestAnimationFrame(loop);
+        }
+
+        function loop(timestamp) {
+            if (!state.running) return;
+            const dt = Math.min((timestamp - lastTime) / 16.67, 2); // Cap at 2x frame time
+            lastTime = timestamp;
+
+            update(dt);
+            draw();
+            animationId = requestAnimationFrame(loop);
+        }
+
+        function update(dt) {
+            state.frame++;
+            gameSpeed = SPEED_BASE + (state.score / 10000);
+
+            // Physics
+            state.player.dy += GRAVITY * dt;
+            state.player.y += state.player.dy * dt;
+
+            // Rotation effect for jump
+            if (!state.player.grounded) {
+                state.player.rot += 0.1 * dt;
+            } else {
+                state.player.rot = 0;
+            }
+
+            // Checks
+            state.player.grounded = false;
+
+            // Ground Collision
+            for (let c of state.candles) {
+                // Horizontal overlaps
+                if (state.player.x + state.player.w > c.x + 4 && state.player.x < c.x + c.w - 4) {
+                    // Vertical landing check
+                    if (state.player.y + state.player.h >= c.y &&
+                        state.player.y + state.player.h <= c.y + 30 + (state.player.dy * dt) &&
+                        state.player.dy >= 0) {
+
+                        state.player.grounded = true;
+                        state.player.dy = 0;
+                        state.player.y = c.y - state.player.h;
+                    }
+                }
+            }
+
+            // Fall Death
+            if (state.player.y > canvas.height + 50) {
+                gameOver("Rug pulled. You fell into the void.");
+            }
+
+            // Sanity Drain
+            state.sanity -= 0.03 * dt;
+            if (state.sanity <= 0) gameOver("Panic Sold. Sanity reached zero.");
+
+            // Move World
+            state.candles.forEach(c => c.x -= gameSpeed * dt);
+            state.obstacles.forEach(o => o.x -= gameSpeed * dt);
+
+            // Remove offscreen
+            state.candles = state.candles.filter(c => c.x + c.w > -100);
+            state.obstacles = state.obstacles.filter(o => o.x + o.w > -100);
+
+            // Spawning
+            let lastCandle = state.candles[state.candles.length - 1];
+            if (lastCandle && lastCandle.x + lastCandle.w < canvas.width + 100) {
+
+                // Decide next step
+                let gapChance = 0.15 + (state.score / 50000); // 15% base gap chance
+                let isGap = Math.random() < gapChance;
+
+                if (isGap) {
+                    // GAP
+                    let gapWidth = 60 + Math.random() * 80;
+                    // Next candle
+                    let nextY = lastCandle.y + (Math.random() * 100 - 50);
+                    nextY = Math.min(canvas.height - 100, Math.max(canvas.height - 350, nextY));
+
+                    state.candles.push({
+                        x: lastCandle.x + lastCandle.w + gapWidth,
+                        y: nextY,
+                        w: CANDLE_WIDTH + Math.random() * 100, // Long landing pad
+                        h: 400,
+                        type: 'green',
+                        wickTop: 10, wickBottom: 10
+                    });
+                } else {
+                    // Normal Candle chain
+                    let nextY = lastCandle.y + (Math.random() * 60 - 30);
+                    nextY = Math.min(canvas.height - 100, Math.max(canvas.height - 350, nextY));
+                    let isRed = Math.random() < 0.3; // 30% red candle
+                    if (isRed) {
+                        // Red candle is lower usually
+                        nextY += 20;
+                    }
+
+                    let newCandle = {
+                        x: lastCandle.x + lastCandle.w,
+                        y: nextY,
+                        w: CANDLE_WIDTH,
+                        h: 400,
+                        type: isRed ? 'red' : 'green',
+                        wickTop: 10 + Math.random() * 20,
+                        wickBottom: 10
+                    };
+                    state.candles.push(newCandle);
+
+                    // Add Obstacles on top of Green candles occasionally
+                    if (!isRed && Math.random() < 0.1) {
+                        state.obstacles.push({
+                            x: newCandle.x + 5,
+                            y: newCandle.y - 30,
+                            w: 30,
+                            h: 30,
+                            type: 'bear'
+                        });
+                    }
+                }
+            }
+
+            // Obstacle Collision
+            for (let o of state.obstacles) {
+                if (rectIntersect(state.player.x, state.player.y, state.player.w, state.player.h, o.x, o.y, o.w, o.h)) {
+                    state.sanity -= 30;
+                    spawnParticles(o.x + o.w / 2, o.y + o.h / 2, 10, '#f00');
+                    state.obstacles = state.obstacles.filter(x => x !== o);
+                    // Hit stop
+                    state.player.dy = -5;
+                }
+            }
+            // Red Candle Collision (Side hit)
+            // If we hit the SIDE of a candle, we stop/slide
+            // For now, simple: Red Candles are just ground you can stand on but they might lead downwards
+
+            // Score
+            state.score += (gameSpeed * dt) / 10;
+
+            // Particles
+            updateParticles(dt);
+
+            // Background
+            updateStars(dt);
+
+            // UI
+            document.getElementById('score-val').innerText = "$" + Math.floor(state.score).toLocaleString();
+            let sanEl = document.getElementById('sanity-bar');
+            sanEl.style.width = Math.max(0, state.sanity) + "%";
+            sanEl.className = `absolute top-0 left-0 h-full transition-colors duration-200 ${state.sanity < 30 ? 'bg-red-500 shadow-[0_0_10px_red]' : 'bg-blue-500'}`;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Stars (Parallax)
+            state.bgStars.forEach(s => {
+                ctx.fillStyle = 'rgba(0, 255, 65, ' + (0.1 + Math.random() * 0.2) + ')';
+                ctx.fillRect(s.x, s.y, s.s, s.s);
+            });
+
+            // Draw Background Grid Lines
+            ctx.strokeStyle = "rgba(0, 255, 65, 0.03)";
+            ctx.lineWidth = 1;
+            let offX = (state.frame * gameSpeed * 0.5) % 50;
+            for (let x = -offX; x < canvas.width; x += 50) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+
+            // Draw Candles
+            for (let c of state.candles) {
+                let isGreen = c.type === 'green';
+                let mainColor = isGreen ? COL_GREEN : COL_RED;
+                let darkColor = isGreen ? COL_DARK_GREEN : COL_DARK_RED;
+
+                // Body
+                // ctx.fillStyle = darkColor; // Outline/Depth
+                // ctx.fillRect(c.x, c.y, c.w, c.h);
+
+                // Gradient Fill
+                let grad = ctx.createLinearGradient(c.x, c.y, c.x + c.w, c.y);
+                grad.addColorStop(0, mainColor);
+                grad.addColorStop(0.5, isGreen ? '#55ff88' : '#ff5588');
+                grad.addColorStop(1, mainColor);
+                ctx.fillStyle = grad;
+                ctx.fillRect(c.x + 1, c.y + 1, c.w - 2, c.h);
+
+                // Glow
+                ctx.shadowColor = mainColor;
+                ctx.shadowBlur = 10;
+                ctx.fillRect(c.x + 2, c.y, c.w - 4, 10); // Top glow strip
+                ctx.shadowBlur = 0;
+
+                // Wicks
+                ctx.fillStyle = mainColor;
+                // Top wick
+                ctx.fillRect(c.x + c.w / 2 - 1, c.y - c.wickTop, 2, c.wickTop);
+                // Bottom wick (visual mainly)
+                // ctx.fillRect(c.x + c.w/2 - 1, c.y + c.h, 2, c.wickBottom);
+            }
+
+            // Draw Obstacles (Bears/FUD)
+            for (let o of state.obstacles) {
+                ctx.fillStyle = '#fff';
+                ctx.font = '24px serif';
+                ctx.fillText("🐻", o.x, o.y + 24);
+                // Hitbox debug
+                // ctx.strokeStyle='red'; ctx.strokeRect(o.x, o.y, o.w, o.h);
+            }
+
+            // Draw Player
+            ctx.save();
+            ctx.translate(state.player.x + state.player.w / 2, state.player.y + state.player.h / 2);
+            // ctx.rotate(state.player.rot); // Optional tumbling
+
+            // Elk Body
+            ctx.fillStyle = COL_GOLD;
+            ctx.shadowColor = COL_GOLD;
+            ctx.shadowBlur = 15;
+            ctx.fillRect(-state.player.w / 2, -state.player.h / 2, state.player.w, state.player.h);
+
+            // Antlers
+            ctx.strokeStyle = COL_GOLD;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(5, -10); ctx.lineTo(15, -20);
+            ctx.moveTo(5, -10); ctx.lineTo(-5, -20);
+            ctx.stroke();
+
+            ctx.restore();
+
+            // Particles
+            state.particles.forEach(p => {
+                ctx.fillStyle = p.c;
+                ctx.globalAlpha = p.l;
+                ctx.fillRect(p.x, p.y, p.s, p.s);
+                ctx.globalAlpha = 1;
+            });
+        }
+
+        // --- UTILS ---
+        function updateStars(dt) {
+            state.bgStars.forEach(s => {
+                s.x -= s.speed * (gameSpeed * 0.1);
+                if (s.x < 0) s.x = canvas.width;
+            });
+        }
+
+        function updateParticles(dt) {
+            for (let i = state.particles.length - 1; i >= 0; i--) {
+                let p = state.particles[i];
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+                p.l -= 0.02 * dt;
+                if (p.l <= 0) state.particles.splice(i, 1);
+            }
+        }
+
+        function spawnParticles(x, y, n, c) {
+            for (let i = 0; i < n; i++) {
+                state.particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    l: 1,
+                    c: c,
+                    s: 2 + Math.random() * 2
+                });
+            }
+        }
+
+        function rectIntersect(x1, y1, w1, h1, x2, y2, w2, h2) {
+            return x2 < x1 + w1 && x2 + w2 > x1 && y2 < y1 + h1 && y2 + h2 > y1;
+        }
+
+        function saveScore(score) {
+            let scores = JSON.parse(localStorage.getItem('elk_runner_scores') || '[]');
+            scores.push(Math.floor(score));
+            scores.sort((a, b) => b - a);
+            scores = scores.slice(0, 5);
+            localStorage.setItem('elk_runner_scores', JSON.stringify(scores));
+            initLeaderboard();
+        }
+
+        function initLeaderboard() {
+            let scores = JSON.parse(localStorage.getItem('elk_runner_scores') || '[]');
+            let list = document.getElementById('leaderboard-list');
+            if (scores.length === 0) {
+                list.innerHTML = '<div class="text-xs text-white/30 font-normal">NO DATA</div>';
+                return;
+            }
+            list.innerHTML = scores.map((s, i) =>
+                `<div class="flex justify-between w-48"><span class="text-white/50 font-normal">#${i + 1}</span> <span class="bg-green-500/10 px-2 rounded text-green-400">$${s.toLocaleString()}</span></div>`
+            ).join('');
+        }
+
+        function gameOver(reason) {
+            state.running = false;
+            saveScore(state.score);
+            document.getElementById('hud').classList.add('opacity-0');
+            document.getElementById('game-over-screen').classList.remove('hidden');
+            document.getElementById('death-msg').innerText = `"${reason}"`;
+            document.getElementById('final-score').innerText = "$" + Math.floor(state.score).toLocaleString();
+        }
+
+        // Init
+        document.getElementById('start-btn').addEventListener('click', startGame);
+        document.getElementById('restart-btn').addEventListener('click', startGame);
+        initLeaderboard();
+
+    </script>
+</body>
+
+</html>

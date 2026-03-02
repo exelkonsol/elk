@@ -19,6 +19,15 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
       className="relative w-full overflow-hidden aspect-[3/2] md:aspect-auto md:h-[340px] lg:h-[400px] xl:h-[460px]"
       style={{ background: '#000' }}
     >
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px] z-30 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to right, rgba(255,255,255,0.04) 0%, rgba(212,160,23,0.65) 50%, rgba(255,255,255,0.04) 100%)',
+          boxShadow: '0 1px 14px rgba(0,0,0,0.7)',
+        }}
+      />
+
       <div className="absolute inset-0 pointer-events-none select-none">
         <div
           className="absolute inset-0"

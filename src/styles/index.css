@@ -198,9 +198,3 @@
 [data-theme="light"] .prose-invert {
   color: var(--text2);
 }
-
-/* Footer bg image — slightly more visible on light */
-[data-theme="light"] .footer-bg>div:first-child {
-  filter: grayscale(0.6) contrast(1.1) brightness(0.95) !important;
-  opacity: 0.15 !important;
-}

@@ -14,14 +14,17 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
   const IMAGE_URL = 'https://raw.githubusercontent.com/exelkonsol/elk/main/images/newfooter.png';
 
   return (
-    <footer className="relative w-full overflow-hidden aspect-[3/2]" style={{ background: '#000' }}>
+    <footer
+      className="relative w-full overflow-hidden aspect-[3/2] md:aspect-auto md:h-[420px] lg:h-[500px] xl:h-[560px]"
+      style={{ background: '#000' }}
+    >
       <div className="absolute inset-0 pointer-events-none select-none">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: `url('${IMAGE_URL}')`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center 52%',
+            backgroundPosition: 'center 38%',
             backgroundRepeat: 'no-repeat',
             filter: 'saturate(1.02) brightness(0.92)',
             opacity: 0.96,

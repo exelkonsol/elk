@@ -120,6 +120,14 @@
   background: rgba(255, 253, 248, 0.45);
 }
 
+[data-theme="light"] #soundscape {
+  --text: #120c05;
+  --text2: #24160a;
+  --text3: rgba(18, 12, 5, 0.90);
+  --text4: rgba(18, 12, 5, 0.80);
+  --text5: rgba(18, 12, 5, 0.66);
+}
+
 /* ════════════════════════
    LIGHT MODE — COMPONENT VISIBILITY FIXES
    Override hardcoded dark-mode-only inline colors

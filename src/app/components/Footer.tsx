@@ -24,12 +24,12 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
           className="absolute inset-0"
           style={{
             backgroundImage: "url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
+            backgroundSize: '140% auto',
+            backgroundPosition: 'center 54%',
             backgroundRepeat: 'no-repeat',
-            filter: 'blur(34px) saturate(1.12) brightness(1.03)',
-            transform: 'scale(1.08)',
-            opacity: 0.36,
+            filter: 'blur(52px) saturate(1.08) brightness(0.90)',
+            transform: 'scale(1.12)',
+            opacity: 0.28,
           }}
         />
         <div
@@ -40,27 +40,25 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
             filter: 'saturate(1.08) contrast(1.02) brightness(1.02)',
-            opacity: 0.82,
+            opacity: 0.80,
             WebkitMaskImage:
-              'radial-gradient(ellipse 112% 96% at 50% 52%, rgba(0,0,0,1) 44%, rgba(0,0,0,0.90) 60%, rgba(0,0,0,0.62) 78%, rgba(0,0,0,0.20) 92%, rgba(0,0,0,0) 100%)',
+              'radial-gradient(ellipse 130% 108% at 50% 52%, rgba(0,0,0,0.98) 32%, rgba(0,0,0,0.78) 54%, rgba(0,0,0,0.48) 72%, rgba(0,0,0,0.20) 86%, rgba(0,0,0,0) 100%)',
             maskImage:
-              'radial-gradient(ellipse 112% 96% at 50% 52%, rgba(0,0,0,1) 44%, rgba(0,0,0,0.90) 60%, rgba(0,0,0,0.62) 78%, rgba(0,0,0,0.20) 92%, rgba(0,0,0,0) 100%)',
+              'radial-gradient(ellipse 130% 108% at 50% 52%, rgba(0,0,0,0.98) 32%, rgba(0,0,0,0.78) 54%, rgba(0,0,0,0.48) 72%, rgba(0,0,0,0.20) 86%, rgba(0,0,0,0) 100%)',
           }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(ellipse 96% 86% at 50% 52%, rgba(10,10,11,0.02) 0%, rgba(10,10,11,0.14) 48%, rgba(10,10,11,0.38) 78%, rgba(10,10,11,0.70) 100%)',
+              'radial-gradient(ellipse 122% 98% at 50% 52%, rgba(10,10,11,0.00) 0%, rgba(10,10,11,0.08) 58%, rgba(10,10,11,0.24) 74%, rgba(10,10,11,0.56) 88%, rgba(10,10,11,0.86) 100%)',
           }}
         />
         <div
           className="absolute inset-0"
           style={{
-            background: `
-              linear-gradient(to right, rgba(10,10,11,0.90) 0%, rgba(10,10,11,0.58) 14%, rgba(10,10,11,0.22) 30%, rgba(10,10,11,0.08) 50%, rgba(10,10,11,0.22) 70%, rgba(10,10,11,0.58) 86%, rgba(10,10,11,0.90) 100%),
-              linear-gradient(to bottom, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.52) 16%, rgba(10,10,11,0.18) 32%, rgba(10,10,11,0.10) 58%, rgba(10,10,11,0.26) 78%, rgba(10,10,11,0.70) 90%, rgba(10,10,11,0.95) 100%)
-            `,
+            background:
+              'linear-gradient(to bottom, rgba(10,10,11,0.58) 0%, rgba(10,10,11,0.16) 22%, rgba(10,10,11,0.20) 68%, rgba(10,10,11,0.80) 100%)',
           }}
         />
       </div>

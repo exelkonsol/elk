@@ -20,6 +20,22 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
       }}
     >
       <div className="footer-bg absolute inset-0 pointer-events-none">
+
+        {/* Layer 1 — deep blur bloom, very low opacity for ambient color */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 52%',
+            backgroundRepeat: 'no-repeat',
+            filter: 'blur(90px) saturate(1.1) brightness(0.7)',
+            transform: 'scale(1.25)',
+            opacity: 0.18,
+          }}
+        />
+
+        {/* Layer 2 — main image, tightly masked with a wide soft radial fade */}
         <div
           className="absolute inset-0"
           style={{
@@ -27,31 +43,50 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
             backgroundSize: 'contain',
             backgroundPosition: 'center 52%',
             backgroundRepeat: 'no-repeat',
-            filter: 'blur(72px) saturate(1.08) brightness(0.84)',
-            transform: 'scale(1.18)',
-            opacity: 0.34,
+            filter: 'saturate(1.0) contrast(0.97) brightness(0.88)',
+            opacity: 0.58,
+            WebkitMaskImage: [
+              'radial-gradient(ellipse 72% 90% at 50% 52%,',
+              '  rgba(0,0,0,1)   0%,',
+              '  rgba(0,0,0,0.92) 28%,',
+              '  rgba(0,0,0,0.72) 48%,',
+              '  rgba(0,0,0,0.38) 64%,',
+              '  rgba(0,0,0,0.12) 78%,',
+              '  rgba(0,0,0,0.00) 90%)',
+            ].join(''),
+            maskImage: [
+              'radial-gradient(ellipse 72% 90% at 50% 52%,',
+              '  rgba(0,0,0,1)   0%,',
+              '  rgba(0,0,0,0.92) 28%,',
+              '  rgba(0,0,0,0.72) 48%,',
+              '  rgba(0,0,0,0.38) 64%,',
+              '  rgba(0,0,0,0.12) 78%,',
+              '  rgba(0,0,0,0.00) 90%)',
+            ].join(''),
           }}
         />
-        <div
-          className="absolute inset-0 transition-all duration-300"
-          style={{
-            backgroundImage: "url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png')",
-            backgroundSize: 'contain',
-            backgroundPosition: 'center 52%',
-            backgroundRepeat: 'no-repeat',
-            filter: 'saturate(1.03) contrast(1.00) brightness(0.95)',
-            opacity: 0.74,
-            WebkitMaskImage:
-              'radial-gradient(ellipse 160% 128% at 50% 52%, rgba(0,0,0,1) 30%, rgba(0,0,0,0.86) 52%, rgba(0,0,0,0.58) 72%, rgba(0,0,0,0.22) 88%, rgba(0,0,0,0.00) 100%)',
-            maskImage:
-              'radial-gradient(ellipse 160% 128% at 50% 52%, rgba(0,0,0,1) 30%, rgba(0,0,0,0.86) 52%, rgba(0,0,0,0.58) 72%, rgba(0,0,0,0.22) 88%, rgba(0,0,0,0.00) 100%)',
-          }}
-        />
+
+        {/* Layer 3 — top & bottom linear fade to kill any remaining hard edges */}
         <div
           className="absolute inset-0"
           style={{
-            background:
-              'radial-gradient(ellipse 140% 112% at 50% 52%, rgba(10,10,11,0.00) 0%, rgba(10,10,11,0.08) 52%, rgba(10,10,11,0.28) 74%, rgba(10,10,11,0.62) 90%, rgba(10,10,11,0.92) 100%), linear-gradient(to bottom, rgba(10,10,11,0.58) 0%, rgba(10,10,11,0.18) 22%, rgba(10,10,11,0.26) 72%, rgba(10,10,11,0.92) 100%)',
+            background: [
+              'linear-gradient(to bottom,',
+              '  #0a0a0b               0%,',
+              '  rgba(10,10,11,0.60)  10%,',
+              '  rgba(10,10,11,0.00)  28%,',
+              '  rgba(10,10,11,0.00)  70%,',
+              '  rgba(10,10,11,0.60)  88%,',
+              '  #0a0a0b              100%)',
+              ',',
+              'linear-gradient(to right,',
+              '  #0a0a0b               0%,',
+              '  rgba(10,10,11,0.55)  10%,',
+              '  rgba(10,10,11,0.00)  26%,',
+              '  rgba(10,10,11,0.00)  74%,',
+              '  rgba(10,10,11,0.55)  90%,',
+              '  #0a0a0b              100%)',
+            ].join(''),
           }}
         />
       </div>

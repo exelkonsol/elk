@@ -11,151 +11,98 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
     navigator.clipboard.writeText(ca).then(() => displayToast('CA COPIED'));
   };
 
-  // Upload newfooter.jpg to your repo/CDN and replace this URL
-  const IMAGE_URL =
-    'https://raw.githubusercontent.com/exelkonsol/elk/main/images/newfooter.png';
+  const IMAGE_URL = 'https://raw.githubusercontent.com/exelkonsol/elk/main/images/newfooter.png';
 
   return (
-    <footer
-      className="relative overflow-hidden py-20 sm:py-28 px-6 min-h-[380px] sm:min-h-[440px]"
-      style={{
-        background: '#0a0a0b',
-        borderTop: '1px solid rgba(255,255,255,0.07)',
-      }}
-    >
-      {/* ── BACKGROUND LAYERS ───────────────────────────────── */}
+    <footer className="relative w-full overflow-hidden aspect-[3/2]" style={{ background: '#000' }}>
       <div className="absolute inset-0 pointer-events-none select-none">
-
-        {/* Layer 1 — soft ambient bloom behind everything */}
-        <div
-          className="absolute inset-[-10%]"
-          style={{
-            backgroundImage: `url('${IMAGE_URL}')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'blur(80px) saturate(1.2) brightness(0.55)',
-            opacity: 0.18,
-          }}
-        />
-
-        {/* Layer 2 — main image, cover fill, light radial fade on edges only */}
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: `url('${IMAGE_URL}')`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: 'center 52%',
             backgroundRepeat: 'no-repeat',
-            filter: 'saturate(0.95) brightness(0.82)',
-            opacity: 0.52,
-            // Gentle radial fade — image already has black edges so
-            // we only need a soft vignette, not an aggressive crop mask
-            WebkitMaskImage:
-              'radial-gradient(ellipse 90% 88% at 50% 50%, #000 0%, #000 38%, rgba(0,0,0,0.88) 56%, rgba(0,0,0,0.50) 74%, rgba(0,0,0,0.14) 88%, transparent 100%)',
-            maskImage:
-              'radial-gradient(ellipse 90% 88% at 50% 50%, #000 0%, #000 38%, rgba(0,0,0,0.88) 56%, rgba(0,0,0,0.50) 74%, rgba(0,0,0,0.14) 88%, transparent 100%)',
+            filter: 'saturate(1.02) brightness(0.92)',
+            opacity: 0.96,
           }}
         />
-
-        {/* Layer 3 — edge reinforcement, especially top/bottom */}
         <div
           className="absolute inset-0"
           style={{
-            background: [
-              'linear-gradient(to bottom,',
-              '  #0a0a0b 0%,',
-              '  rgba(10,10,11,0.75) 6%,',
-              '  rgba(10,10,11,0.18) 18%,',
-              '  transparent 32%)',
-              ',',
-              'linear-gradient(to top,',
-              '  #0a0a0b 0%,',
-              '  rgba(10,10,11,0.75) 6%,',
-              '  rgba(10,10,11,0.18) 18%,',
-              '  transparent 32%)',
-              ',',
-              'linear-gradient(to right,',
-              '  #0a0a0b 0%,',
-              '  rgba(10,10,11,0.60) 4%,',
-              '  rgba(10,10,11,0.12) 14%,',
-              '  transparent 26%)',
-              ',',
-              'linear-gradient(to left,',
-              '  #0a0a0b 0%,',
-              '  rgba(10,10,11,0.60) 4%,',
-              '  rgba(10,10,11,0.12) 14%,',
-              '  transparent 26%)',
-            ].join(''),
+            background:
+              'linear-gradient(to bottom, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.14) 40%, rgba(0,0,0,0.38) 100%)',
           }}
         />
       </div>
 
-      {/* ── CONTENT ─────────────────────────────────────────── */}
-      <div className="relative z-20 max-w-2xl mx-auto text-center space-y-10">
-        <blockquote
-          className="font-['Crimson_Text'] text-base sm:text-lg leading-relaxed italic px-4"
-          style={{ color: 'rgba(230,222,210,0.45)' }}
-        >
-          "The antlers are heavy. We carry them together."
-        </blockquote>
+      <div className="relative z-20 h-full flex items-center justify-center px-4 sm:px-6">
+        <div className="max-w-2xl w-full text-center space-y-5 sm:space-y-8">
+          <blockquote
+            className="font-['Crimson_Text'] text-sm sm:text-lg leading-relaxed italic px-4"
+            style={{ color: 'rgba(235,228,217,0.68)', textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}
+          >
+            "The antlers are heavy. We carry them together."
+          </blockquote>
 
-        <div className="flex justify-center gap-8">
-          <a
-            href="https://x.com/ElkBurden"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Twitter"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors hover:text-[#c8c0b4]"
-            style={{ color: 'rgba(230,222,210,0.22)' }}
-          >
-            <Twitter className="w-5 h-5" />
-          </a>
-          <a
-            href="https://x.com/i/communities/2014904566983094598"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Community"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors hover:text-[#c8c0b4]"
-            style={{ color: 'rgba(230,222,210,0.22)' }}
-          >
-            <Users className="w-5 h-5" />
-          </a>
-          <a
-            href="https://birdeye.so/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump?chain=solana"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Chart"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors hover:text-[#c8c0b4]"
-            style={{ color: 'rgba(230,222,210,0.22)' }}
-          >
-            <Activity className="w-5 h-5" />
-          </a>
-          <a
-            href="https://solscan.io/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Solscan"
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors hover:text-[#c8c0b4]"
-            style={{ color: 'rgba(230,222,210,0.22)' }}
-          >
-            <LinkIcon className="w-5 h-5" />
-          </a>
-        </div>
+          <div className="flex justify-center gap-6 sm:gap-8">
+            <a
+              href="https://x.com/ElkBurden"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Twitter"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors hover:text-[#d4c7b6]"
+              style={{ color: 'rgba(235,228,217,0.56)' }}
+            >
+              <Twitter className="w-5 h-5" />
+            </a>
+            <a
+              href="https://x.com/i/communities/2014904566983094598"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Community"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors hover:text-[#d4c7b6]"
+              style={{ color: 'rgba(235,228,217,0.56)' }}
+            >
+              <Users className="w-5 h-5" />
+            </a>
+            <a
+              href="https://birdeye.so/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump?chain=solana"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chart"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors hover:text-[#d4c7b6]"
+              style={{ color: 'rgba(235,228,217,0.56)' }}
+            >
+              <Activity className="w-5 h-5" />
+            </a>
+            <a
+              href="https://solscan.io/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Solscan"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors hover:text-[#d4c7b6]"
+              style={{ color: 'rgba(235,228,217,0.56)' }}
+            >
+              <LinkIcon className="w-5 h-5" />
+            </a>
+          </div>
 
-        <div>
-          <button
-            onClick={copyCA}
-            className="font-['JetBrains_Mono'] text-[0.6rem] tracking-widest break-all transition-colors hover:text-[rgba(230,222,210,0.45)]"
-            style={{ color: 'rgba(230,222,210,0.22)' }}
-          >
-            8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump
-          </button>
-          <p
-            className="font-['JetBrains_Mono'] text-[0.55rem] tracking-widest uppercase mt-4"
-            style={{ color: 'rgba(230,222,210,0.12)' }}
-          >
-            (c) 2025 $ELK - The Burden We Carry Together
-          </p>
+          <div>
+            <button
+              onClick={copyCA}
+              className="font-['JetBrains_Mono'] text-[0.52rem] sm:text-[0.6rem] tracking-[0.16em] sm:tracking-widest break-all transition-colors hover:text-[rgba(235,228,217,0.86)]"
+              style={{ color: 'rgba(235,228,217,0.70)', textShadow: '0 2px 8px rgba(0,0,0,0.85)' }}
+            >
+              8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump
+            </button>
+            <p
+              className="font-['JetBrains_Mono'] text-[0.48rem] sm:text-[0.55rem] tracking-[0.18em] sm:tracking-widest uppercase mt-3 sm:mt-4"
+              style={{ color: 'rgba(235,228,217,0.52)', textShadow: '0 2px 8px rgba(0,0,0,0.85)' }}
+            >
+              (c) 2025 $ELK - The Burden We Carry Together
+            </p>
+          </div>
         </div>
       </div>
     </footer>

@@ -13,7 +13,7 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
 
   // Upload newfooter.jpg to your repo/CDN and replace this URL
   const IMAGE_URL =
-    'https://raw.githubusercontent.com/exelkonsol/elk/main/images/newfooter.jpg';
+    'https://raw.githubusercontent.com/exelkonsol/elk/main/images/newfooter.png';
 
   return (
     <footer

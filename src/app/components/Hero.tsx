@@ -56,9 +56,6 @@ const Hero: React.FC = () => {
                 src="https://raw.githubusercontent.com/exelkonsol/elk/main/images/headerlogo.png"
                 alt="$ELK"
                 className="hero-logo w-[240px] h-[240px] sm:w-[340px] sm:h-[340px] md:w-[440px] md:h-[440px] lg:w-[520px] lg:h-[520px] object-contain select-none transition-all duration-700 hover:scale-105"
-                style={{
-                  filter: 'brightness(1.1) contrast(1.03) drop-shadow(0 20px 60px rgba(0,0,0,0.7))',
-                }}
                 loading="eager"
               />
             </div>

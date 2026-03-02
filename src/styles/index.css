@@ -1,0 +1,121 @@
+@import './theme.css';
+@import './tailwind.css';
+@import './components.css';
+
+/* ════════════════════════
+   ATMOSPHERE LAYERS
+════════════════════════ */
+.global-bg {
+  position: fixed;
+  inset: 0;
+  background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/elk2.png');
+  background-size: cover;
+  background-position: center top;
+  opacity: var(--global-bg-o);
+  z-index: -10;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+[data-theme="light"] .global-bg {
+  filter: sepia(0.4) brightness(0.48) contrast(1.2);
+}
+
+.global-tint {
+  position: fixed;
+  inset: 0;
+  background: var(--tint);
+  z-index: -9;
+  pointer-events: none;
+  transition: background 0.35s ease;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 55%, rgba(0,0,0,0.88) 100%);
+  pointer-events: none;
+  z-index: -5;
+}
+
+[data-theme="light"] .vignette {
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(80,65,40,0.28) 55%, rgba(65,50,28,0.65) 100%);
+}
+
+.noise {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: var(--noise-o);
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4t5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3powQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTqz/GtrGuXfbyyBniKykOWQWGqwwMA7QiYAxi+IlPdqo+hYHnUt5ZPfnsHJyNiDtnpJyayNBkF6cWoYGAMY92ZBKLsilhkc37+cMLWPDtp5+8AAAAElFTkSuQmCC");
+  background-repeat: repeat;
+  transition: opacity 0.35s ease;
+}
+
+/* ════════════════════════
+   GLASS UTILITY
+════════════════════════ */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  transition: background 0.35s ease, border-color 0.25s ease;
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .glass {
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+  }
+}
+
+/* ════════════════════════
+   SCROLL REVEAL
+════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 {
+  transition-delay: 0.12s;
+}
+
+.reveal-delay-2 {
+  transition-delay: 0.24s;
+}
+
+.reveal-delay-3 {
+  transition-delay: 0.36s;
+}
+
+.reveal-delay-4 {
+  transition-delay: 0.48s;
+}
+
+/* ════════════════════════
+   SECTION BACKGROUNDS (LIGHT MODE)
+════════════════════════ */
+[data-theme="light"] .chart-section {
+  background: rgba(0,0,0,0.06);
+}
+
+[data-theme="light"] .mechanisms-section {
+  background: rgba(255,255,255,0.22);
+}
+
+[data-theme="light"] .quote-section-wrapper {
+  background: rgba(0,0,0,0.06);
+}
+
+[data-theme="light"] .soundscape-section {
+  background: rgba(255,255,255,0.22);
+}

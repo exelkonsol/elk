@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="$ELK - A Solana memecoin rooted in existential philosophy. The antlers are heavy. We carry them together.">
+<meta name="theme-color" content="#0a0a0b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com https://www.gstatic.com https://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https: wss:; media-src 'self' https: blob: data:; frame-src 'self' https:;">
+<meta property="og:title" content="$ELK - The Burden We Carry Together">
+<meta property="og:description" content="The tragedy of a species becoming unfit for life by over-evolving one ability.">
+<meta property="og:image" content="https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="https://raw.githubusercontent.com/exelkonsol/elk/main/images/pumpfun.png" type="image/png">
+<title>$ELK — The Burden We Carry Together</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = 'https://zbugvtypukklxpvrzxra.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpidWd2dHlwdWtrbHhwdnJ6eHJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MjMwNzgsImV4cCI6MjA4NTk5OTA3OH0.aHYE5M0NOsxqJakcKmKTi2MfaxZbPhmMsiz9Hi6zQMc';
+const ALLOWED_MECHANISMS = ['isolation', 'anchoring', 'distraction', 'sublimation'];
+const CYCLE_LENGTH_DAYS = 14;
+const CYCLE_LENGTH_MS = CYCLE_LENGTH_DAYS * 24 * 60 * 60 * 1000;
+const STORAGE_KEYS = { HAS_VOTED:'elk_has_voted', VOTED_MECH:'elk_voted_mech', VOTED_CYCLE:'elk_voted_cycle', LOCAL_VOTES:'elk_local_votes' };
+let supabaseClient=null,useSupabase=false,votingEnabled=true,isVoting=false,currentCycle=1;
+let currentVotes={isolation:0,anchoring:0,distraction:0,sublimation:0},realtimeChannel=null;
+const updateConnectionStatus=(s)=>{const el=document.getElementById('vote-status-indicator');if(!el)return;const c={connected:'bg-green-500/50',error:'bg-red-500/50',loading:'bg-yellow-500/50'};el.className=`w-2 h-2 rounded-full ${c[s]||c.loading} animate-pulse`;};
+const updateVoteUI=(votes)=>{if(votes)currentVotes=votes;ALLOWED_MECHANISMS.forEach(m=>{const el=document.querySelector(`[data-mechanism="${m}"] .vote-count`);if(el)el.textContent=(currentVotes[m]||0).toLocaleString();});};
+const lockButtons=(votedMech)=>{document.querySelectorAll('.vote-btn').forEach(b=>{b.disabled=true;b.classList.add('opacity-50','cursor-not-allowed');b.textContent='Voted';});const card=document.querySelector(`[data-mechanism="${votedMech}"]`);if(card)card.classList.add('voted');};
+const resetButtons=()=>{document.querySelectorAll('.vote-btn').forEach(b=>{b.disabled=false;b.classList.remove('opacity-50','cursor-not-allowed');b.textContent='Vote';});document.querySelectorAll('.mechanism-card').forEach(c=>c.classList.remove('voted'));};
+const syncVoteLock=()=>{const votedCycle=parseInt(localStorage.getItem(STORAGE_KEYS.VOTED_CYCLE)||'0');const hasVoted=localStorage.getItem(STORAGE_KEYS.HAS_VOTED)==='true';if(votedCycle!==currentCycle){localStorage.removeItem(STORAGE_KEYS.HAS_VOTED);localStorage.removeItem(STORAGE_KEYS.VOTED_MECH);localStorage.removeItem(STORAGE_KEYS.VOTED_CYCLE);resetButtons();}else if(hasVoted){const mech=localStorage.getItem(STORAGE_KEYS.VOTED_MECH);if(mech)lockButtons(mech);}};
+const initSupabase=async()=>{if(SUPABASE_URL==='https://your-project.supabase.co')return false;try{supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);const{data,error}=await supabaseClient.from('elk_votes').select('*').eq('id','current').single();if(error){if(error.code==='PGRST116')await createInitialVoteRecord();else throw error;}else{currentVotes={isolation:data.isolation||0,anchoring:data.anchoring||0,distraction:data.distraction||0,sublimation:data.sublimation||0};currentCycle=data.cycle||1;}setupRealtimeSubscription();useSupabase=true;updateConnectionStatus('connected');return true;}catch(e){console.error('Supabase init failed:',e);updateConnectionStatus('error');return false;}};
+const createInitialVoteRecord=async()=>{const now=new Date();const cycleEnd=new Date(now.getTime()+CYCLE_LENGTH_MS);const{error}=await supabaseClient.from('elk_votes').insert({id:'current',isolation:0,anchoring:0,distraction:0,sublimation:0,cycle:1,cycle_started_at:now.toISOString(),cycle_ends_at:cycleEnd.toISOString()});if(error)throw error;};
+const setupRealtimeSubscription=()=>{realtimeChannel=supabaseClient.channel('elk_votes_changes').on('postgres_changes',{event:'*',schema:'public',table:'elk_votes',filter:'id=eq.current'},(payload)=>{if(payload.new){currentVotes={isolation:payload.new.isolation||0,anchoring:payload.new.anchoring||0,distraction:payload.new.distraction||0,sublimation:payload.new.sublimation||0};if(payload.new.cycle)currentCycle=payload.new.cycle;updateVoteUI();syncVoteLock();}}).subscribe();};
+const voteSupabase=async(mechanism)=>{const{data,error}=await supabaseClient.rpc('increment_vote',{mechanism_name:mechanism});if(error)throw error;return data;};
+const getLocalVotes=()=>{const s=localStorage.getItem(STORAGE_KEYS.LOCAL_VOTES);if(s){try{return JSON.parse(s);}catch(e){}}return{isolation:0,anchoring:0,distraction:0,sublimation:0};};
+const saveLocalVotes=(votes)=>{localStorage.setItem(STORAGE_KEYS.LOCAL_VOTES,JSON.stringify(votes));};
+const voteLocal=(mechanism)=>{const votes=getLocalVotes();votes[mechanism]=(votes[mechanism]||0)+1;saveLocalVotes(votes);return votes;};
+window.handleVote=async(mechanism)=>{if(!votingEnabled){showToast('VOTING UNAVAILABLE');return;}if(isVoting){showToast('PROCESSING...');return;}if(!ALLOWED_MECHANISMS.includes(mechanism)){showToast('INVALID MECHANISM');return;}const hasVoted=localStorage.getItem(STORAGE_KEYS.HAS_VOTED)==='true';const votedCycle=parseInt(localStorage.getItem(STORAGE_KEYS.VOTED_CYCLE)||'0');if(hasVoted&&votedCycle===currentCycle){showToast('ALREADY VOTED THIS CYCLE');return;}isVoting=true;showToast('VOTING...');try{if(useSupabase)await voteSupabase(mechanism);else{const votes=voteLocal(mechanism);updateVoteUI(votes);}localStorage.setItem(STORAGE_KEYS.HAS_VOTED,'true');localStorage.setItem(STORAGE_KEYS.VOTED_MECH,mechanism);localStorage.setItem(STORAGE_KEYS.VOTED_CYCLE,String(currentCycle));lockButtons(mechanism);showToast('VOTE RECORDED');}catch(e){console.error('Voting failed:',e);showToast('VOTE FAILED — RETRY');}finally{isVoting=false;}};
+const initVoting=async()=>{updateConnectionStatus('loading');const ok=await initSupabase();if(!ok){currentVotes=getLocalVotes();updateConnectionStatus('connected');}updateVoteUI();syncVoteLock();};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initVoting);else initVoting();
+window.votingEnabled=votingEnabled;
+</script>
+
+<style>
+/* ════════════════════════
+   THEME VARIABLES — DARK
+════════════════════════ */
+:root {
+  --bg:        #0a0a0b;
+  --bg2:       #111114;
+  --card:      #141416;
+  --card2:     #1c1c20;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.12);
+  --text:      #f0ebe3;
+  --text2:     #c8c0b4;
+  --text3:     rgba(230,222,210,0.45);
+  --text4:     rgba(230,222,210,0.22);
+  --text5:     rgba(230,222,210,0.12);
+  --red:       #c41e3a;
+  --red-dim:   rgba(139,26,26,0.25);
+  --red-glow:  rgba(196,30,58,0.15);
+  --gold:      #d4a017;
+  --gold-dim:  rgba(212,160,23,0.12);
+  --glass:     rgba(8,8,12,0.55);
+  --nav-bg:    rgba(5,5,8,0.93);
+  --noise-o:   0.038;
+  --global-bg-o: 0.26;
+  --tint:      rgba(0,0,0,0.48);
+  --shadow-card: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+/* ════════════════════════
+   THEME VARIABLES — LIGHT
+   Warm parchment / aged vellum — philosophical, somber, high contrast
+════════════════════════ */
+[data-theme="light"] {
+  /* Backgrounds — clear warm parchment hierarchy */
+  --bg:        #c8bfa6;
+  --bg2:       #bfb59a;
+  --card:      #dfd8c4;
+  --card2:     #d8cfb8;
+
+  /* Borders — subtle warm separation */
+  --border:    rgba(70,50,15,0.22);
+  --border2:   rgba(70,50,15,0.40);
+
+  /* Text — very dark warm browns for WCAG compliance */
+  --text:      #160f05;
+  --text2:     #2a1e0a;
+  --text3:     rgba(22,15,5,0.72);
+  --text4:     rgba(22,15,5,0.50);
+  --text5:     rgba(22,15,5,0.26);
+
+  /* Accent colors — deep, readable on parchment */
+  --red:       #7a1020;
+  --red-dim:   rgba(122,16,32,0.18);
+  --red-glow:  rgba(122,16,32,0.12);
+  --gold:      #7a5200;
+  --gold-dim:  rgba(122,82,0,0.18);
+
+  /* Surfaces */
+  --glass:     rgba(220,212,192,0.93);
+  --nav-bg:    rgba(205,196,175,0.97);
+
+  /* Overlays */
+  --noise-o:   0.025;
+  --global-bg-o: 0.65;
+  --tint:      rgba(90,75,50,0.22);
+
+  /* Shadows — warm, soft depth */
+  --shadow-card: 0 4px 24px rgba(60,42,12,0.22), 0 1px 4px rgba(60,42,12,0.12);
+}
+
+/* ════════════════════════
+   BASE
+════════════════════════ */
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; touch-action: manipulation; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); color: var(--text); font-family: 'Crimson Text', Georgia, serif; overflow-x: hidden; transition: background 0.35s ease, color 0.25s ease; }
+* { box-sizing: border-box; }
+h1,h2,h3,h4 { font-family: 'Cinzel', serif; }
+
+/* ════════════════════════
+   ATMOSPHERE LAYERS
+════════════════════════ */
+.global-bg {
+  position: fixed; inset: 0;
+  background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/elk2.png');
+  background-size: cover; background-position: center top;
+  opacity: var(--global-bg-o); z-index: -10;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+[data-theme="light"] .global-bg {
+  filter: sepia(0.4) brightness(0.48) contrast(1.2);
+}
+.global-tint { position: fixed; inset: 0; background: var(--tint); z-index: -9; pointer-events: none; transition: background 0.35s ease; }
+.vignette { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 55%, rgba(0,0,0,0.88) 100%); pointer-events: none; z-index: -5; }
+[data-theme="light"] .vignette { background: radial-gradient(ellipse at center, transparent 0%, rgba(80,65,40,0.28) 55%, rgba(65,50,28,0.65) 100%); }
+.noise {
+  position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+  pointer-events: none; z-index: 50; opacity: var(--noise-o);
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4t5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3powQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTqz/GtrGuXfbyyBniKykOWQWGqwwMA7QiYAxi+IlPdqo+hYHnUt5ZPfnsHJyNiDtnpJyayNBkF6cWoYGAMY92ZBKLsilhkc37+cMLWPDtp5+8AAAAElFTkSuQmCC");
+  background-repeat: repeat; transition: opacity 0.35s ease;
+}
+
+/* ════════════════════════
+   GLASS UTILITY
+════════════════════════ */
+.glass {
+  background: var(--glass); border: 1px solid var(--border);
+  transition: background 0.35s ease, border-color 0.25s ease;
+}
+@supports (backdrop-filter: blur(1px)) {
+  .glass { backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); }
+}
+
+/* ════════════════════════
+   NAVIGATION
+════════════════════════ */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 68px; display: flex; align-items: center;
+  background: var(--nav-bg); border-bottom: 1px solid var(--border);
+  transition: background 0.35s ease, border-color 0.25s ease;
+}
+@supports (backdrop-filter: blur(1px)) {
+  #navbar { backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); background: color-mix(in srgb, var(--nav-bg) 80%, transparent); }
+}
+.nav-logo {
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.1rem;
+  letter-spacing: 0.3em; color: var(--text); text-decoration: none;
+  transition: color 0.2s; text-transform: uppercase;
+}
+.nav-logo:hover { color: var(--gold); }
+.nav-link {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--text3); text-decoration: none;
+  transition: color 0.25s; padding: 4px 0; position: relative;
+}
+.nav-link::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px; background: var(--gold); transform: scaleX(0); transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); transform-origin: center; }
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--text2); }
+.nav-link.active::after { transform: scaleX(1); }
+.ca-btn {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text3); border: 1px solid var(--border); background: transparent;
+  padding: 6px 12px; border-radius: 4px; cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s; white-space: nowrap; min-height: 36px;
+}
+.ca-btn:hover { color: var(--text); border-color: var(--border2); background: rgba(255,255,255,0.04); }
+[data-theme="light"] .ca-btn { color: var(--text3); border-color: var(--border); }
+[data-theme="light"] .ca-btn:hover { color: var(--text); background: rgba(0,0,0,0.07); border-color: var(--border2); }
+.theme-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 12px;
+  border-radius: 17px; border: 1px solid var(--border2);
+  background: var(--card2); cursor: pointer;
+  color: var(--text3); font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+  transition: color 0.25s, border-color 0.25s, background 0.25s, box-shadow 0.25s;
+  white-space: nowrap; position: relative; overflow: hidden;
+}
+.theme-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--gold-dim) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.25s;
+}
+.theme-btn:hover { color: var(--text); border-color: var(--gold); box-shadow: 0 0 12px var(--gold-dim); }
+.theme-btn:hover::before { opacity: 1; }
+.theme-btn .theme-track {
+  width: 28px; height: 16px; border-radius: 8px;
+  border: 1px solid var(--border2); background: var(--bg);
+  position: relative; flex-shrink: 0; transition: background 0.3s, border-color 0.3s;
+}
+.theme-btn .theme-knob {
+  position: absolute; top: 2px; left: 2px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--text3); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), background 0.3s;
+}
+[data-theme="light"] .theme-btn { color: var(--text3); border-color: var(--border2); background: var(--card2); }
+[data-theme="light"] .theme-btn .theme-track { background: rgba(122,82,0,0.2); border-color: var(--gold); }
+[data-theme="light"] .theme-btn .theme-knob { transform: translateX(12px); background: var(--gold); }
+
+/* ════════════════════════
+   MOBILE MENU
+════════════════════════ */
+#mobile-menu {
+  position: fixed; top: 68px; left: 0; right: 0;
+  background: var(--nav-bg); border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem 1.5rem; z-index: 99;
+  transform: translateY(-100%); opacity: 0; pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+  display: flex; flex-direction: column; gap: 0.25rem;
+}
+@supports (backdrop-filter: blur(1px)) {
+  #mobile-menu { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+}
+#mobile-menu.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.mobile-link {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--text3); padding: 12px 14px; border-radius: 6px;
+  text-decoration: none; transition: color 0.2s, background 0.2s; min-height: 44px; display: flex; align-items: center;
+}
+.mobile-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+[data-theme="light"] .mobile-link { color: var(--text3); }
+[data-theme="light"] .mobile-link:hover { color: var(--text); background: rgba(0,0,0,0.08); }
+#hamburger-btn .hbl { background: var(--text3); transition: all 0.3s; }
+[data-theme="light"] #hamburger-btn .hbl { background: var(--text3); }
+#hamburger-btn.open .hbl:nth-child(1) { transform: rotate(45deg) translate(3px, 3px); }
+#hamburger-btn.open .hbl:nth-child(2) { opacity: 0; }
+#hamburger-btn.open .hbl:nth-child(3) { transform: rotate(-45deg) translate(3px, -3px); }
+
+/* ════════════════════════
+   HERO
+════════════════════════ */
+#hero {
+  position: relative; min-height: 100svh; display: flex; align-items: center; justify-content: center;
+  padding: 100px 1.5rem 80px; overflow: hidden;
+}
+.hero-fog-a, .hero-fog-b {
+  position: absolute; pointer-events: none; border-radius: 50%; z-index: 0;
+}
+.hero-fog-a {
+  width: 65vw; height: 45vw; max-width: 900px;
+  left: -10%; top: 20%;
+  background: radial-gradient(ellipse, rgba(139,26,26,0.1) 0%, transparent 70%);
+  animation: fog-drift-a 14s ease-in-out infinite alternate;
+}
+.hero-fog-b {
+  width: 55vw; height: 40vw; max-width: 750px;
+  right: -10%; top: 30%;
+  background: radial-gradient(ellipse, rgba(184,134,11,0.07) 0%, transparent 70%);
+  animation: fog-drift-b 18s ease-in-out infinite alternate;
+}
+@keyframes fog-drift-a { 0% { transform: translateX(-15px) translateY(0) scale(1); opacity: 0.6; } 100% { transform: translateX(15px) translateY(-18px) scale(1.08); opacity: 1; } }
+@keyframes fog-drift-b { 0% { transform: translateX(12px) translateY(-8px) scale(0.95); opacity: 0.5; } 100% { transform: translateX(-12px) translateY(12px) scale(1.05); opacity: 0.9; } }
+.hero-content { position: relative; z-index: 2; text-align: center; max-width: 860px; width: 100%; }
+@keyframes hero-in { from { opacity: 0; transform: translateY(30px) scale(1.04); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.hero-animate { animation: hero-in 1.2s cubic-bezier(0.22,1,0.36,1) both; }
+.hero-logo { transition: transform 0.8s cubic-bezier(0.22,1,0.36,1), filter 0.6s ease; filter: brightness(1.1) drop-shadow(0 20px 60px rgba(0,0,0,0.7)); display: block; }
+.hero-logo:hover { transform: translateY(-6px) scale(1.02); filter: brightness(1.25) drop-shadow(0 28px 70px rgba(0,0,0,0.6)); }
+[data-theme="light"] .hero-logo {
+  filter: invert(1) sepia(0.45) saturate(0.55) brightness(0.18) drop-shadow(0 16px 40px rgba(0,0,0,0.3));
+}
+[data-theme="light"] .hero-logo:hover {
+  filter: invert(1) sepia(0.55) saturate(0.65) brightness(0.14) drop-shadow(0 22px 50px rgba(0,0,0,0.35));
+}
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
+  letter-spacing: 0.55em; text-transform: uppercase; color: var(--text4);
+}
+[data-theme="light"] .hero-eyebrow { color: var(--text3); }
+.hero-quote {
+  font-family: 'Cinzel', serif; font-size: clamp(1.1rem, 3.5vw, 2.2rem);
+  font-weight: 400; color: var(--text); line-height: 1.5;
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+[data-theme="light"] .hero-quote {
+  text-shadow: 0 1px 10px rgba(0,0,0,0.2);
+}
+.hero-quote.fading { opacity: 0; transform: translateY(8px); }
+.hero-source {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--text4);
+}
+[data-theme="light"] .hero-source { color: var(--text3); }
+
+/* ════════════════════════
+   BUTTONS
+════════════════════════ */
+.btn-primary {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+  background: var(--red-dim); border: 1px solid rgba(196,30,58,0.3);
+  color: rgba(220,140,150,0.9); padding: 14px 28px; border-radius: 4px;
+  text-decoration: none; cursor: pointer; transition: all 0.25s; white-space: nowrap;
+  min-height: 48px; display: inline-flex; align-items: center; justify-content: center;
+}
+.btn-primary:hover { background: rgba(139,26,26,0.4); border-color: rgba(196,30,58,0.55); color: rgba(255,180,185,1); transform: translateY(-2px); box-shadow: 0 10px 40px rgba(139,26,26,0.25); }
+[data-theme="light"] .btn-primary {
+  color: rgba(122,16,32,0.92);
+  border-color: rgba(122,16,32,0.40);
+  background: rgba(122,16,32,0.10);
+}
+[data-theme="light"] .btn-primary:hover {
+  color: rgba(90,8,20,1);
+  background: rgba(122,16,32,0.20);
+  border-color: rgba(122,16,32,0.60);
+  box-shadow: 0 10px 40px rgba(90,8,20,0.18);
+}
+.btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--text3); border: 1px solid var(--border);
+  padding: 14px 24px; border-radius: 4px; text-decoration: none;
+  transition: all 0.25s; min-height: 48px; white-space: nowrap; background: transparent;
+}
+.btn-ghost:hover { color: var(--text2); border-color: var(--border2); background: rgba(255,255,255,0.03); }
+[data-theme="light"] .btn-ghost { color: var(--text3); border-color: var(--border); }
+[data-theme="light"] .btn-ghost:hover { color: var(--text); border-color: var(--border2); background: rgba(0,0,0,0.07); }
+
+/* ════════════════════════
+   SECTION STRUCTURE
+════════════════════════ */
+.section-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
+  letter-spacing: 0.55em; text-transform: uppercase; color: var(--text4);
+  display: block; margin-bottom: 12px;
+}
+[data-theme="light"] .section-label { color: var(--text3); }
+.section-title {
+  font-family: 'Cinzel', serif; font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.5rem); color: var(--text2);
+  line-height: 1.1; margin: 0;
+  transition: color 0.25s;
+}
+[data-theme="light"] .section-title { color: var(--text); }
+
+/* Light mode section separation — clear alternating warm bands */
+[data-theme="light"] #chart    { background: rgba(0,0,0,0.05); }
+[data-theme="light"] #mechanisms { background: rgba(255,255,255,0.18); }
+[data-theme="light"] #manifesto  { background: rgba(0,0,0,0.05); }
+[data-theme="light"] #soundscape { background: rgba(255,255,255,0.18); }
+
+/* ════════════════════════
+   CHART SECTION
+════════════════════════ */
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 18px 20px;
+  transition: background 0.25s, border-color 0.25s;
+  box-shadow: var(--shadow-card);
+}
+.stat-label { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--text4); }
+[data-theme="light"] .stat-label { color: var(--text3); }
+.stat-val { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--text); margin-top: 6px; }
+.stat-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--text3); margin-top: 4px; }
+.stat-pos { color: rgba(74,222,128,0.8); }
+.stat-neg { color: rgba(248,113,113,0.8); }
+[data-theme="light"] .stat-pos { color: rgba(22,130,50,0.9); }
+[data-theme="light"] .stat-neg { color: rgba(160,30,30,0.9); }
+.chart-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; height: 660px; transition: border-color 0.25s; box-shadow: var(--shadow-card); }
+@media (max-width: 640px) { .chart-wrap { height: 440px; } }
+.chart-tab {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em;
+  text-transform: uppercase; padding: 6px 12px; border-radius: 5px;
+  border: 1px solid transparent; color: var(--text3); background: transparent;
+  cursor: pointer; transition: all 0.2s;
+}
+[data-theme="light"] .chart-tab { color: var(--text3); }
+.chart-tab.active { color: var(--text); border-color: rgba(212,160,23,0.4); background: var(--gold-dim); }
+[data-theme="light"] .chart-tab.active { color: var(--text); border-color: var(--gold); background: var(--gold-dim); }
+.chart-tab:hover:not(.active) { color: var(--text2); }
+.chart-res {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.15em;
+  text-transform: uppercase; padding: 5px 10px; border-radius: 4px;
+  color: var(--text3); background: transparent; cursor: pointer; transition: all 0.2s; border: none;
+}
+[data-theme="light"] .chart-res { color: var(--text4); }
+.chart-res.active { color: var(--gold); background: var(--gold-dim); }
+[data-theme="light"] .chart-res.active { color: var(--gold); background: var(--gold-dim); }
+.chart-res:hover:not(.active) { color: var(--text2); }
+
+/* ════════════════════════
+   MECHANISM CARDS
+════════════════════════ */
+.mechanism-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px 28px 24px;
+  min-height: 320px; display: flex; flex-direction: column;
+  justify-content: space-between; cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.3s ease, background 0.25s ease, box-shadow 0.3s ease;
+  position: relative; overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.mechanism-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.mechanism-card:hover { transform: translateY(-5px); }
+.mechanism-card:hover::before { opacity: 1; }
+[data-mechanism="isolation"]::before { background: linear-gradient(90deg, transparent, #4a9eff, transparent); }
+[data-mechanism="isolation"]:hover { border-color: rgba(74,158,255,0.3); box-shadow: 0 12px 50px rgba(74,158,255,0.1), inset 0 0 40px rgba(74,158,255,0.04); }
+[data-mechanism="isolation"] .mech-accent { color: rgba(74,158,255,0.85); }
+[data-mechanism="isolation"] .vote-btn:hover { border-color: rgba(74,158,255,0.5); color: rgba(74,158,255,0.9); }
+[data-mechanism="anchoring"]::before { background: linear-gradient(90deg, transparent, #d4a017, transparent); }
+[data-mechanism="anchoring"]:hover { border-color: rgba(212,160,23,0.3); box-shadow: 0 12px 50px rgba(212,160,23,0.1), inset 0 0 40px rgba(212,160,23,0.04); }
+[data-mechanism="anchoring"] .mech-accent { color: rgba(212,160,23,0.85); }
+[data-mechanism="anchoring"] .vote-btn:hover { border-color: rgba(212,160,23,0.5); color: rgba(212,160,23,0.9); }
+[data-mechanism="distraction"]::before { background: linear-gradient(90deg, transparent, #ff6b35, transparent); }
+[data-mechanism="distraction"]:hover { border-color: rgba(255,107,53,0.3); box-shadow: 0 12px 50px rgba(255,107,53,0.1), inset 0 0 40px rgba(255,107,53,0.04); }
+[data-mechanism="distraction"] .mech-accent { color: rgba(255,107,53,0.85); }
+[data-mechanism="distraction"] .vote-btn:hover { border-color: rgba(255,107,53,0.5); color: rgba(255,107,53,0.9); }
+[data-mechanism="sublimation"]::before { background: linear-gradient(90deg, transparent, #9b59b6, transparent); }
+[data-mechanism="sublimation"]:hover { border-color: rgba(155,89,182,0.3); box-shadow: 0 12px 50px rgba(155,89,182,0.1), inset 0 0 40px rgba(155,89,182,0.04); }
+[data-mechanism="sublimation"] .mech-accent { color: rgba(155,89,182,0.85); }
+[data-mechanism="sublimation"] .vote-btn:hover { border-color: rgba(155,89,182,0.5); color: rgba(155,89,182,0.9); }
+
+/* Light mode card accent — slightly deeper for readability on parchment */
+[data-theme="light"] [data-mechanism="isolation"] .mech-accent { color: rgba(40,120,230,0.9); }
+[data-theme="light"] [data-mechanism="anchoring"] .mech-accent { color: rgba(150,100,0,0.9); }
+[data-theme="light"] [data-mechanism="distraction"] .mech-accent { color: rgba(210,70,10,0.9); }
+[data-theme="light"] [data-mechanism="sublimation"] .mech-accent { color: rgba(120,60,170,0.9); }
+
+.mechanism-card.voted { background: color-mix(in srgb, var(--card) 90%, rgba(139,26,26,0.15)); border-color: rgba(139,26,26,0.3); }
+.mech-title { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 600; color: var(--text2); transition: color 0.2s; }
+[data-theme="light"] .mech-title { color: var(--text); }
+.mechanism-card:hover .mech-title { color: var(--text); }
+.mech-desc { color: var(--text3); font-size: 0.95rem; line-height: 1.65; margin-top: 10px; font-family: 'Crimson Text', serif; }
+[data-theme="light"] .mech-desc { color: var(--text3); }
+.mech-tagline { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text4); margin-top: 12px; }
+[data-theme="light"] .mech-tagline { color: var(--text4); }
+.vote-label { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text4); }
+[data-theme="light"] .vote-label { color: var(--text3); }
+.vote-count { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: var(--text2); }
+[data-theme="light"] .vote-count { color: var(--text); }
+.vote-btn {
+  width: 100%; padding: 11px; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--text3); border: 1px solid var(--border); background: transparent;
+  border-radius: 5px; cursor: pointer; transition: all 0.25s; min-height: 44px;
+}
+[data-theme="light"] .vote-btn { color: var(--text3); border-color: var(--border2); }
+[data-theme="light"] .vote-btn:hover { color: var(--text); background: rgba(0,0,0,0.07); border-color: var(--border2); }
+
+/* ════════════════════════
+   QUOTE SECTION
+════════════════════════ */
+.quote-section {
+  position: relative; overflow: hidden; border-radius: 16px;
+  background: var(--card); border: 1px solid var(--border2);
+  box-shadow: var(--shadow-card);
+}
+.quote-bg-img {
+  position: absolute; inset: 0;
+  background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/generatewisdom.png');
+  background-size: cover; background-position: center;
+  opacity: 0.2; pointer-events: none; z-index: 0;
+  filter: grayscale(0.4);
+  transition: opacity 0.35s ease;
+}
+[data-theme="light"] .quote-bg-img {
+  opacity: 0.55;
+  filter: grayscale(0.15) brightness(0.45) contrast(1.1);
+}
+.quote-inner { position: relative; z-index: 1; padding: 56px 40px; text-align: center; min-height: 480px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.mode-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 36px; }
+.mode-btn {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 8px 18px; border: 1px solid var(--border); color: var(--text3);
+  background: transparent; border-radius: 4px; cursor: pointer; transition: all 0.2s; min-height: 40px;
+}
+[data-theme="light"] .mode-btn { color: var(--text3); border-color: var(--border2); background: rgba(255,255,255,0.3); }
+.mode-btn.active { border-color: rgba(212,160,23,0.5); color: var(--text2); background: var(--gold-dim); }
+[data-theme="light"] .mode-btn.active { border-color: var(--gold); color: var(--text); background: var(--gold-dim); }
+.mode-btn:hover:not(.active) { border-color: var(--border2); color: var(--text2); }
+[data-theme="light"] .mode-btn:hover:not(.active) { border-color: var(--border2); color: var(--text); background: rgba(255,255,255,0.4); }
+#quote-display {
+  font-family: 'Cinzel', serif; font-style: normal; font-size: clamp(1.05rem, 2.8vw, 1.8rem);
+  font-weight: 400; color: var(--text); line-height: 1.55; max-width: 780px;
+  min-height: 120px; display: flex; align-items: center; justify-content: center; text-align: center;
+  margin: 0 auto 36px; transition: opacity 0.45s ease, transform 0.45s ease;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+[data-theme="light"] #quote-display {
+  text-shadow: 0 1px 6px rgba(0,0,0,0.35);
+  color: #f0ebe0;
+}
+#quote-display.fading { opacity: 0; transform: translateY(6px); }
+.gen-btn {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+  padding: 12px 28px; border: 1px solid var(--border2); color: var(--text3);
+  background: transparent; border-radius: 5px; cursor: pointer; transition: all 0.2s; min-height: 44px;
+}
+[data-theme="light"] .gen-btn { color: var(--text3); border-color: var(--border2); background: rgba(255,255,255,0.3); }
+.gen-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+[data-theme="light"] .gen-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+/* ════════════════════════
+   AUDIO PLAYER
+════════════════════════ */
+.player-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden; position: relative;
+  transition: border-color 0.25s, background 0.35s;
+  box-shadow: var(--shadow-card);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .player-card { backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+}
+#player-art-bg {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+  filter: blur(50px) brightness(0.18) saturate(0.5); transform: scale(1.2);
+  transition: background-image 1s ease, filter 0.35s ease; z-index: 0; pointer-events: none;
+}
+[data-theme="light"] #player-art-bg {
+  filter: blur(50px) brightness(0.28) saturate(0.25);
+}
+#viz-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.player-inner { position: relative; z-index: 2; padding: 36px 36px 28px; }
+
+/* ════════════════════════════════════════
+   VINYL — SLOW AUTHENTIC LP SPIN
+   
+   FIX: Use explicit longhand properties instead of
+   the animation shorthand to prevent Tailwind or
+   any specificity conflict from overriding duration.
+   32s = ~1.875 RPM, true LP turntable speed.
+   
+   will-change + translate3d isolation keeps this
+   entirely on the GPU compositor thread.
+   animation-fill-mode and animation-delay are set
+   explicitly to prevent shorthand parsing issues.
+════════════════════════════════════════ */
+.vinyl {
+  position: relative; border-radius: 50%; flex-shrink: 0; cursor: pointer;
+  width: 170px; height: 170px;
+  background: repeating-radial-gradient(circle at center,
+    #0d0d0d 0, #0d0d0d 2px, #080808 3px, #080808 6px,
+    #0b0b0b 7px, #0b0b0b 9px);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 16px 60px rgba(0,0,0,0.9), inset 0 0 50px rgba(0,0,0,0.8);
+
+  /* Longhand animation — prevents any shorthand override */
+  animation-name: vinyl-spin;
+  animation-duration: 32s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: paused;
+  animation-fill-mode: none;
+  animation-delay: 0s;
+  animation-direction: normal;
+
+  /* Compositor isolation */
+  will-change: transform;
+  transform-origin: 50% 50%;
+  transform: translateZ(0); /* force GPU layer before animation starts */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  touch-action: manipulation;
+  transition: box-shadow 0.35s;
+}
+
+[data-theme="light"] .vinyl {
+  background: repeating-radial-gradient(circle at center,
+    #1a1a1a 0, #1a1a1a 2px, #0f0f0f 3px, #0f0f0f 6px,
+    #141414 7px, #141414 9px);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.2), 0 16px 48px rgba(0,0,0,0.4), inset 0 0 40px rgba(0,0,0,0.6);
+}
+
+.vinyl.playing {
+  animation-play-state: running;
+  /* Ensure duration cannot be overridden when .playing is added */
+  animation-duration: 32s;
+}
+
+@keyframes vinyl-spin {
+  from { transform: rotate(0deg) translateZ(0); }
+  to   { transform: rotate(360deg) translateZ(0); }
+}
+/* Also define with -webkit- prefix for older Safari */
+@-webkit-keyframes vinyl-spin {
+  from { -webkit-transform: rotate(0deg) translateZ(0); }
+  to   { -webkit-transform: rotate(360deg) translateZ(0); }
+}
+
+.vinyl-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 38%; height: 38%; border-radius: 50%; overflow: hidden; background: #000; border: 1px solid rgba(255,255,255,0.07); }
+.vinyl-label img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+.vinyl-hole { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 7%; height: 7%; border-radius: 50%; background: #000; border: 1px solid rgba(255,255,255,0.15); z-index: 2; }
+
+/* Progress */
+.progress-bar { position: relative; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; cursor: pointer; touch-action: none; }
+[data-theme="light"] .progress-bar { background: rgba(0,0,0,0.18); }
+.progress-fill { height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.6) 0%, rgba(212,160,23,0.5) 100%); border-radius: 2px; width: 0%; pointer-events: none; position: relative; }
+[data-theme="light"] .progress-fill { background: linear-gradient(90deg, rgba(40,28,10,0.7) 0%, rgba(122,82,0,0.85) 100%); }
+.progress-handle { position: absolute; right: -5px; top: 50%; transform: translateY(-50%) scale(0); width: 10px; height: 10px; background: #fff; border-radius: 50%; pointer-events: none; box-shadow: 0 0 8px rgba(255,255,255,0.5); transition: transform 0.2s; }
+[data-theme="light"] .progress-handle { background: var(--text2); box-shadow: 0 0 8px rgba(0,0,0,0.3); }
+.progress-bar:hover .progress-handle, .progress-bar:active .progress-handle { transform: translateY(-50%) scale(1); }
+@media (pointer: coarse) {
+  .progress-bar { height: 20px; background: transparent; }
+  .progress-bar::before { content: ''; position: absolute; top: 8px; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+  [data-theme="light"] .progress-bar::before { background: rgba(0,0,0,0.16); }
+  .progress-fill { top: 8px; height: 4px; }
+  .progress-handle { transform: translateY(-50%) scale(1) !important; width: 14px; height: 14px; right: -7px; }
+}
+
+/* Controls */
+.ctrl-btn { background: transparent; border: none; color: var(--text3); cursor: pointer; transition: color 0.15s, transform 0.15s, opacity 0.15s; opacity: 0.55; display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
+.ctrl-btn:hover { opacity: 1; color: var(--text); transform: scale(1.1); }
+.ctrl-btn.on { opacity: 1; color: var(--text2); }
+.play-btn { width: 58px; height: 58px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; color: rgba(255,255,255,0.9); }
+.play-btn:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.5); transform: scale(1.06); box-shadow: 0 0 24px rgba(255,255,255,0.1); }
+[data-theme="light"] .play-btn { border-color: rgba(0,0,0,0.35); background: rgba(0,0,0,0.12); color: var(--text); }
+[data-theme="light"] .play-btn:hover { background: rgba(0,0,0,0.22); border-color: rgba(0,0,0,0.5); box-shadow: 0 0 20px rgba(0,0,0,0.15); }
+[data-theme="light"] .ctrl-btn { color: var(--text2); opacity: 0.75; }
+[data-theme="light"] .ctrl-btn:hover { color: var(--text); opacity: 1; }
+[data-theme="light"] .ctrl-btn.on { color: var(--text); opacity: 1; }
+
+/* Volume */
+.vol-slider { -webkit-appearance: none; appearance: none; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; outline: none; cursor: pointer; }
+[data-theme="light"] .vol-slider { background: rgba(0,0,0,0.18); }
+.vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.65); cursor: pointer; transition: background 0.2s, transform 0.2s; }
+.vol-slider::-webkit-slider-thumb:hover { background: #fff; transform: scale(1.2); }
+[data-theme="light"] .vol-slider::-webkit-slider-thumb { background: rgba(0,0,0,0.6); }
+[data-theme="light"] .vol-slider::-webkit-slider-thumb:hover { background: var(--text); transform: scale(1.2); }
+.vol-slider::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.65); border: none; cursor: pointer; }
+[data-theme="light"] .vol-slider::-moz-range-thumb { background: rgba(0,0,0,0.6); }
+
+/* Status dot */
+@keyframes status-pulse { 0%,100% { opacity: 0.35; transform: scale(1); } 50% { opacity: 1; transform: scale(1.35); } }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); display: inline-block; transition: background 0.3s; }
+.status-dot.playing { background: rgba(74,222,128,0.8); animation: status-pulse 1.8s ease-in-out infinite; }
+[data-theme="light"] .status-dot { background: rgba(0,0,0,0.25); }
+[data-theme="light"] .status-dot.playing { background: rgba(22,130,50,0.9); }
+[data-theme="light"] #stext { color: var(--text3); }
+[data-theme="light"] #track-num { color: var(--text3); }
+[data-theme="light"] #track-title { color: var(--text); }
+[data-theme="light"] #track-desc { color: var(--text3); }
+[data-theme="light"] #tcur, [data-theme="light"] #ttot { color: var(--text4); }
+
+/* Track item */
+.track-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 6px; border-left: 2px solid transparent; cursor: pointer; transition: background 0.15s, border-color 0.15s, padding-left 0.15s; min-height: 40px; }
+.track-item:hover { background: rgba(255,255,255,0.04); padding-left: 14px; }
+.track-item.active { background: rgba(255,255,255,0.06); border-left-color: rgba(212,160,23,0.5); }
+[data-theme="light"] .track-item:hover { background: rgba(0,0,0,0.07); }
+[data-theme="light"] .track-item.active { background: rgba(0,0,0,0.09); border-left-color: var(--gold); }
+[data-theme="light"] .track-item .font-mono { color: var(--text3) !important; }
+[data-theme="light"] .track-item.active .font-mono { color: var(--text2) !important; }
+.playlist-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.07) transparent; }
+.playlist-scroll::-webkit-scrollbar { width: 3px; }
+.playlist-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
+[data-theme="light"] .playlist-scroll { scrollbar-color: rgba(0,0,0,0.14) transparent; }
+[data-theme="light"] .playlist-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.14); }
+
+/* ════════════════════════
+   MINI PLAYER
+════════════════════════ */
+#mini-player {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 98;
+  height: 68px; background: var(--nav-bg); border-top: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; gap: 14px;
+  transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), background 0.3s ease;
+  pointer-events: none;
+}
+@supports (backdrop-filter: blur(1px)) {
+  #mini-player { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+}
+#mini-player.shown { transform: translateY(0); pointer-events: auto; }
+.mini-art { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+.mini-art img { width: 100%; height: 100%; object-fit: cover; }
+.mini-title { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--text2); white-space: nowrap; overflow: hidden; flex: 1; min-width: 0; }
+[data-theme="light"] .mini-title { color: var(--text); }
+.mini-progress { flex: 1; max-width: 200px; height: 2px; background: rgba(255,255,255,0.1); border-radius: 1px; overflow: hidden; }
+.mini-progress-fill { height: 100%; background: var(--gold); border-radius: 1px; width: 0%; }
+[data-theme="light"] .mini-progress { background: rgba(0,0,0,0.14); }
+
+/* ════════════════════════
+   SCROLL REVEAL
+════════════════════════ */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.12s; }
+.reveal-delay-2 { transition-delay: 0.24s; }
+.reveal-delay-3 { transition-delay: 0.36s; }
+.reveal-delay-4 { transition-delay: 0.48s; }
+
+/* ════════════════════════
+   TOAST + MODAL
+════════════════════════ */
+#toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--glass); border: 1px solid var(--border);
+  padding: 10px 22px; border-radius: 50px; z-index: 200;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--text3);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+@supports (backdrop-filter: blur(1px)) {
+  #toast { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+}
+#toast.shown { opacity: 1; transform: translateX(-50%) translateY(0); }
+[data-theme="light"] #toast { color: var(--text2); }
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 150;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 24px;
+}
+@supports (backdrop-filter: blur(1px)) {
+  .modal-overlay { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(0,0,0,0.72); }
+}
+[data-theme="light"] .modal-overlay { background: rgba(50,38,22,0.85); }
+.modal-overlay.open { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-top-color: rgba(212,160,23,0.3); border-radius: 12px;
+  max-width: 600px; width: 100%; padding: 36px; max-height: 90vh; overflow-y: auto;
+  transform: scale(0.96) translateY(12px); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+}
+[data-theme="light"] .modal-box {
+  border-top-color: var(--gold);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+}
+.modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+.modal-title { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 600; color: var(--text); margin-bottom: 20px; }
+.modal-body { font-family: 'Crimson Text', serif; font-size: 1.05rem; line-height: 1.8; color: var(--text2); }
+[data-theme="light"] .modal-body { color: var(--text2); }
+.modal-body p + p { margin-top: 14px; }
+.modal-body em { color: var(--text3); font-style: italic; font-size: 0.95rem; }
+[data-theme="light"] .modal-body em { color: var(--text3); }
+
+/* ════════════════════════
+   FOOTER
+════════════════════════ */
+footer {
+  position: relative;
+  border-top: 1px solid var(--border);
+  padding: 80px 24px 100px;
+  min-height: 340px;
+  background: var(--bg);
+  overflow: hidden;
+  transition: background 0.35s, border-color 0.25s;
+}
+
+.footer-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.footer-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: grayscale(1) contrast(1.05) brightness(1.1);
+  opacity: 0.28;
+  transition: opacity 0.35s ease, filter 0.35s ease;
+}
+
+.footer-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 75% at 50% 50%,
+    transparent 0%,
+    transparent 35%,
+    rgba(var(--bg-rgb, 24,21,17), 0.55) 65%,
+    var(--bg) 100%
+  );
+}
+
+:root             { --bg-rgb: 10,10,11; }
+[data-theme="light"] { --bg-rgb: 200,191,166; }
+
+[data-theme="light"] .footer-bg::before {
+  opacity: 0.30;
+  filter: grayscale(0.9) contrast(1.1) brightness(0.48);
+}
+
+/* Footer text legibility */
+[data-theme="light"] footer blockquote { color: var(--text2); }
+[data-theme="light"] footer .font-mono { color: var(--text4); }
+[data-theme="light"] footer button.font-mono { color: var(--text3); }
+[data-theme="light"] footer button.font-mono:hover { color: var(--text2); }
+
+/* ════════════════════════
+   RESPONSIVE
+════════════════════════ */
+@media (max-width: 640px) {
+  .player-inner { padding: 24px 20px 20px; }
+  .vinyl { width: 140px; height: 140px; }
+  .play-btn { width: 52px; height: 52px; }
+  .quote-inner { padding: 36px 20px; }
+  #mini-player { padding: 0 14px; gap: 10px; }
+}
+
+/* ════════════════════════
+   LIGHT MODE — CHART IFRAME BAR
+════════════════════════ */
+[data-theme="light"] .chart-wrap > div:first-child {
+  background: rgba(var(--bg-rgb), 0.5) !important;
+}
+[data-theme="light"] a[href*="geckoterminal"] {
+  color: var(--text4) !important;
+}
+[data-theme="light"] a[href*="geckoterminal"]:hover {
+  color: var(--text3) !important;
+}
+</style>
+</head>
+
+<body class="antialiased selection:bg-white/10 selection:text-white">
+
+<!-- Atmosphere -->
+<div class="global-bg"></div>
+<div class="global-tint"></div>
+<div class="vignette"></div>
+<div class="noise"></div>
+
+<!-- Toast -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Modal -->
+<div id="modal-overlay" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button onclick="closeModal()" class="absolute top-4 right-4 text-[var(--text3)] hover:text-[var(--text)] transition-colors" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 w-full">
+    <div class="flex items-center justify-between">
+
+      <a href="#top" class="nav-logo">$ELK</a>
+
+      <div class="hidden md:flex items-center gap-8 lg:gap-12 absolute left-1/2 -translate-x-1/2">
+        <a href="#top"        data-nav="top"         class="nav-link">Home</a>
+        <a href="#chart"      data-nav="chart"       class="nav-link">Chart</a>
+        <a href="#mechanisms" data-nav="mechanisms"  class="nav-link">Mechanisms</a>
+        <a href="#manifesto"  data-nav="manifesto"   class="nav-link">Quotes</a>
+        <a href="#soundscape" data-nav="soundscape"  class="nav-link">Soundscape</a>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div id="vote-status-indicator" class="w-2 h-2 rounded-full bg-yellow-500/50 animate-pulse" title="Voting status"></div>
+        <button class="ca-btn hidden sm:block" onclick="copyText('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump','CA COPIED')">8DaLP…Gpump</button>
+        <button class="ca-btn sm:hidden" onclick="copyText('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump','CA COPIED')">CA</button>
+        <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle theme">
+          <i data-lucide="moon" id="theme-icon" class="w-3 h-3 relative z-10 flex-shrink-0"></i>
+          <span id="theme-label" class="relative z-10 hidden sm:inline">Dark</span>
+          <div class="theme-track relative z-10"><div class="theme-knob"></div></div>
+        </button>
+        <button id="hamburger-btn" onclick="toggleMobileMenu()" class="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-1" aria-label="Menu">
+          <span class="hbl block w-5 h-0.5 bg-[var(--text3)] transition-all duration-300"></span>
+          <span class="hbl block w-5 h-0.5 bg-[var(--text3)] transition-all duration-300"></span>
+          <span class="hbl block w-5 h-0.5 bg-[var(--text3)] transition-all duration-300"></span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div id="mobile-menu">
+  <a href="#top"        class="mobile-link" onclick="closeMobileMenu()">Home</a>
+  <a href="#chart"      class="mobile-link" onclick="closeMobileMenu()">Chart</a>
+  <a href="#mechanisms" class="mobile-link" onclick="closeMobileMenu()">Mechanisms</a>
+  <a href="#manifesto"  class="mobile-link" onclick="closeMobileMenu()">Quotes</a>
+  <a href="#soundscape" class="mobile-link" onclick="closeMobileMenu()">Soundscape</a>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section id="top">
+<div id="hero">
+  <div class="hero-fog-a"></div>
+  <div class="hero-fog-b"></div>
+
+  <div class="hero-content hero-animate">
+    <div class="flex justify-center mb-10">
+      <img id="hero-logo"
+        src="https://raw.githubusercontent.com/exelkonsol/elk/main/images/headerlogo.png"
+        alt="$ELK"
+        class="hero-logo w-[240px] h-[240px] sm:w-[340px] sm:h-[340px] md:w-[440px] md:h-[440px] lg:w-[520px] lg:h-[520px] object-contain select-none mx-auto"
+        loading="eager" fetchpriority="high" decoding="async">
+    </div>
+
+    <div class="space-y-4 mb-12 max-w-2xl mx-auto px-4">
+      <p class="hero-eyebrow">Peter Wessel Zapffe // The Last Messiah</p>
+      <h1 id="hero-quote" class="hero-quote">"The tragedy of a species becoming unfit for life by over-evolving one ability."</h1>
+      <p id="hero-source" class="hero-source">Mystical Fragments // 1933</p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 justify-center items-center px-4">
+      <a href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" class="btn-primary w-full sm:w-auto">Buy $ELK</a>
+      <a href="https://x.com/i/communities/2014904566983094598" target="_blank" class="btn-ghost w-full sm:w-auto">Join The Silence</a>
+      <a href="https://birdeye.so/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump?chain=solana" target="_blank" class="btn-ghost w-full sm:w-auto">Live Chart</a>
+    </div>
+
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     CHART
+══════════════════════════════════════ -->
+<section id="chart" class="py-24 sm:py-32 px-4 sm:px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <span class="section-label">On-Chain Reality</span>
+      <h2 class="section-title">Live Chart</h2>
+    </div>
+
+    <div class="chart-wrap reveal">
+      <div class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--card)]/60">
+        <div class="flex gap-1" id="chart-tabs">
+          <button onclick="setChartType('price')"      data-type="price"      class="chart-tab active">Price</button>
+          <button onclick="setChartType('market_cap')" data-type="market_cap" class="chart-tab">Mkt Cap</button>
+        </div>
+        <div class="flex gap-0.5" id="res-tabs">
+          <button onclick="setRes('1')"  data-res="1"  class="chart-res">1m</button>
+          <button onclick="setRes('5')"  data-res="5"  class="chart-res">5m</button>
+          <button onclick="setRes('15')" data-res="15" class="chart-res">15m</button>
+          <button onclick="setRes('60')" data-res="60" class="chart-res active">1h</button>
+          <button onclick="setRes('240')"data-res="240"class="chart-res">4h</button>
+          <button onclick="setRes('1D')" data-res="1D" class="chart-res">1D</button>
+        </div>
+        <a href="https://www.geckoterminal.com/solana/pools/DMhjxjETWp4qNnQXhaojQ9h4ycf3DegJ231wKcY2c9pi" target="_blank" class="hidden sm:flex items-center gap-1 text-[var(--text4)] hover:text-[var(--text3)] transition-colors font-mono text-[0.55rem] tracking-widest uppercase"><i data-lucide="external-link" class="w-3 h-3"></i>GeckoTerminal</a>
+      </div>
+      <iframe id="gecko-iframe"
+        src="https://www.geckoterminal.com/solana/pools/DMhjxjETWp4qNnQXhaojQ9h4ycf3DegJ231wKcY2c9pi?embed=1&info=0&swaps=1&light_chart=0&chart_type=price&resolution=60&bg_color=000000&chart_bg_color=000000"
+        frameborder="0" allow="clipboard-write" allowfullscreen
+        style="position:absolute;top:41px;left:0;right:0;bottom:0;width:100%;height:calc(100% - 41px);">
+      </iframe>
+      <div id="chart-loader" class="absolute inset-0 top-[41px] bg-[var(--card)]/60 flex items-center justify-center z-20 pointer-events-none">
+        <span class="font-mono text-[0.6rem] tracking-widest text-[var(--text4)] uppercase animate-pulse">Loading Chart…</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
+      <button onclick="copyText('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump','CA COPIED')" class="btn-ghost text-[0.55rem] gap-2">
+        <i data-lucide="copy" class="w-3 h-3"></i> 8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump
+      </button>
+      <a href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" class="btn-primary text-[0.6rem] px-5 py-3">Buy on Pump.fun</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOUR MECHANISMS
+══════════════════════════════════════ -->
+<section id="mechanisms" class="py-24 sm:py-32 px-4 sm:px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label">Survival Architecture</span>
+      <h2 class="section-title">Four Mechanisms</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+
+      <div class="mechanism-card reveal" data-mechanism="isolation">
+        <div onclick="openModal('isolation')" class="flex-1">
+          <div class="flex justify-between items-start mb-5">
+            <h3 class="mech-title">Isolation</h3>
+            <i data-lucide="info" class="w-4 h-4 text-[var(--text4)] mt-1 flex-shrink-0"></i>
+          </div>
+          <p class="mech-desc">Remove tokens from circulation. Confine anxiety to manageable compartments.</p>
+          <p class="mech-tagline">Suppression through reduction</p>
+          <p class="mech-accent font-mono text-xs mt-3 tracking-widest uppercase">Burns / Isolation</p>
+        </div>
+        <div class="mt-6 pt-5 border-t border-[var(--border)]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="vote-label">Global Votes</span>
+            <span class="vote-count" data-count="0">0</span>
+          </div>
+          <button onclick="handleVote('isolation')" class="vote-btn">Vote</button>
+        </div>
+      </div>
+
+      <div class="mechanism-card reveal reveal-delay-1" data-mechanism="anchoring">
+        <div onclick="openModal('anchoring')" class="flex-1">
+          <div class="flex justify-between items-start mb-5">
+            <h3 class="mech-title">Anchoring</h3>
+            <i data-lucide="info" class="w-4 h-4 text-[var(--text4)] mt-1 flex-shrink-0"></i>
+          </div>
+          <p class="mech-desc">Permanent liquidity. Fixed points preventing drift into the chaotic void.</p>
+          <p class="mech-tagline">Structure against entropy</p>
+          <p class="mech-accent font-mono text-xs mt-3 tracking-widest uppercase">Lock / Anchor</p>
+        </div>
+        <div class="mt-6 pt-5 border-t border-[var(--border)]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="vote-label">Global Votes</span>
+            <span class="vote-count" data-count="0">0</span>
+          </div>
+          <button onclick="handleVote('anchoring')" class="vote-btn">Vote</button>
+        </div>
+      </div>
+
+      <div class="mechanism-card reveal reveal-delay-2" data-mechanism="distraction">
+        <div onclick="openModal('distraction')" class="flex-1">
+          <div class="flex justify-between items-start mb-5">
+            <h3 class="mech-title">Distraction</h3>
+            <i data-lucide="info" class="w-4 h-4 text-[var(--text4)] mt-1 flex-shrink-0"></i>
+          </div>
+          <p class="mech-desc">Marketing, raids, content. Keep the mind moving against the abyss.</p>
+          <p class="mech-tagline">Motion against stillness</p>
+          <p class="mech-accent font-mono text-xs mt-3 tracking-widest uppercase">Meme / Distract</p>
+        </div>
+        <div class="mt-6 pt-5 border-t border-[var(--border)]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="vote-label">Global Votes</span>
+            <span class="vote-count" data-count="0">0</span>
+          </div>
+          <button onclick="handleVote('distraction')" class="vote-btn">Vote</button>
+        </div>
+      </div>
+
+      <div class="mechanism-card reveal reveal-delay-3" data-mechanism="sublimation">
+        <div onclick="openModal('sublimation')" class="flex-1">
+          <div class="flex justify-between items-start mb-5">
+            <h3 class="mech-title">Sublimation</h3>
+            <i data-lucide="info" class="w-4 h-4 text-[var(--text4)] mt-1 flex-shrink-0"></i>
+          </div>
+          <p class="mech-desc">Transform suffering into art. Philosophy as evolutionary bypass.</p>
+          <p class="mech-tagline">Pain becomes meaning</p>
+          <p class="mech-accent font-mono text-xs mt-3 tracking-widest uppercase">Learn / Sublimate</p>
+        </div>
+        <div class="mt-6 pt-5 border-t border-[var(--border)]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="vote-label">Global Votes</span>
+            <span class="vote-count" data-count="0">0</span>
+          </div>
+          <button onclick="handleVote('sublimation')" class="vote-btn">Vote</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     QUOTE GENERATOR
+══════════════════════════════════════ -->
+<section id="manifesto" class="py-24 sm:py-32 px-4 sm:px-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <span class="section-label">Echoes of the Present Void</span>
+      <h2 class="section-title">Generate Echo</h2>
+    </div>
+
+    <div class="quote-section reveal">
+      <div class="quote-bg-img"></div>
+      <div class="quote-inner">
+        <div class="mode-btns">
+          <button class="mode-btn active" onclick="setMode('existential',this)" aria-pressed="true">Existential</button>
+          <button class="mode-btn" onclick="setMode('degen',this)" aria-pressed="false">Degen</button>
+          <button class="mode-btn" onclick="setMode('elk',this)" aria-pressed="false">Elk Wisdom</button>
+        </div>
+
+        <div id="quote-display">"We built machines to save time, and now we kill time staring at them, waiting for something to happen."</div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="generateQuote()" class="gen-btn">Generate Echo</button>
+          <button onclick="copyQuote()" class="gen-btn px-4" aria-label="Copy quote"><i data-lucide="copy" class="w-4 h-4"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SOUNDSCAPE / AUDIO PLAYER
+══════════════════════════════════════ -->
+<section id="soundscape" class="py-24 sm:py-28 px-4 sm:px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <span class="section-label">Auditory Space</span>
+      <h2 class="section-title">Hymns for the Herd</h2>
+    </div>
+
+    <div class="player-card reveal">
+      <div id="player-art-bg" style="background-image:url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/Before%20the%20Clearing.png')"></div>
+      <canvas id="viz-canvas" class="absolute inset-0 w-full h-full opacity-[0.18] pointer-events-none z-[1]"></canvas>
+
+      <div class="player-inner">
+        <div class="flex flex-col sm:flex-row gap-8 sm:gap-10 items-center sm:items-start mb-8">
+
+          <div class="flex flex-col items-center gap-3 flex-shrink-0">
+            <div class="vinyl" id="vinyl" onclick="togglePlay()" role="button" aria-label="Play/Pause">
+              <div class="vinyl-label">
+                <img id="art-img" src="https://raw.githubusercontent.com/exelkonsol/elk/main/images/Before%20the%20Clearing.png" alt="Album Art" decoding="async">
+              </div>
+              <div class="vinyl-hole"></div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="status-dot" id="sdot"></span>
+              <span id="stext" class="font-mono text-xs text-[var(--text4)] tracking-widest uppercase">Paused</span>
+            </div>
+          </div>
+
+          <div class="flex-1 w-full flex flex-col gap-5 min-w-0">
+            <div class="text-center sm:text-left">
+              <div id="track-num" class="font-mono text-[0.58rem] text-[var(--text4)] tracking-widest mb-1">TRACK 01 / 16</div>
+              <h3 id="track-title" class="font-['Cinzel'] text-2xl sm:text-3xl text-[var(--text)] leading-tight mb-1 truncate">Before the Clearing</h3>
+              <p id="track-desc" class="text-[var(--text3)] text-sm italic truncate">"The silence before revelation"</p>
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="progress-bar" id="pbar" role="slider" aria-label="Seek" tabindex="0">
+                <div class="progress-fill" id="pfill"><div class="progress-handle"></div></div>
+              </div>
+              <div class="flex justify-between font-mono text-[0.6rem] text-[var(--text4)]">
+                <span id="tcur">00:00</span>
+                <span id="ttot">00:00</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-2 sm:gap-4">
+              <button onclick="toggleShuffle()" id="shuf-btn" class="ctrl-btn" aria-label="Shuffle"><i data-lucide="shuffle" class="w-4 h-4"></i></button>
+              <button onclick="prevTrack()" class="ctrl-btn" aria-label="Previous"><i data-lucide="skip-back" class="w-5 h-5"></i></button>
+              <button onclick="togglePlay()" id="play-btn" class="play-btn" aria-label="Play/Pause">
+                <i data-lucide="play" id="play-icon" class="w-5 h-5 ml-0.5"></i>
+              </button>
+              <button onclick="nextTrack()" class="ctrl-btn" aria-label="Next"><i data-lucide="skip-forward" class="w-5 h-5"></i></button>
+              <button onclick="toggleRepeat()" id="rep-btn" class="ctrl-btn" aria-label="Repeat"><i data-lucide="repeat" class="w-4 h-4"></i></button>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <button onclick="toggleMute()" id="mute-btn" class="ctrl-btn" aria-label="Mute"><i data-lucide="volume-2" id="vol-icon" class="w-4 h-4"></i></button>
+              <input type="range" min="0" max="100" value="65" class="vol-slider flex-1" oninput="setVolume(this.value)" aria-label="Volume" id="vol-slider">
+              <i data-lucide="volume-2" class="w-3 h-3 text-[var(--text4)]"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-[var(--border)] pt-5">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-mono text-[0.58rem] tracking-widest text-[var(--text4)] uppercase">Playlist — 16 Tracks</span>
+            <span class="font-mono text-[0.55rem] text-[var(--text5)]">$ELK Soundscape</span>
+          </div>
+          <div id="playlist" class="overflow-y-auto max-h-56 space-y-0.5 pr-1 playlist-scroll"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="aud" preload="metadata" playsinline webkit-playsinline></audio>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer>
+  <div class="footer-bg"></div>
+  <div class="relative z-20 max-w-2xl mx-auto text-center space-y-10">
+    <blockquote class="font-['Crimson_Text'] text-[var(--text3)] text-base sm:text-lg leading-relaxed italic px-4">
+      "The antlers are heavy. We carry them together."
+    </blockquote>
+
+    <div class="flex justify-center gap-8">
+      <a href="https://x.com/ElkBurden" target="_blank" aria-label="Twitter" class="text-[var(--text4)] hover:text-[var(--text2)] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+      <a href="https://x.com/i/communities/2014904566983094598" target="_blank" aria-label="Community" class="text-[var(--text4)] hover:text-[var(--text2)] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"><i data-lucide="users" class="w-5 h-5"></i></a>
+      <a href="https://birdeye.so/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump?chain=solana" target="_blank" aria-label="Chart" class="text-[var(--text4)] hover:text-[var(--text2)] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"><i data-lucide="activity" class="w-5 h-5"></i></a>
+      <a href="https://solscan.io/token/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump" target="_blank" aria-label="Solscan" class="text-[var(--text4)] hover:text-[var(--text2)] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"><i data-lucide="link" class="w-5 h-5"></i></a>
+    </div>
+
+    <div>
+      <button onclick="copyText('8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump','CA COPIED')" class="font-mono text-[0.6rem] text-[var(--text4)] hover:text-[var(--text3)] tracking-widest transition-colors break-all">
+        8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump
+      </button>
+      <p class="font-mono text-[0.55rem] text-[var(--text5)] tracking-widest uppercase mt-4">© 2025 $ELK — The Burden We Carry Together</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     MINI PLAYER
+══════════════════════════════════════ -->
+<div id="mini-player">
+  <div class="mini-art">
+    <img id="mini-art-img" src="https://raw.githubusercontent.com/exelkonsol/elk/main/images/Before%20the%20Clearing.png" alt="" decoding="async">
+  </div>
+  <div class="min-w-0 flex-1 hidden sm:block">
+    <div class="mini-title" id="mini-title">Before the Clearing</div>
+    <div class="mini-progress mt-1"><div class="mini-progress-fill" id="mini-pfill"></div></div>
+  </div>
+  <div class="flex items-center gap-1">
+    <button onclick="prevTrack()" class="ctrl-btn w-9 h-9" aria-label="Previous"><i data-lucide="skip-back" class="w-4 h-4"></i></button>
+    <button onclick="togglePlay()" class="ctrl-btn w-9 h-9" aria-label="Play/Pause"><i data-lucide="play" id="mini-play-icon" class="w-4 h-4"></i></button>
+    <button onclick="nextTrack()" class="ctrl-btn w-9 h-9" aria-label="Next"><i data-lucide="skip-forward" class="w-4 h-4"></i></button>
+  </div>
+  <button onclick="document.getElementById('soundscape').scrollIntoView({behavior:'smooth'})" class="ctrl-btn w-8 h-8 ml-1" title="Open player"><i data-lucide="music" class="w-3.5 h-3.5"></i></button>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════ -->
+<script>
+/* ── Init ── */
+if(history.scrollRestoration)history.scrollRestoration='manual';
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>lucide.createIcons());
+}else{
+  lucide.createIcons();
+}
+
+/* ── Toast ── */
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('shown');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('shown'),2400);
+}
+
+/* ── Clipboard ── */
+function copyText(txt,msg){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>showToast(msg)).catch(()=>fallbackCopy(txt,msg));
+  }else fallbackCopy(txt,msg);
+}
+function fallbackCopy(txt,msg){
+  const ta=document.createElement('textarea');ta.value=txt;
+  ta.style.cssText='position:fixed;left:-9999px;opacity:0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');showToast(msg);}catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* ── Theme Toggle ── */
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme',isDark?'light':'dark');
+  const icon=document.getElementById('theme-icon');
+  icon.setAttribute('data-lucide',isDark?'sun':'moon');
+  const lbl=document.getElementById('theme-label');
+  if(lbl)lbl.textContent=isDark?'Light':'Dark';
+  lucide.createIcons();
+}
+
+/* ── Mobile Menu ── */
+function toggleMobileMenu(){
+  const m=document.getElementById('mobile-menu');
+  const b=document.getElementById('hamburger-btn');
+  const open=m.classList.contains('open');
+  m.classList.toggle('open',!open);
+  b.classList.toggle('open',!open);
+  document.body.style.overflow=open?'':'hidden';
+}
+function closeMobileMenu(){
+  document.getElementById('mobile-menu').classList.remove('open');
+  document.getElementById('hamburger-btn').classList.remove('open');
+  document.body.style.overflow='';
+}
+window.addEventListener('resize',()=>{ if(window.innerWidth>=768)closeMobileMenu(); });
+
+/* ── Nav Scroll Spy ── */
+(function(){
+  const sections=['top','chart','mechanisms','manifesto','soundscape'];
+  const links=document.querySelectorAll('.nav-link[data-nav]');
+  function activate(id){links.forEach(a=>a.classList.toggle('active',a.dataset.nav===id));}
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    new IntersectionObserver(entries=>{
+      entries.forEach(e=>{ if(e.isIntersecting)activate(id); });
+    },{threshold:0.25,rootMargin:'-68px 0px -40% 0px'}).observe(el);
+  });
+  activate('top');
+})();
+
+/* ── Scroll Reveal ── */
+(function(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach((e,i)=>{
+      if(e.isIntersecting){
+        const el=e.target;
+        const del=parseInt(el.dataset.revealDelay||0);
+        setTimeout(()=>el.classList.add('visible'),del);
+        obs.unobserve(el);
+      }
+    });
+  },{threshold:0.1});
+  document.querySelectorAll('.reveal').forEach((el,i)=>{ obs.observe(el); });
+})();
+
+/* ── Chart iframe loader ── */
+(function(){
+  const iframe=document.getElementById('gecko-iframe');
+  const loader=document.getElementById('chart-loader');
+  if(iframe&&loader){
+    iframe.addEventListener('load',()=>{
+      loader.style.opacity='0';setTimeout(()=>loader.style.display='none',600);
+    });
+  }
+  const POOL='DMhjxjETWp4qNnQXhaojQ9h4ycf3DegJ231wKcY2c9pi';
+  let ctype='price',cres='60';
+  function buildSrc(){return`https://www.geckoterminal.com/solana/pools/${POOL}?embed=1&info=0&swaps=1&light_chart=0&chart_type=${ctype}&resolution=${cres}&bg_color=000000&chart_bg_color=000000`;}
+  window.setChartType=function(t){
+    ctype=t;
+    document.querySelectorAll('.chart-tab').forEach(b=>b.classList.toggle('active',b.dataset.type===t));
+    iframe.src=buildSrc();
+    if(loader){loader.style.display='flex';loader.style.opacity='1';}
+  };
+  window.setRes=function(r){
+    cres=r;
+    document.querySelectorAll('.chart-res').forEach(b=>b.classList.toggle('active',b.dataset.res===r));
+    iframe.src=buildSrc();
+    if(loader){loader.style.display='flex';loader.style.opacity='1';}
+  };
+  setTimeout(()=>lucide.createIcons(),100);
+})();
+
+/* ── Modal ── */
+const modalData={
+  isolation:{title:'Isolation',body:`<p>Isolation is the deliberate thinning of noise—the conscious decision to wall off disturbing thoughts and reduce the overwhelming complexity of existence to manageable fragments. In Zapffe's philosophy, isolation functions as a psychological defense mechanism where we compartmentalize the unbearable truths about our condition.</p><p>Within the $ELK ecosystem, isolation manifests through token burns and supply reduction. By removing tokens from circulation, we compress the system until only what matters remains. This scarcity reflects the deeper fear of nothingness—the void we desperately try to avoid confronting.</p><p>The burn is not destruction—it is selective forgetting, a mercy we grant ourselves.</p><p><em>"We survive by refusing to see the whole picture."</em></p>`},
+  anchoring:{title:'Anchoring',body:`<p>Anchoring is the mechanism by which we attach ourselves to fixed points in a reality that offers none. Zapffe understood that humans require stable reference points—values, beliefs, routines—to prevent the vertiginous drift into cosmic meaninglessness.</p><p>In the $ELK framework, anchoring takes the form of permanent liquidity and locked pools. These immutable structures serve as gravitational centers, preventing the community from scattering into the chaotic void of speculation.</p><p>When everything is uncertain, when markets crash and narratives collapse, the anchor remains. Structure against entropy. Order against chaos. A stake driven into shifting sand.</p><p><em>"We build monuments not because they will last, but because building them gives us something to hold."</em></p>`},
+  distraction:{title:'Distraction',body:`<p>Distraction is motion as mercy—the perpetual activity that prevents the mind from settling into contemplation of its own predicament. Zapffe recognized that humanity fills every silence with noise, every pause with action, because stillness invites the awareness we cannot bear.</p><p>For $ELK, distraction manifests as marketing campaigns, community raids, meme creation, and the endless production of content. These activities are not merely promotional—they are existential. The raid is a ritual. The meme is a prayer.</p><p>Distraction is not denial—it is strategic avoidance. The community that moves together survives together.</p><p><em>"We fill the void with noise because the void's silence tells us too much."</em></p>`},
+  sublimation:{title:'Sublimation',body:`<p>Sublimation is the highest of Zapffe's mechanisms—the transformation of suffering into something greater. Where isolation hides, anchoring steadies, and distraction averts, sublimation transmutes. It takes the raw material of existential pain and forges it into art, philosophy, community, and meaning.</p><p>Within $ELK, sublimation is the philosophical foundation itself. The project transforms the brutal realities of memecoin speculation—the losses, the volatility, the absurdity—into a shared mythology. We do not deny the suffering; we make it sacred.</p><p>The burden becomes the badge. The weight becomes the wings.</p><p><em>"Pain becomes meaning when we refuse to let it be meaningless."</em></p>`}
+};
+function openModal(mech){
+  const d=modalData[mech];if(!d)return;
+  document.getElementById('modal-title').textContent=d.title;
+  document.getElementById('modal-body').innerHTML=d.body;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  lucide.createIcons();
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+
+/* ── Hero Quote Rotation ── */
+const heroQuotes=[
+  {q:"The tragedy of a species becoming unfit for life by over-evolving one ability.",s:"Zapffe // The Last Messiah"},
+  {q:"Man is a biological paradox, armed too heavily by spirit for his own good.",s:"Zapffe // The Last Messiah"},
+  {q:"Consciousness does not calm the storm; it makes the storm legible.",s:"After Zapffe"},
+  {q:"To endure ourselves, we anchor, distract, and reshape sorrow into form.",s:"After Zapffe's Four Mechanisms"},
+  {q:"The task is not to erase despair, but to sublimate it into creation.",s:"After Zapffe"},
+  {q:"Silence is where the unbearable starts to speak clearly.",s:"After Zapffe"},
+  {q:"A burden carried consciously can become a language.",s:"After Zapffe"},
+  {q:"What we call meaning is often shelter built against the cold of lucidity.",s:"After Zapffe"}
+];
+let heroIdx=-1;
+function rotateHeroQuote(){
+  const qEl=document.getElementById('hero-quote');
+  const sEl=document.getElementById('hero-source');
+  if(!qEl)return;
+  let next=Math.floor(Math.random()*heroQuotes.length);
+  while(next===heroIdx&&heroQuotes.length>1)next=Math.floor(Math.random()*heroQuotes.length);
+  heroIdx=next;
+  const q=heroQuotes[next];
+  qEl.classList.add('fading');
+  setTimeout(()=>{
+    qEl.textContent='"'+q.q+'"';
+    if(sEl)sEl.textContent=q.s;
+    qEl.classList.remove('fading');
+  },300);
+}
+setInterval(rotateHeroQuote,9000);
+
+/* ── Quote Generator ── */
+const quotesExistential=["We built machines to save time, and now we kill time staring at them, waiting for something to happen.","Man is the only animal that refuses to be what he is.","Anxiety is the dizziness of freedom.","To live is to suffer, to survive is to find some meaning in the suffering.","He who has a why to live can bear almost any how.","We are condemned to be free.","The struggle itself towards the heights is enough to fill a man's heart.","One must imagine Sisyphus happy.","The absurd is born of this confrontation between the human need and the unreasonable silence of the world.","There is but one truly serious philosophical problem, and that is suicide.","Freedom is what you do with what's been done to you.","We are our choices.","The only way to deal with an unfree world is to become so absolutely free that your very existence is an act of rebellion.","The mass of men lead lives of quiet desperation.","Nothing matters very much, and most things don't matter at all.","The cure for pain is in the pain.","To be conscious is to be sick.","The eternal silence of these infinite spaces frightens me.","Every existing thing is born without reason, prolongs itself out of weakness, and dies by chance.","The meaning of life is that it stops.","The consciousness of the nothingness of our being is the heaviest burden we carry.","God is dead! He remains dead! And we have killed him.","When you look into an abyss, the abyss also gazes into you.","Without music, life would be a mistake.","The thought of suicide is a great consolation: by means of it one gets successfully through many a bad night.","We have art in order not to die of the truth.","The future influences the present just as much as the past.","The individual has always had to struggle to keep from being overwhelmed by the tribe.","The free soul is rare, but you know it when you see it.","The problem with the world is that the intelligent people are full of doubts, while the stupid ones are full of confidence.","Find what you love and let it kill you.","The less I needed, the better I felt.","People are strange: They are constantly angered by trivial things, but on a major matter like totally wasting their lives, they hardly seem to notice.","We are here to laugh at the odds and live our lives so well that Death will tremble to take us.","I took a deep breath and listened to the old brag of my heart. I am, I am, I am.","The silence between thoughts is where truth resides.","Life is a first draft written in disappearing ink.","The void is not empty; it is full of answers to questions we dare not ask.","We are the question the universe asks itself when it cannot sleep.","Meaning is a sandcastle built against the tide of entropy.","We are all temporarily abled.","To be human is to be a question without an answer.","The weight of existence is measured in unfulfilled possibilities.","We are echoes of a bang that forgot its own cause.","Consciousness is nature's mistake.","The end is built into the beginning.","Life is the art of drawing sufficient conclusions from insufficient premises.","We are the glitch in the universal matrix.","The only authentic life is one that embraces its own absurdity.","Silence is the only language that tells the truth.","Being is the original sin.","Life is a sentence served in the prison of the skull.","The void is patient; it can wait.","To exist is to be incomplete.","We are all time travelers moving at the speed of now.","Consciousness is a lighthouse warning ships that will never come.","The universe is silent, and in that silence, we hear ourselves.","Life is a spoiler for the ending we all know is coming.","We are the ashes pretending we remember the fire.","The self is a story we tell to keep the darkness company.","To live is to be exposed."];
+const quotesDegen=["Buy high, sell low, cry in the shower.","My portfolio is red, my eyes are too.","Sleep is for those without leverage.","I checked the chart 400 times today, nothing changed but my sanity.","WAGMI is a lie we tell ourselves to keep holding.","Diamond hands? More like heavy bags.","I'm in it for the tech (I'm down 90%).","Liquidation emails are my morning alarm.","Just one more pump, I promise I'll exit.","The devs did something... they sold.","Sir, your bags are leaking.","My therapist accepts Solana now.","I sold the bottom and bought the top, perfectly balanced.","NGMI is not a state of mind, it's a lifestyle.","The chart looks like my EKG after my third energy drink.","I'm not panicking, I'm just aggressively long-term holding.","My entry point is a distant memory, like my sanity.","The community is strong because nobody can afford to leave.","I diversified by buying different shades of red candles.","My financial advisor blocked my number.","The dev is active... in the Maldives.","I'm a hodler, not a trader. Mostly because I don't know how to sell.","My bags have bags.","The only green I see is when I close my eyes.","I'm early to the next cycle, or late to the last one.","My portfolio is a modern art piece titled 'Regret'.","I have a PhD in buying the top.","My liquidation price is my sleep paralysis demon.","I don't always check the chart, but when I do, it's red.","I told my mom I trade crypto. She thinks I'm a drug dealer.","My wallet is like a black hole, but for money.","I'm not losing money, I'm investing in experience points.","The only thing pumping is my blood pressure.","I have diamond hands and paper lungs from all the screaming.","My strategy is buy high, never sell, die young.","I'm in a committed relationship with my unrealized losses.","My portfolio is diversified between zero and nothing.","I don't need sleep, I need a 10x.","My average down strategy has brought me to the center of the Earth.","I'm not a degenerate, I'm a sophisticated risk manager.","My bank account is a horror story I tell my children.","I bought the dip, then it dipped more.","My bags are so heavy I need a chiropractor.","I'm not crying, it's just liquidated tears.","My trading strategy is autism powered by caffeine.","I'm bullish on ramen noodles for the next year.","My ROI is Return On Ignorance.","I don't check the price, I check my will to live.","The chart is forming a 'descending into madness' pattern.","I'm leveraged 50x on hope.","My cost basis is a work of fiction.","The community is tight-knit because we're all trapped in the same burning building.","I bought the rumor, sold the news, bought the lawsuit.","My trading strategy is 'thoughts and prayers'.","I'm a crypto veteran... of three months.","My portfolio is diversified between rugs and slow rugs.","The dev said 'trust me'—famous last words.","I'm not crying, I'm leaking value.","The chart is forming a beautiful 'L' for 'loser'.","I have a strong hand... because I can't find the sell button.","My financial plan is 'number go up eventually'."];
+const quotesElk=["The antlers are heavy, but they are ours.","We do not choose the burden, we only choose how to carry it.","In the forest of the market, the Elk stands still.","The herd survives not by speed, but by endurance.","Shedding velvet is painful, but growth requires blood.","The wilderness cares not for your wallet.","We graze on the volatility of the world.","To be an Elk is to carry the weight of the sky on your head.","The clearing comes only after the thickest woods.","Tracks in the snow fade, but the path remains.","The mountain does not move, yet we climb it still.","In silence, the herd finds its strength.","The antlers are not for fighting, but for remembering.","Winter tests the herd; only the patient survive.","We do not run from the storm; we lower our heads and push through.","The forest provides for those who wait.","To migrate is to trust in the unknown.","The elk does not check the price, the elk checks the horizon.","We carry our losses like antlers—visible, heavy, and ours alone.","The herd moves as one shadow across the mountain.","Even in the deepest snow, we find the grass beneath.","The wolf fears the elk who has nothing left to lose.","The elk does not ask why the mountain is high, it simply climbs.","The silence of the forest is the only chart we trust.","When the storm comes, the elk does not hide, it endures.","The heaviest antlers belong to those who have survived the most winters.","We do not fear the bear market; we have seen real bears.","The herd remembers every path, even those grown over with doubt.","To be an elk is to know that stillness is also a kind of movement.","Our antlers scrape the sky so others know we are here.","The young elk asks when the bull run comes. The old elk knows winter never ends.","We walk uphill because that is where the clearing lies.","Even a broken antler points toward the sky.","The weight of the antlers reminds us we are still alive.","The elk sees farther from the heights it has climbed alone.","Our calls echo in valleys where liquidity has dried up.","We do not sell our winter coat when the first frost arrives.","The forest teaches that patience outlives panic.","An elk alone is a target; a herd together is a fortress.","We drink from frozen streams because we refuse to move to warmer waters.","The elk knows that the deepest snow hides the sweetest grass.","Our tracks may wander, but our destination is always forward.","We are the ghosts of the forest, carrying the weight of generations.","When the herd thins, the survivors grow stronger.","The forest floor is littered with the bones of those who ran too fast.","To shed the old velvet is to embrace the new growth, raw and bleeding.","The forest is indifferent, but the herd is not.","The old elk's antlers are worn smooth by seasons of survival.","In the depth of winter, the elk finds the evergreen.","Our burden is visible so that others may learn from our endurance.","To be herd is to be home.","The valley is wide, but the herd is wider.","The wolf howls; we lower our heads and walk on.","In the rut, we remember we are animals; in the herd, we remember we are family.","The forest has no deadlines, only seasons.","The highest peaks teach the deepest humility.","The Elk does not check the weather; it wears it.","The burden shared becomes the burden shaped into a home.","The clearing is earned, not given.","We carry the sky on our heads so the earth can see it.","To be Elk is to be a patient mountain.","In silence, the antlers speak of years."];
+
+let quoteMode='existential',quoteHistory=[];
+function setMode(m,btn){
+  quoteMode=m;quoteHistory=[];
+  document.querySelectorAll('.mode-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false');});
+  btn.classList.add('active');btn.setAttribute('aria-pressed','true');
+  generateQuote();
+}
+function generateQuote(){
+  const d=document.getElementById('quote-display');
+  d.classList.add('fading');
+  setTimeout(()=>{
+    let pool=quoteMode==='degen'?quotesDegen:quoteMode==='elk'?quotesElk:quotesExistential;
+    let avail=pool.map((_,i)=>i).filter(i=>!quoteHistory.includes(i));
+    if(!avail.length){quoteHistory=[];avail=pool.map((_,i)=>i);}
+    const ri=avail[Math.floor(Math.random()*avail.length)];
+    quoteHistory.push(ri);if(quoteHistory.length>50)quoteHistory.shift();
+    d.textContent='"'+pool[ri]+'"';
+    d.classList.remove('fading');
+  },300);
+}
+function copyQuote(){copyText(document.getElementById('quote-display').textContent,'WISDOM COPIED');}
+
+/* ════════════════════════════════════
+   AUDIO PLAYER
+════════════════════════════════════ */
+const IMG_BASE='https://raw.githubusercontent.com/exelkonsol/elk/main/images/';
+const AUD_BASE='https://raw.githubusercontent.com/exelkonsol/elk/main/music/';
+
+const tracks=[
+  {title:"Before the Clearing",         desc:"The silence before revelation"},
+  {title:"Crimson Twilight",            desc:"Dusk bleeds into the void"},
+  {title:"Echoes Where Meaning Was",    desc:"Resonance of the lost"},
+  {title:"Eternal Weight",              desc:"The burden without end"},
+  {title:"Forest Depths",               desc:"Where the light forgets itself"},
+  {title:"Herd Gathering",              desc:"The convergence of the burdened"},
+  {title:"Herd Through the Valley",     desc:"Together into the unknown"},
+  {title:"Migration of the Burdened",   desc:"Moving forward, always forward"},
+  {title:"Mountain Echo",               desc:"Words that return changed"},
+  {title:"No Elk Walks Alone",          desc:"The weight is shared"},
+  {title:"Signal from the Ridge",       desc:"A call across the dark"},
+  {title:"The Burden",                  desc:"What we carry defines us"},
+  {title:"The Herd Remembers",          desc:"Memory lives in the herd"},
+  {title:"The Weight of Knowing",       desc:"Consciousness is the cost"},
+  {title:"Turning Ash to Altar",        desc:"Transformation through suffering"},
+  {title:"What Consciousness Costs",    desc:"The price of awareness"}
+];
+
+function trackArtUrl(idx){ return IMG_BASE+encodeURIComponent(tracks[idx].title)+'.png'; }
+function trackAudioUrl(t){ return AUD_BASE+encodeURIComponent(t.title)+'.mp3'; }
+
+let curIdx=0,playing=false,doShuffle=true,doRepeat=false;
+let shuffleQ=[],audioHasPlayed=false;
+let volLevel=0.65,muted=false;
+let vizInit=false;
+
+const aud=document.getElementById('aud');
+
+function buildShuffleQ(){
+  shuffleQ=tracks.map((_,i)=>i).filter(i=>i!==curIdx);
+  for(let i=shuffleQ.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffleQ[i],shuffleQ[j]]=[shuffleQ[j],shuffleQ[i]];}
+}
+
+function initAudioCtx(){
+  if(vizInit)return;
+  vizInit=true;
+  startCSSViz();
+}
+
+/* ── CSS Visualizer ── */
+let vizRaf;
+function startCSSViz(){
+  const canvas=document.getElementById('viz-canvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const BARS=48;
+  const phases=Array.from({length:BARS},()=>Math.random()*Math.PI*2);
+  const speeds=Array.from({length:BARS},()=>0.6+Math.random()*1.4);
+  const baseH=Array.from({length:BARS},(_,i)=>{
+    const centre=Math.abs(i-BARS/2)/(BARS/2);
+    return 0.15+0.5*(1-centre*centre);
+  });
+
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const resize=()=>{
+    const r=canvas.getBoundingClientRect();
+    canvas.width=Math.floor(r.width*dpr);
+    canvas.height=Math.floor(r.height*dpr);
+  };
+  resize();
+  if(window.ResizeObserver)new ResizeObserver(resize).observe(canvas);
+
+  let last=0;
+  function frame(ts){
+    vizRaf=requestAnimationFrame(frame);
+    if(ts-last<40)return; last=ts;
+    const W=canvas.width,H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+    if(!playing)return;
+
+    const t=ts/1000;
+    const bw=(W/dpr)/BARS;
+
+    for(let i=0;i<BARS;i++){
+      const wave=Math.sin(t*speeds[i]+phases[i])*0.35
+               + Math.sin(t*speeds[i]*0.5+phases[i]*1.3)*0.2;
+      const h=(baseH[i]+wave)*H*0.65;
+      const alpha=0.12+baseH[i]*0.25+(wave+0.55)*0.08;
+      const x=i*bw*dpr;
+      ctx.fillStyle=`rgba(200,190,170,${Math.max(0.04,alpha)})`;
+      ctx.fillRect(x+1,H-h,bw*dpr-2,Math.max(2,h));
+    }
+  }
+  frame(0);
+}
+
+/* ── Load Track ── */
+function loadTrack(idx,autoPlay=false){
+  if(idx<0||idx>=tracks.length)return;
+  curIdx=idx;
+  const t=tracks[idx];
+  const artUrl=trackArtUrl(idx);
+  const audUrl=trackAudioUrl(t);
+
+  document.getElementById('track-title').textContent=t.title;
+  document.getElementById('track-desc').textContent='"'+t.desc+'"';
+  document.getElementById('track-num').textContent='TRACK '+pad(idx+1)+' / '+pad(tracks.length);
+  document.getElementById('art-img').src=artUrl;
+  document.getElementById('mini-art-img').src=artUrl;
+  document.getElementById('mini-title').textContent=t.title;
+  document.getElementById('player-art-bg').style.backgroundImage=`url('${artUrl}')`;
+  document.getElementById('pfill').style.width='0%';
+  document.getElementById('mini-pfill').style.width='0%';
+  document.getElementById('tcur').textContent='00:00';
+  document.getElementById('ttot').textContent='00:00';
+
+  document.querySelectorAll('.track-item').forEach((el,i)=>el.classList.toggle('active',i===idx));
+
+  aud.onloadedmetadata=null;
+  aud.oncanplaythrough=null;
+  aud.onerror=null;
+
+  aud.src=audUrl;
+  aud.load();
+
+  aud.onloadedmetadata=()=>{
+    document.getElementById('ttot').textContent=fmt(aud.duration);
+  };
+
+  aud.onerror=(e)=>{
+    console.warn('Audio load error — URL:',audUrl,'\nEvent:',e);
+    showToast('TRACK UNAVAILABLE');
+  };
+
+  if(autoPlay){
+    aud.oncanplaythrough=()=>{
+      aud.oncanplaythrough=null;
+      doPlay();
+    };
+    setTimeout(()=>{
+      if(!playing && autoPlay){
+        aud.oncanplaythrough=null;
+        doPlay();
+      }
+    }, 1200);
+  }
+}
+
+function doPlay(){
+  if(!vizInit)initAudioCtx();
+  const playPromise=aud.play();
+  if(playPromise!==undefined){
+    playPromise.then(()=>{
+      playing=true;audioHasPlayed=true;
+      document.getElementById('vinyl').classList.add('playing');
+      document.getElementById('sdot').classList.add('playing');
+      document.getElementById('stext').textContent='Playing';
+      setIcon('play-icon','pause');
+      setIcon('mini-play-icon','pause');
+      document.getElementById('mini-player').classList.add('shown');
+    }).catch(err=>{
+      console.warn('Play blocked:',err);
+      showToast('TAP TO PLAY');
+    });
+  }
+}
+
+function doPause(){
+  aud.pause();playing=false;
+  document.getElementById('vinyl').classList.remove('playing');
+  document.getElementById('sdot').classList.remove('playing');
+  document.getElementById('stext').textContent='Paused';
+  setIcon('play-icon','play');
+  setIcon('mini-play-icon','play');
+}
+
+function togglePlay(){
+  if(!vizInit)initAudioCtx();
+  playing?doPause():doPlay();
+}
+
+function nextTrack(){
+  if(doShuffle){if(!shuffleQ.length)buildShuffleQ();loadTrack(shuffleQ.pop(),true);}
+  else loadTrack((curIdx+1)%tracks.length,true);
+}
+function prevTrack(){
+  if(aud.currentTime>3){aud.currentTime=0;}
+  else loadTrack((curIdx-1+tracks.length)%tracks.length,playing);
+}
+
+function toggleShuffle(){
+  doShuffle=!doShuffle;
+  document.getElementById('shuf-btn').classList.toggle('on',doShuffle);
+  if(doShuffle)buildShuffleQ();
+  showToast(doShuffle?'SHUFFLE ON':'SHUFFLE OFF');
+}
+function toggleRepeat(){
+  doRepeat=!doRepeat;aud.loop=doRepeat;
+  document.getElementById('rep-btn').classList.toggle('on',doRepeat);
+  showToast(doRepeat?'REPEAT ON':'REPEAT OFF');
+}
+function setVolume(v){
+  volLevel=v/100;
+  if(!muted) aud.volume=volLevel;
+  if(v==0)setIcon('vol-icon','volume-x');
+  else if(v<40)setIcon('vol-icon','volume-1');
+  else setIcon('vol-icon','volume-2');
+  lucide.createIcons();
+}
+function toggleMute(){
+  muted=!muted;
+  aud.volume=muted?0:volLevel;
+  setIcon('vol-icon',muted?'volume-x':'volume-2');
+  lucide.createIcons();
+}
+
+aud.addEventListener('timeupdate',()=>{
+  if(!aud.duration)return;
+  const pct=(aud.currentTime/aud.duration)*100;
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('mini-pfill').style.width=pct+'%';
+  document.getElementById('tcur').textContent=fmt(aud.currentTime);
+});
+aud.addEventListener('ended',()=>{if(!doRepeat)nextTrack();});
+
+/* ── Progress Bar ── */
+let dragging=false;
+const pbar=document.getElementById('pbar');
+function seekTo(clientX){
+  const r=pbar.getBoundingClientRect();
+  const pos=Math.max(0,Math.min(1,(clientX-r.left)/r.width));
+  if(aud.duration){aud.currentTime=pos*aud.duration;document.getElementById('pfill').style.width=(pos*100)+'%';}
+}
+pbar.addEventListener('mousedown',e=>{dragging=true;seekTo(e.clientX);});
+document.addEventListener('mousemove',e=>{if(dragging)seekTo(e.clientX);});
+document.addEventListener('mouseup',()=>dragging=false);
+pbar.addEventListener('touchstart',e=>{dragging=true;seekTo(e.touches[0].clientX);},{passive:true});
+document.addEventListener('touchmove',e=>{if(dragging)seekTo(e.touches[0].clientX);},{passive:true});
+document.addEventListener('touchend',()=>dragging=false);
+pbar.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')aud.currentTime=Math.min(aud.duration,aud.currentTime+5);
+  if(e.key==='ArrowLeft')aud.currentTime=Math.max(0,aud.currentTime-5);
+});
+
+/* ── Keyboard Shortcuts ── */
+document.addEventListener('keydown',e=>{
+  if(['INPUT','TEXTAREA','BUTTON'].includes(e.target.tagName))return;
+  if(e.key===' '){e.preventDefault();togglePlay();}
+  if(e.key==='ArrowRight')nextTrack();
+  if(e.key==='ArrowLeft')prevTrack();
+  if(e.key==='m'||e.key==='M')toggleMute();
+});
+
+/* ── Build Playlist ── */
+function buildPlaylist(){
+  const pl=document.getElementById('playlist');
+  pl.innerHTML='';
+  tracks.forEach((t,i)=>{
+    const el=document.createElement('div');
+    el.className='track-item'+(i===0?' active':'');
+    el.onclick=()=>loadTrack(i,true);
+    el.innerHTML=
+      `<span class="font-mono text-[0.58rem] text-[var(--text4)] w-6 flex-shrink-0">${pad(i+1)}</span>`+
+      `<span class="font-mono text-xs text-[var(--text2)] truncate flex-1">${t.title}</span>`+
+      `<span class="font-mono text-[0.58rem] text-[var(--text4)] italic hidden sm:block flex-shrink-0 ml-2 truncate max-w-[130px]">${t.desc}</span>`;
+    pl.appendChild(el);
+  });
+}
+
+/* ── Mini Player visibility ── */
+const soundscapeSection=document.getElementById('soundscape');
+new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(audioHasPlayed){
+      document.getElementById('mini-player').classList.toggle('shown',!e.isIntersecting);
+    }
+  });
+},{threshold:0.1}).observe(soundscapeSection);
+
+/* ── Helpers ── */
+function fmt(s){if(!s||!isFinite(s))return'00:00';const m=Math.floor(s/60);return pad(m)+':'+pad(Math.floor(s%60));}
+function pad(n){return String(n).padStart(2,'0');}
+function setIcon(id,name){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.setAttribute('data-lucide',name);
+  lucide.createIcons({nodes:[el]});
+}
+
+/* ── Init Audio Player ── */
+buildPlaylist();
+buildShuffleQ();
+document.getElementById('shuf-btn').classList.add('on');
+loadTrack(0,false);
+aud.volume=volLevel;
+
+window.addEventListener('beforeunload',()=>{ if(vizRaf)cancelAnimationFrame(vizRaf); });
+</script>
+</body>
+</html>

@@ -1,0 +1,543 @@
+/* ════════════════════════════════════════
+   VINYL RECORD - FIXED SLOW ROTATION
+   Duration increased from 32s to 75s for realistic slow spin
+════════════════════════════════════════ */
+.vinyl {
+  position: relative;
+  border-radius: 50%;
+  flex-shrink: 0;
+  cursor: pointer;
+  width: 170px;
+  height: 170px;
+  background: repeating-radial-gradient(circle at center,
+    #0d0d0d 0, #0d0d0d 2px, #080808 3px, #080808 6px,
+    #0b0b0b 7px, #0b0b0b 9px);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 16px 60px rgba(0,0,0,0.9), inset 0 0 50px rgba(0,0,0,0.8);
+
+  /* Longhand animation properties to prevent override */
+  animation-name: vinyl-spin;
+  animation-duration: 75s; /* Increased from 32s for much slower, realistic spin */
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: paused;
+  animation-fill-mode: none;
+  animation-delay: 0s;
+  animation-direction: normal;
+
+  /* GPU optimization */
+  will-change: transform;
+  transform-origin: 50% 50%;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  touch-action: manipulation;
+  transition: box-shadow 0.35s;
+}
+
+[data-theme="light"] .vinyl {
+  background: repeating-radial-gradient(circle at center,
+    #1a1a1a 0, #1a1a1a 2px, #0f0f0f 3px, #0f0f0f 6px,
+    #141414 7px, #141414 9px);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.2), 0 16px 48px rgba(0,0,0,0.4), inset 0 0 40px rgba(0,0,0,0.6);
+}
+
+.vinyl.playing {
+  animation-play-state: running;
+  /* Ensure duration stays fixed */
+  animation-duration: 75s !important;
+}
+
+@keyframes vinyl-spin {
+  from {
+    transform: rotate(0deg) translateZ(0);
+  }
+  to {
+    transform: rotate(360deg) translateZ(0);
+  }
+}
+
+@-webkit-keyframes vinyl-spin {
+  from {
+    -webkit-transform: rotate(0deg) translateZ(0);
+  }
+  to {
+    -webkit-transform: rotate(360deg) translateZ(0);
+  }
+}
+
+.vinyl-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 38%;
+  height: 38%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.vinyl-label img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.vinyl-hole {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 7%;
+  height: 7%;
+  border-radius: 50%;
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.15);
+  z-index: 2;
+}
+
+@media (max-width: 640px) {
+  .vinyl {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+/* ════════════════════════
+   IMPROVED AUDIO CONTROLS
+   Slick, modern, professional
+════════════════════════ */
+.play-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.25);
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.95);
+  position: relative;
+  overflow: hidden;
+}
+
+.play-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.play-btn:hover::before {
+  opacity: 1;
+}
+
+.play-btn:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.14) 100%);
+  border-color: rgba(255,255,255,0.4);
+  transform: scale(1.08);
+  box-shadow: 0 0 32px rgba(255,255,255,0.15), inset 0 2px 8px rgba(255,255,255,0.1);
+}
+
+.play-btn:active {
+  transform: scale(1.02);
+}
+
+[data-theme="light"] .play-btn {
+  border-color: rgba(0,0,0,0.35);
+  background: linear-gradient(135deg, rgba(0,0,0,0.16) 0%, rgba(0,0,0,0.12) 100%);
+  color: var(--text);
+}
+
+[data-theme="light"] .play-btn::before {
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), transparent 60%);
+}
+
+[data-theme="light"] .play-btn:hover {
+  background: linear-gradient(135deg, rgba(0,0,0,0.24) 0%, rgba(0,0,0,0.18) 100%);
+  border-color: rgba(0,0,0,0.5);
+  box-shadow: 0 0 28px rgba(0,0,0,0.18), inset 0 2px 8px rgba(255,255,255,0.3);
+}
+
+.ctrl-btn {
+  background: transparent;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.ctrl-btn::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ctrl-btn:hover::before {
+  opacity: 1;
+}
+
+.ctrl-btn:hover {
+  opacity: 1;
+  color: var(--text);
+  transform: scale(1.12);
+}
+
+.ctrl-btn.on {
+  opacity: 1;
+  color: var(--gold);
+}
+
+.ctrl-btn:active {
+  transform: scale(0.98);
+}
+
+[data-theme="light"] .ctrl-btn {
+  color: var(--text3);
+  opacity: 0.75;
+}
+
+[data-theme="light"] .ctrl-btn::before {
+  background: radial-gradient(circle, rgba(0,0,0,0.08), transparent 70%);
+}
+
+[data-theme="light"] .ctrl-btn:hover {
+  color: var(--text);
+  opacity: 1;
+}
+
+[data-theme="light"] .ctrl-btn.on {
+  color: var(--gold);
+  opacity: 1;
+}
+
+/* ════════════════════════
+   PROGRESS BAR
+════════════════════════ */
+.progress-bar {
+  position: relative;
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+[data-theme="light"] .progress-bar {
+  background: rgba(0,0,0,0.20);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.6) 0%, var(--gold) 100%);
+  border-radius: 2px;
+  width: 0%;
+  pointer-events: none;
+  position: relative;
+  transition: width 0.1s linear;
+}
+
+[data-theme="light"] .progress-fill {
+  background: linear-gradient(90deg, rgba(40,28,10,0.75) 0%, var(--gold) 100%);
+}
+
+.progress-handle {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%) scale(0);
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 12px rgba(255,255,255,0.6), 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+
+[data-theme="light"] .progress-handle {
+  background: var(--text);
+  box-shadow: 0 0 12px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.progress-bar:hover .progress-handle,
+.progress-bar:active .progress-handle {
+  transform: translateY(-50%) scale(1);
+}
+
+@media (pointer: coarse) {
+  .progress-bar {
+    height: 20px;
+    background: transparent;
+  }
+  
+  .progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+  
+  [data-theme="light"] .progress-bar::before {
+    background: rgba(0,0,0,0.18);
+  }
+  
+  .progress-fill {
+    top: 8px;
+    height: 4px;
+  }
+  
+  .progress-handle {
+    transform: translateY(-50%) scale(1) !important;
+    width: 16px;
+    height: 16px;
+    right: -8px;
+  }
+}
+
+/* ════════════════════════
+   VOLUME SLIDER
+════════════════════════ */
+.vol-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+[data-theme="light"] .vol-slider {
+  background: rgba(0,0,0,0.20);
+}
+
+.vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.7));
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.vol-slider::-webkit-slider-thumb:hover {
+  background: #fff;
+  transform: scale(1.25);
+  box-shadow: 0 0 16px rgba(255,255,255,0.5), 0 2px 8px rgba(0,0,0,0.4);
+}
+
+[data-theme="light"] .vol-slider::-webkit-slider-thumb {
+  background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.55));
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+[data-theme="light"] .vol-slider::-webkit-slider-thumb:hover {
+  background: var(--text);
+  transform: scale(1.25);
+  box-shadow: 0 0 16px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.vol-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.7));
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+[data-theme="light"] .vol-slider::-moz-range-thumb {
+  background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.55));
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* ════════════════════════
+   STATUS DOT
+════════════════════════ */
+@keyframes status-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: inline-block;
+  transition: background 0.3s;
+}
+
+.status-dot.playing {
+  background: rgba(74,222,128,0.85);
+  animation: status-pulse 1.8s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(74,222,128,0.6);
+}
+
+[data-theme="light"] .status-dot {
+  background: rgba(0,0,0,0.25);
+}
+
+[data-theme="light"] .status-dot.playing {
+  background: rgba(22,130,50,0.95);
+  box-shadow: 0 0 12px rgba(22,130,50,0.5);
+}
+
+/* ════════════════════════
+   TRACK LIST
+════════════════════════ */
+.track-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 44px;
+}
+
+.track-item:hover {
+  background: rgba(255,255,255,0.06);
+  padding-left: 16px;
+  border-left-color: rgba(212,160,23,0.3);
+}
+
+.track-item.active {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--gold);
+}
+
+[data-theme="light"] .track-item:hover {
+  background: rgba(0,0,0,0.08);
+  border-left-color: rgba(138,97,0,0.4);
+}
+
+[data-theme="light"] .track-item.active {
+  background: rgba(0,0,0,0.11);
+  border-left-color: var(--gold);
+}
+
+/* ════════════════════════
+   PLAYER CARD
+════════════════════════ */
+.player-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.25s, background 0.35s;
+  box-shadow: var(--shadow-card);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .player-card {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+}
+
+#player-art-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(50px) brightness(0.18) saturate(0.5);
+  transform: scale(1.2);
+  transition: background-image 1s ease, filter 0.35s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+[data-theme="light"] #player-art-bg {
+  filter: blur(50px) brightness(0.32) saturate(0.3);
+}
+
+#viz-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.player-inner {
+  position: relative;
+  z-index: 2;
+  padding: 36px 36px 28px;
+}
+
+@media (max-width: 640px) {
+  .player-inner {
+    padding: 24px 20px 20px;
+  }
+}
+
+.playlist-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.08) transparent;
+}
+
+.playlist-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.playlist-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+}
+
+.playlist-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+[data-theme="light"] .playlist-scroll {
+  scrollbar-color: rgba(0,0,0,0.16) transparent;
+}
+
+[data-theme="light"] .playlist-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.16);
+}
+
+[data-theme="light"] .playlist-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.24);
+}

@@ -1,0 +1,126 @@
+@import 'tailwindcss';
+
+/* ════════════════════════
+   CUSTOM FONTS
+════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+/* ════════════════════════
+   THEME VARIABLES — DARK
+════════════════════════ */
+:root {
+  --bg:        #0a0a0b;
+  --bg2:       #111114;
+  --card:      #141416;
+  --card2:     #1c1c20;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.12);
+  --text:      #f0ebe3;
+  --text2:     #c8c0b4;
+  --text3:     rgba(230,222,210,0.45);
+  --text4:     rgba(230,222,210,0.22);
+  --text5:     rgba(230,222,210,0.12);
+  --red:       #c41e3a;
+  --red-dim:   rgba(139,26,26,0.25);
+  --red-glow:  rgba(196,30,58,0.15);
+  --gold:      #d4a017;
+  --gold-dim:  rgba(212,160,23,0.12);
+  --glass:     rgba(8,8,12,0.55);
+  --nav-bg:    rgba(5,5,8,0.93);
+  --noise-o:   0.038;
+  --global-bg-o: 0.26;
+  --tint:      rgba(0,0,0,0.48);
+  --shadow-card: 0 8px 40px rgba(0,0,0,0.6);
+  --bg-rgb: 10,10,11;
+}
+
+/* ════════════════════════
+   THEME VARIABLES — LIGHT
+   Enhanced contrast and readability
+════════════════════════ */
+[data-theme="light"] {
+  /* Backgrounds — clear warm parchment hierarchy */
+  --bg:        #c8bfa6;
+  --bg2:       #bfb59a;
+  --card:      #e8e1cd;
+  --card2:     #d8cfb8;
+
+  /* Borders — stronger warm separation */
+  --border:    rgba(70,50,15,0.28);
+  --border2:   rgba(70,50,15,0.45);
+
+  /* Text — very dark warm browns for maximum contrast */
+  --text:      #0f0900;
+  --text2:     #1f1505;
+  --text3:     rgba(15,9,0,0.78);
+  --text4:     rgba(15,9,0,0.58);
+  --text5:     rgba(15,9,0,0.32);
+
+  /* Accent colors — deep, highly readable */
+  --red:       #8a1425;
+  --red-dim:   rgba(138,20,37,0.20);
+  --red-glow:  rgba(138,20,37,0.15);
+  --gold:      #8a6100;
+  --gold-dim:  rgba(138,97,0,0.22);
+
+  /* Surfaces */
+  --glass:     rgba(232,225,205,0.95);
+  --nav-bg:    rgba(215,206,185,0.98);
+
+  /* Overlays */
+  --noise-o:   0.022;
+  --global-bg-o: 0.68;
+  --tint:      rgba(90,75,50,0.20);
+
+  /* Shadows — warm, medium depth */
+  --shadow-card: 0 4px 28px rgba(60,42,12,0.28), 0 1px 5px rgba(60,42,12,0.16);
+  
+  --bg-rgb: 200,191,166;
+}
+
+/* ════════════════════════
+   BASE STYLES
+════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Text', Georgia, serif;
+  overflow-x: hidden;
+  transition: background 0.35s ease, color 0.25s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Cinzel', serif;
+}
+
+/* ════════════════════════
+   SELECTION COLORS
+════════════════════════ */
+::selection {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+[data-theme="light"] ::selection {
+  background: rgba(0,0,0,0.20);
+  color: var(--text);
+}

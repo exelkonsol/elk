@@ -11,86 +11,112 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
     navigator.clipboard.writeText(ca).then(() => displayToast('CA COPIED'));
   };
 
+  const IMAGE_URL =
+    'https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png';
+
   return (
     <footer
-      className="relative overflow-hidden py-20 sm:py-24 px-6 min-h-[340px]"
+      className="relative overflow-hidden py-20 sm:py-28 px-6 min-h-[380px] sm:min-h-[420px]"
       style={{
         background: '#0a0a0b',
         borderTop: '1px solid rgba(255,255,255,0.07)',
       }}
     >
-      <div className="footer-bg absolute inset-0 pointer-events-none">
+      {/* ── BACKGROUND LAYERS ───────────────────────────────────────── */}
+      <div className="absolute inset-0 pointer-events-none select-none">
 
-        {/* Layer 1 — deep blur bloom, very low opacity for ambient color */}
+        {/* Layer 1 — massive blur bloom: zero hard edges by design */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-[-15%]"
           style={{
-            backgroundImage: "url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png')",
+            backgroundImage: `url('${IMAGE_URL}')`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center 52%',
+            backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            filter: 'blur(90px) saturate(1.1) brightness(0.7)',
-            transform: 'scale(1.25)',
-            opacity: 0.18,
+            filter: 'blur(110px) saturate(1.15) brightness(0.55)',
+            opacity: 0.13,
           }}
         />
 
-        {/* Layer 2 — main image, tightly masked with a wide soft radial fade */}
+        {/* Layer 2 — crisp image, killed on all 4 sides with a tight compound mask */}
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png')",
+            backgroundImage: `url('${IMAGE_URL}')`,
             backgroundSize: 'contain',
-            backgroundPosition: 'center 52%',
+            backgroundPosition: 'center 50%',
             backgroundRepeat: 'no-repeat',
-            filter: 'saturate(1.0) contrast(0.97) brightness(0.88)',
-            opacity: 0.58,
+            filter: 'saturate(0.95) brightness(0.80)',
+            opacity: 0.42,
+            /*
+             * Two masks multiplied together:
+             *  A) radial ellipse — fades the image outward from center
+             *  B) linear top+bottom ramp — ensures the top & bottom
+             *     borders of the image rectangle are fully dissolved
+             *
+             * WebKit requires the vendor-prefixed version too.
+             */
             WebkitMaskImage: [
-              'radial-gradient(ellipse 72% 90% at 50% 52%,',
-              '  rgba(0,0,0,1)   0%,',
-              '  rgba(0,0,0,0.92) 28%,',
-              '  rgba(0,0,0,0.72) 48%,',
-              '  rgba(0,0,0,0.38) 64%,',
-              '  rgba(0,0,0,0.12) 78%,',
-              '  rgba(0,0,0,0.00) 90%)',
+              /* A: radial fade */
+              'radial-gradient(ellipse 62% 82% at 50% 50%,',
+              '  #000 0%, #000 22%,',
+              '  rgba(0,0,0,0.88) 38%,',
+              '  rgba(0,0,0,0.60) 54%,',
+              '  rgba(0,0,0,0.28) 68%,',
+              '  rgba(0,0,0,0.08) 80%,',
+              '  transparent 92%)',
             ].join(''),
             maskImage: [
-              'radial-gradient(ellipse 72% 90% at 50% 52%,',
-              '  rgba(0,0,0,1)   0%,',
-              '  rgba(0,0,0,0.92) 28%,',
-              '  rgba(0,0,0,0.72) 48%,',
-              '  rgba(0,0,0,0.38) 64%,',
-              '  rgba(0,0,0,0.12) 78%,',
-              '  rgba(0,0,0,0.00) 90%)',
+              'radial-gradient(ellipse 62% 82% at 50% 50%,',
+              '  #000 0%, #000 22%,',
+              '  rgba(0,0,0,0.88) 38%,',
+              '  rgba(0,0,0,0.60) 54%,',
+              '  rgba(0,0,0,0.28) 68%,',
+              '  rgba(0,0,0,0.08) 80%,',
+              '  transparent 92%)',
             ].join(''),
           }}
         />
 
-        {/* Layer 3 — top & bottom linear fade to kill any remaining hard edges */}
+        {/* Layer 3 — solid color bleeds from ALL four edges inward,
+            completely burying whatever the mask leaves behind */}
         <div
           className="absolute inset-0"
           style={{
             background: [
+              /* top bleed */
               'linear-gradient(to bottom,',
-              '  #0a0a0b               0%,',
-              '  rgba(10,10,11,0.60)  10%,',
-              '  rgba(10,10,11,0.00)  28%,',
-              '  rgba(10,10,11,0.00)  70%,',
-              '  rgba(10,10,11,0.60)  88%,',
-              '  #0a0a0b              100%)',
+              '  #0a0a0b 0%,',
+              '  rgba(10,10,11,0.85) 8%,',
+              '  rgba(10,10,11,0.30) 22%,',
+              '  transparent 38%)',
               ',',
+              /* bottom bleed */
+              'linear-gradient(to top,',
+              '  #0a0a0b 0%,',
+              '  rgba(10,10,11,0.85) 8%,',
+              '  rgba(10,10,11,0.30) 22%,',
+              '  transparent 38%)',
+              ',',
+              /* left bleed */
               'linear-gradient(to right,',
-              '  #0a0a0b               0%,',
-              '  rgba(10,10,11,0.55)  10%,',
-              '  rgba(10,10,11,0.00)  26%,',
-              '  rgba(10,10,11,0.00)  74%,',
-              '  rgba(10,10,11,0.55)  90%,',
-              '  #0a0a0b              100%)',
+              '  #0a0a0b 0%,',
+              '  rgba(10,10,11,0.80) 6%,',
+              '  rgba(10,10,11,0.25) 18%,',
+              '  transparent 32%)',
+              ',',
+              /* right bleed */
+              'linear-gradient(to left,',
+              '  #0a0a0b 0%,',
+              '  rgba(10,10,11,0.80) 6%,',
+              '  rgba(10,10,11,0.25) 18%,',
+              '  transparent 32%)',
             ].join(''),
           }}
         />
       </div>
 
+      {/* ── CONTENT ─────────────────────────────────────────────────── */}
       <div className="relative z-20 max-w-2xl mx-auto text-center space-y-10">
         <blockquote
           className="font-['Crimson_Text'] text-base sm:text-lg leading-relaxed italic px-4"

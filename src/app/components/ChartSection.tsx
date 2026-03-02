@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Copy, ExternalLink } from 'lucide-react';
 
 interface ChartSectionProps {
@@ -67,23 +67,26 @@ const ChartSection: React.FC<ChartSectionProps> = ({ displayToast }) => {
             position: 'relative',
             height: '660px',
             boxShadow: 'var(--shadow-card)',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           <div
-            className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-2"
+            className="z-10 flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:px-4"
             style={{
               background: 'rgba(var(--bg-rgb), 0.6)',
               borderBottom: '1px solid var(--border)',
             }}
           >
-            <div className="flex gap-1">
+            <div className="flex gap-1 self-start">
               <button
                 onClick={() => {
                   setChartType('price');
                   setLoading(true);
                 }}
-                className={`font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-3 py-2 rounded border transition-all ${chartType === 'price' ? 'border-[rgba(212,160,23,0.4)]' : 'border-transparent'
-                  }`}
+                className={`font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-3 py-2 rounded border transition-all ${
+                  chartType === 'price' ? 'border-[rgba(212,160,23,0.4)]' : 'border-transparent'
+                }`}
                 style={{
                   color: chartType === 'price' ? 'var(--text)' : 'var(--text3)',
                   background: chartType === 'price' ? 'var(--gold-dim)' : 'transparent',
@@ -96,8 +99,9 @@ const ChartSection: React.FC<ChartSectionProps> = ({ displayToast }) => {
                   setChartType('market_cap');
                   setLoading(true);
                 }}
-                className={`font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-3 py-2 rounded border transition-all ${chartType === 'market_cap' ? 'border-[rgba(212,160,23,0.4)]' : 'border-transparent'
-                  }`}
+                className={`font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-3 py-2 rounded border transition-all ${
+                  chartType === 'market_cap' ? 'border-[rgba(212,160,23,0.4)]' : 'border-transparent'
+                }`}
                 style={{
                   color: chartType === 'market_cap' ? 'var(--text)' : 'var(--text3)',
                   background: chartType === 'market_cap' ? 'var(--gold-dim)' : 'transparent',
@@ -107,7 +111,7 @@ const ChartSection: React.FC<ChartSectionProps> = ({ displayToast }) => {
               </button>
             </div>
 
-            <div className="flex gap-0.5">
+            <div className="flex w-full gap-0.5 overflow-x-auto pb-0.5 sm:w-auto sm:justify-center">
               {['1', '5', '15', '60', '240', '1D'].map((res) => (
                 <button
                   key={res}
@@ -115,8 +119,9 @@ const ChartSection: React.FC<ChartSectionProps> = ({ displayToast }) => {
                     setResolution(res);
                     setLoading(true);
                   }}
-                  className={`font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.15em] uppercase px-2.5 py-1.5 rounded transition-all ${resolution === res ? 'bg-[var(--gold-dim)]' : 'bg-transparent'
-                    }`}
+                  className={`whitespace-nowrap font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.15em] uppercase px-2.5 py-1.5 rounded transition-all ${
+                    resolution === res ? 'bg-[var(--gold-dim)]' : 'bg-transparent'
+                  }`}
                   style={{
                     color: resolution === res ? 'var(--gold)' : 'var(--text4)',
                   }}
@@ -138,48 +143,51 @@ const ChartSection: React.FC<ChartSectionProps> = ({ displayToast }) => {
             </a>
           </div>
 
-          <iframe
-            src={buildSrc()}
-            className="absolute top-[41px] left-0 right-0 bottom-0 w-full"
-            style={{ height: 'calc(100% - 41px)' }}
-            frameBorder="0"
-            allow="clipboard-write"
-            allowFullScreen
-            onLoad={() => setLoading(false)}
-          />
+          <div className="relative flex-1 min-h-0">
+            <iframe
+              src={buildSrc()}
+              className="absolute inset-0 h-full w-full"
+              frameBorder="0"
+              allow="clipboard-write"
+              allowFullScreen
+              onLoad={() => setLoading(false)}
+            />
 
-          {loading && (
-            <div
-              className="absolute inset-0 top-[41px] flex items-center justify-center z-20 pointer-events-none"
-              style={{ background: 'rgba(var(--bg-rgb), 0.6)' }}
-            >
-              <span
-                className="font-['JetBrains_Mono'] text-[0.6rem] tracking-widest uppercase animate-pulse"
-                style={{ color: 'var(--text4)' }}
+            {loading && (
+              <div
+                className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
+                style={{ background: 'rgba(var(--bg-rgb), 0.6)' }}
               >
-                Loading Chart…
-              </span>
-            </div>
-          )}
+                <span
+                  className="font-['JetBrains_Mono'] text-[0.6rem] tracking-widest uppercase animate-pulse"
+                  style={{ color: 'var(--text4)' }}
+                >
+                  Loading Chart...
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <button
             onClick={copyCA}
-            className="inline-flex items-center gap-2 font-['JetBrains_Mono'] text-[0.55rem] tracking-[0.2em] uppercase px-6 py-4 rounded border min-h-[48px] transition-all hover:bg-[rgba(255,255,255,0.03)]"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 font-['JetBrains_Mono'] text-[0.52rem] sm:text-[0.55rem] tracking-[0.14em] sm:tracking-[0.2em] uppercase px-4 sm:px-6 py-4 rounded border min-h-[48px] transition-all hover:bg-[rgba(255,255,255,0.03)]"
             style={{
               color: 'var(--text3)',
               borderColor: 'var(--border)',
             }}
           >
             <Copy className="w-3 h-3" />
-            8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump
+            <span className="hidden sm:inline">8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump</span>
+            <span className="sm:hidden">Copy Contract Address</span>
           </button>
+
           <a
             href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump"
             target="_blank"
             rel="noopener noreferrer"
-            className="chart-buy-btn inline-flex items-center justify-center font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-5 py-3 rounded transition-all"
+            className="chart-buy-btn inline-flex w-full sm:w-auto items-center justify-center font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-5 py-3 rounded transition-all min-h-[48px]"
             style={{
               background: 'var(--red-dim)',
               borderWidth: '1px',

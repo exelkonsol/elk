@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Info } from 'lucide-react';
-import { ALLOWED_MECHANISMS, voteSupabase, voteLocal, hasVotedThisCycle, markVoted, getVotedMechanism } from '../utils/supabase';
+import { voteSupabase, voteLocal, hasVotedThisCycle, markVoted, getVotedMechanism } from '../utils/supabase';
 import type { Mechanism, Votes } from '../utils/supabase';
 
 interface MechanismsSectionProps {
@@ -15,19 +15,19 @@ interface MechanismsSectionProps {
 const modalData: Record<Mechanism, { title: string; body: string }> = {
   isolation: {
     title: 'Isolation',
-    body: `<p>Isolation is the deliberate thinning of noise—the conscious decision to wall off disturbing thoughts and reduce the overwhelming complexity of existence to manageable fragments. In Zapffe's philosophy, isolation functions as a psychological defense mechanism where we compartmentalize the unbearable truths about our condition.</p><p>Within the $ELK ecosystem, isolation manifests through token burns and supply reduction. By removing tokens from circulation, we compress the system until only what matters remains. This scarcity reflects the deeper fear of nothingness—the void we desperately try to avoid confronting.</p><p>The burn is not destruction—it is selective forgetting, a mercy we grant ourselves.</p><p><em>"We survive by refusing to see the whole picture."</em></p>`,
+    body: `<p>Isolation is the deliberate thinning of noise - the conscious decision to wall off disturbing thoughts and reduce the overwhelming complexity of existence to manageable fragments. In Zapffe's philosophy, isolation functions as a psychological defense mechanism where we compartmentalize unbearable truths about our condition.</p><p>Within the $ELK ecosystem, isolation manifests through token burns and supply reduction. By removing tokens from circulation, we compress the system until only what matters remains. Scarcity becomes structure, and structure becomes psychological relief.</p><p>Isolation also defines attention. Communities survive by deciding what not to amplify: empty narratives, panic cycles, and performative outrage. If everything is urgent, nothing is meaningful. Isolation restores hierarchy to signal.</p><p>On-chain, this mechanism appears as subtraction with intent. The act is visible, irreversible, and public. That visibility matters: it turns private fear into a shared rite and gives the community a measurable symbol of discipline.</p><p>At a human level, isolation is not cowardice. It is triage. We narrow the frame so we can keep moving without collapse. The mind does this internally; the project mirrors it externally.</p><p>The burn is not destruction - it is selective forgetting, a mercy we grant ourselves so that purpose can survive contact with chaos.</p><p><em>"We survive by refusing to see the whole picture."</em></p>`,
   },
   anchoring: {
     title: 'Anchoring',
-    body: `<p>Anchoring is the mechanism by which we attach ourselves to fixed points in a reality that offers none. Zapffe understood that humans require stable reference points—values, beliefs, routines—to prevent the vertiginous drift into cosmic meaninglessness.</p><p>In the $ELK framework, anchoring takes the form of permanent liquidity and locked pools. These immutable structures serve as gravitational centers, preventing the community from scattering into the chaotic void of speculation.</p><p>When everything is uncertain, when markets crash and narratives collapse, the anchor remains. Structure against entropy. Order against chaos. A stake driven into shifting sand.</p><p><em>"We build monuments not because they will last, but because building them gives us something to hold."</em></p>`,
+    body: `<p>Anchoring is the mechanism by which we attach ourselves to fixed points in a reality that offers none. Zapffe observed that humans need stable references - values, roles, routines - to prevent the drift into existential vertigo.</p><p>In the $ELK framework, anchoring appears as permanent liquidity, locked structures, and persistent rituals. These are not cosmetic features. They are anti-fragile coordinates that keep the community legible when sentiment fractures.</p><p>An anchor is useful precisely when pressure rises. During volatility, people search for what cannot be moved. Durable liquidity, transparent token rails, and repeatable community behavior create that psychological floor.</p><p>Anchoring also reduces social fragmentation. Without common points of return, discourse splinters into private timelines and isolated panic. Anchors synchronize participants around shared evidence and shared memory.</p><p>Operationally, anchoring means choosing commitments that outlast mood: documented rules, visible treasury behavior, and predictable cadence. Stability is less about promises and more about repeatability under stress.</p><p>When everything is uncertain, the anchor remains. Structure against entropy. Order against chaos. A stake driven into shifting sand.</p><p><em>"We build monuments not because they will last, but because building them gives us something to hold."</em></p>`,
   },
   distraction: {
     title: 'Distraction',
-    body: `<p>Distraction is motion as mercy—the perpetual activity that prevents the mind from settling into contemplation of its own predicament. Zapffe recognized that humanity fills every silence with noise, every pause with action, because stillness invites the awareness we cannot bear.</p><p>For $ELK, distraction manifests as marketing campaigns, community raids, meme creation, and the endless production of content. These activities are not merely promotional—they are existential. The raid is a ritual. The meme is a prayer.</p><p>Distraction is not denial—it is strategic avoidance. The community that moves together survives together.</p><p><em>"We fill the void with noise because the void's silence tells us too much."</em></p>`,
+    body: `<p>Distraction is motion as mercy - the continuous activity that prevents the mind from settling too long on its own abyss. Zapffe recognized that silence can become unbearable when consciousness turns inward without buffer.</p><p>For $ELK, distraction appears as campaigns, raids, meme production, storytelling, and relentless publishing. These actions are not only marketing outputs. They are social metabolism: movement that keeps paralysis from taking root.</p><p>In high-volatility environments, idle attention becomes hostile attention. People invent threats, magnify rumors, and spiral. Constructive distraction channels that energy into coordinated tasks with visible progress markers.</p><p>This mechanism also scales belonging. Shared activity creates synchronization: the same jokes, the same references, the same cadence of response. Culture compounds faster when people build in public, together, in real time.</p><p>Healthy distraction is directional, not random. It turns anxiety into work and work into identity. The objective is not to avoid truth forever, but to stay functional long enough to transform it.</p><p>Distraction is not denial - it is strategic avoidance. The community that moves together survives together.</p><p><em>"We fill the void with noise because the void's silence tells us too much."</em></p>`,
   },
   sublimation: {
     title: 'Sublimation',
-    body: `<p>Sublimation is the highest of Zapffe's mechanisms—the transformation of suffering into something greater. Where isolation hides, anchoring steadies, and distraction averts, sublimation transmutes. It takes the raw material of existential pain and forges it into art, philosophy, community, and meaning.</p><p>Within $ELK, sublimation is the philosophical foundation itself. The project transforms the brutal realities of memecoin speculation—the losses, the volatility, the absurdity—into a shared mythology. We do not deny the suffering; we make it sacred.</p><p>The burden becomes the badge. The weight becomes the wings.</p><p><em>"Pain becomes meaning when we refuse to let it be meaningless."</em></p>`,
+    body: `<p>Sublimation is the highest of Zapffe's mechanisms: the transformation of suffering into form. Where isolation narrows, anchoring stabilizes, and distraction redirects, sublimation converts. It turns raw pain into artifacts that can be shared, studied, and carried.</p><p>Within $ELK, sublimation is the foundation of the whole narrative stack. Losses, volatility, absurdity, and uncertainty are not hidden. They are translated into language, symbols, audio, and ritual so the experience becomes coherent instead of chaotic.</p><p>Sublimation is what allows the community to metabolize failure without collapsing into cynicism. A bad cycle can still produce meaning if it yields craft, memory, and stronger collective pattern recognition.</p><p>This mechanism also upgrades identity. Participants are not only speculators reacting to price. They become co-authors of a philosophy-driven system where creation itself is a response to existential pressure.</p><p>In practical terms, sublimation means building things that outlast the moment: narratives, media, archives, and design choices that carry emotional truth forward. Art becomes infrastructure for endurance.</p><p>The burden becomes the badge. The weight becomes the wings.</p><p><em>"Pain becomes meaning when we refuse to let it be meaningless."</em></p>`,
   },
 };
 
@@ -135,7 +135,7 @@ const MechanismsSection: React.FC<MechanismsSectionProps> = ({
       displayToast('VOTE RECORDED');
     } catch (e) {
       console.error('Voting failed:', e);
-      displayToast('VOTE FAILED — RETRY');
+      displayToast('VOTE FAILED - RETRY');
     } finally {
       setIsVoting(false);
     }
@@ -175,8 +175,11 @@ const MechanismsSection: React.FC<MechanismsSectionProps> = ({
                   boxShadow: 'var(--shadow-card)',
                 }}
               >
-                <div className="absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(90deg, transparent, ${mech.color}, transparent)` }} />
-                
+                <div
+                  className="absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ background: `linear-gradient(90deg, transparent, ${mech.color}, transparent)` }}
+                />
+
                 <div onClick={() => openModal(modalData[mech.id])} className="flex-1">
                   <div className="flex justify-between items-start mb-5">
                     <h3 className="font-['Cinzel'] text-2xl font-semibold" style={{ color: 'var(--text2)' }}>

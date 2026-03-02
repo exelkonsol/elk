@@ -30,9 +30,8 @@ const MiniPlayer: React.FC = () => {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-[98] h-[68px] flex items-center px-5 gap-4 backdrop-blur-[20px] transition-transform duration-400 ${
-        visible ? 'translate-y-0' : 'translate-y-full'
-      }`}
+      className={`fixed bottom-0 left-0 right-0 z-[98] h-[68px] flex items-center px-5 gap-4 backdrop-blur-[20px] transition-transform duration-400 ${visible ? 'translate-y-0' : 'translate-y-full'
+        }`}
       style={{
         background: 'var(--nav-bg)',
         borderTop: '1px solid var(--border)',
@@ -54,7 +53,7 @@ const MiniPlayer: React.FC = () => {
         >
           {tracks[currentIndex]?.title}
         </div>
-        <div className="mt-1 flex-1 max-w-[200px] h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+        <div className="mini-progress-bg mt-1 flex-1 max-w-[200px] h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
           <div
             className="h-full rounded-full"
             style={{

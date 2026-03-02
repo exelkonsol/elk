@@ -82,9 +82,8 @@ const ChartSection: React.FC<ChartSectionProps> = ({ displayToast }) => {
                   setChartType('price');
                   setLoading(true);
                 }}
-                className={`font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-3 py-2 rounded border transition-all ${
-                  chartType === 'price' ? 'border-[rgba(212,160,23,0.4)]' : 'border-transparent'
-                }`}
+                className={`font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-3 py-2 rounded border transition-all ${chartType === 'price' ? 'border-[rgba(212,160,23,0.4)]' : 'border-transparent'
+                  }`}
                 style={{
                   color: chartType === 'price' ? 'var(--text)' : 'var(--text3)',
                   background: chartType === 'price' ? 'var(--gold-dim)' : 'transparent',
@@ -97,9 +96,8 @@ const ChartSection: React.FC<ChartSectionProps> = ({ displayToast }) => {
                   setChartType('market_cap');
                   setLoading(true);
                 }}
-                className={`font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-3 py-2 rounded border transition-all ${
-                  chartType === 'market_cap' ? 'border-[rgba(212,160,23,0.4)]' : 'border-transparent'
-                }`}
+                className={`font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-3 py-2 rounded border transition-all ${chartType === 'market_cap' ? 'border-[rgba(212,160,23,0.4)]' : 'border-transparent'
+                  }`}
                 style={{
                   color: chartType === 'market_cap' ? 'var(--text)' : 'var(--text3)',
                   background: chartType === 'market_cap' ? 'var(--gold-dim)' : 'transparent',
@@ -117,9 +115,8 @@ const ChartSection: React.FC<ChartSectionProps> = ({ displayToast }) => {
                     setResolution(res);
                     setLoading(true);
                   }}
-                  className={`font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.15em] uppercase px-2.5 py-1.5 rounded transition-all ${
-                    resolution === res ? 'bg-[var(--gold-dim)]' : 'bg-transparent'
-                  }`}
+                  className={`font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.15em] uppercase px-2.5 py-1.5 rounded transition-all ${resolution === res ? 'bg-[var(--gold-dim)]' : 'bg-transparent'
+                    }`}
                   style={{
                     color: resolution === res ? 'var(--gold)' : 'var(--text4)',
                   }}
@@ -182,7 +179,7 @@ const ChartSection: React.FC<ChartSectionProps> = ({ displayToast }) => {
             href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-5 py-3 rounded transition-all"
+            className="chart-buy-btn inline-flex items-center justify-center font-['JetBrains_Mono'] text-[0.6rem] tracking-[0.2em] uppercase px-5 py-3 rounded transition-all"
             style={{
               background: 'var(--red-dim)',
               borderWidth: '1px',

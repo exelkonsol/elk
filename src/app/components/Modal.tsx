@@ -27,9 +27,8 @@ const Modal: React.FC<ModalProps> = ({ data, onClose }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/88 transition-opacity duration-300 ${
-        data ? 'opacity-100 backdrop-blur-xl' : 'opacity-0 pointer-events-none'
-      }`}
+      className={`modal-overlay fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/88 transition-opacity duration-300 ${data ? 'opacity-100 backdrop-blur-xl' : 'opacity-0 pointer-events-none'
+        }`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

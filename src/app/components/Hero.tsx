@@ -54,7 +54,7 @@ const Hero: React.FC = () => {
             <img
               src="https://raw.githubusercontent.com/exelkonsol/elk/main/images/headerlogo.png"
               alt="$ELK"
-              className="w-[240px] h-[240px] sm:w-[340px] sm:h-[340px] md:w-[440px] md:h-[440px] lg:w-[520px] lg:h-[520px] object-contain select-none transition-all duration-700 hover:scale-105"
+              className="hero-logo w-[240px] h-[240px] sm:w-[340px] sm:h-[340px] md:w-[440px] md:h-[440px] lg:w-[520px] lg:h-[520px] object-contain select-none transition-all duration-700 hover:scale-105"
               style={{
                 filter: 'brightness(1.1) drop-shadow(0 20px 60px rgba(0,0,0,0.7))',
               }}
@@ -70,17 +70,15 @@ const Hero: React.FC = () => {
               Peter Wessel Zapffe // The Last Messiah
             </p>
             <h1
-              className={`font-['Cinzel'] text-[clamp(1.1rem,3.5vw,2.2rem)] font-normal leading-relaxed transition-all duration-500 ${
-                fading ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
-              }`}
+              className={`font-['Cinzel'] text-[clamp(1.1rem,3.5vw,2.2rem)] font-normal leading-relaxed transition-all duration-500 ${fading ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
+                }`}
               style={{ color: 'var(--text)' }}
             >
               "{currentQuote.q}"
             </h1>
             <p
-              className={`font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.3em] uppercase transition-all duration-500 ${
-                fading ? 'opacity-0' : 'opacity-100'
-              }`}
+              className={`font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.3em] uppercase transition-all duration-500 ${fading ? 'opacity-0' : 'opacity-100'
+                }`}
               style={{ color: 'var(--text4)' }}
             >
               {currentQuote.s}
@@ -92,7 +90,7 @@ const Hero: React.FC = () => {
               href="https://pump.fun/coin/8DaLPxatThHR6ZMx62QtvA6vZ1oJaEKA6gWoQxjGpump"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center font-['JetBrains_Mono'] text-[0.65rem] tracking-[0.2em] uppercase px-7 py-4 rounded min-h-[48px] w-full sm:w-auto transition-all duration-250 hover:translate-y-[-2px]"
+              className="hero-buy-btn inline-flex items-center justify-center font-['JetBrains_Mono'] text-[0.65rem] tracking-[0.2em] uppercase px-7 py-4 rounded min-h-[48px] w-full sm:w-auto transition-all duration-250 hover:translate-y-[-2px]"
               style={{
                 background: 'var(--red-dim)',
                 borderWidth: '1px',

@@ -17,7 +17,7 @@
 }
 
 [data-theme="light"] .global-bg {
-  filter: sepia(0.4) brightness(0.48) contrast(1.2);
+  filter: sepia(0.25) brightness(0.92) contrast(1.05);
 }
 
 .global-tint {
@@ -32,13 +32,13 @@
 .vignette {
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 55%, rgba(0,0,0,0.88) 100%);
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 55%, rgba(0, 0, 0, 0.88) 100%);
   pointer-events: none;
   z-index: -5;
 }
 
 [data-theme="light"] .vignette {
-  background: radial-gradient(ellipse at center, transparent 0%, rgba(80,65,40,0.28) 55%, rgba(65,50,28,0.65) 100%);
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(100, 80, 50, 0.08) 55%, rgba(80, 60, 30, 0.22) 100%);
 }
 
 .noise {
@@ -105,17 +105,80 @@
    SECTION BACKGROUNDS (LIGHT MODE)
 ════════════════════════ */
 [data-theme="light"] .chart-section {
-  background: rgba(0,0,0,0.06);
+  background: rgba(26, 18, 8, 0.03);
 }
 
 [data-theme="light"] .mechanisms-section {
-  background: rgba(255,255,255,0.22);
+  background: rgba(255, 253, 248, 0.45);
 }
 
 [data-theme="light"] .quote-section-wrapper {
-  background: rgba(0,0,0,0.06);
+  background: rgba(26, 18, 8, 0.03);
 }
 
 [data-theme="light"] .soundscape-section {
-  background: rgba(255,255,255,0.22);
+  background: rgba(255, 253, 248, 0.45);
+}
+
+/* ════════════════════════
+   LIGHT MODE — COMPONENT VISIBILITY FIXES
+   Override hardcoded dark-mode-only inline colors
+════════════════════════ */
+
+/* Hover backgrounds: white-alpha → dark-alpha for light mode */
+[data-theme="light"] a[class*="hover\:bg-\[rgba\(255"]:hover,
+[data-theme="light"] button[class*="hover\:bg-\[rgba\(255"]:hover {
+  background-color: rgba(26, 18, 8, 0.06) !important;
+}
+
+/* Hero Buy button */
+[data-theme="light"] .hero-buy-btn {
+  background: var(--red-dim) !important;
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+}
+
+[data-theme="light"] .hero-buy-btn:hover {
+  background: rgba(160, 24, 48, 0.20) !important;
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+  box-shadow: 0 8px 32px rgba(160, 24, 48, 0.12) !important;
+}
+
+/* Chart Buy button */
+[data-theme="light"] .chart-buy-btn {
+  background: var(--red-dim) !important;
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+}
+
+/* Hero logo — softer shadow on light */
+[data-theme="light"] .hero-logo {
+  filter: brightness(1.0) drop-shadow(0 12px 40px rgba(80, 60, 30, 0.20)) !important;
+}
+
+/* MiniPlayer progress bg */
+[data-theme="light"] .mini-progress-bg {
+  background: rgba(26, 18, 8, 0.12) !important;
+}
+
+/* Quote text shadow — warm on light */
+[data-theme="light"] .quote-text-shadow {
+  text-shadow: 0 1px 12px rgba(80, 60, 30, 0.10) !important;
+}
+
+/* Modal overlay — frosted light */
+[data-theme="light"] .modal-overlay {
+  background: rgba(245, 240, 232, 0.85) !important;
+}
+
+/* Modal prose — override prose-invert for light mode */
+[data-theme="light"] .prose-invert {
+  color: var(--text2);
+}
+
+/* Footer bg image — slightly more visible on light */
+[data-theme="light"] .footer-bg>div:first-child {
+  filter: grayscale(0.6) contrast(1.1) brightness(0.95) !important;
+  opacity: 0.15 !important;
 }

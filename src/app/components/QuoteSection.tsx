@@ -172,9 +172,8 @@ const QuoteSection: React.FC<QuoteSectionProps> = ({ displayToast }) => {
                 <button
                   key={m}
                   onClick={() => setMode(m)}
-                  className={`font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.2em] uppercase px-5 py-2.5 rounded border min-h-[40px] transition-all ${
-                    mode === m ? 'border-[var(--gold)]' : 'border-[var(--border)]'
-                  }`}
+                  className={`font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.2em] uppercase px-5 py-2.5 rounded border min-h-[40px] transition-all ${mode === m ? 'border-[var(--gold)]' : 'border-[var(--border)]'
+                    }`}
                   style={{
                     color: mode === m ? 'var(--text)' : 'var(--text3)',
                     background: mode === m ? 'var(--gold-dim)' : 'transparent',
@@ -186,9 +185,8 @@ const QuoteSection: React.FC<QuoteSectionProps> = ({ displayToast }) => {
             </div>
 
             <div
-              className={`font-['Cinzel'] text-[clamp(1.05rem,2.8vw,1.8rem)] font-normal leading-relaxed max-w-[780px] min-h-[120px] flex items-center justify-center text-center mb-9 transition-all duration-450 ${
-                fading ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
-              }`}
+              className={`quote-text-shadow font-['Cinzel'] text-[clamp(1.05rem,2.8vw,1.8rem)] font-normal leading-relaxed max-w-[780px] min-h-[120px] flex items-center justify-center text-center mb-9 transition-all duration-450 ${fading ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
+                }`}
               style={{
                 color: 'var(--text)',
                 textShadow: '0 2px 20px rgba(0,0,0,0.5)',

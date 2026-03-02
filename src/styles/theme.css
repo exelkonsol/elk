@@ -36,46 +36,46 @@
 
 /* ════════════════════════
    THEME VARIABLES — LIGHT
-   Enhanced contrast and readability
+   Clean ivory/cream palette with high contrast
 ════════════════════════ */
 [data-theme="light"] {
-  /* Backgrounds — clear warm parchment hierarchy */
-  --bg:        #c8bfa6;
-  --bg2:       #bfb59a;
-  --card:      #e8e1cd;
-  --card2:     #d8cfb8;
+  /* Backgrounds — clean warm ivory hierarchy */
+  --bg:        #f5f0e8;
+  --bg2:       #ede7db;
+  --card:      #fffdf8;
+  --card2:     #f0ebe1;
 
-  /* Borders — stronger warm separation */
-  --border:    rgba(70,50,15,0.28);
-  --border2:   rgba(70,50,15,0.45);
+  /* Borders — refined warm separation */
+  --border:    rgba(120,90,50,0.15);
+  --border2:   rgba(120,90,50,0.25);
 
-  /* Text — very dark warm browns for maximum contrast */
-  --text:      #0f0900;
-  --text2:     #1f1505;
-  --text3:     rgba(15,9,0,0.78);
-  --text4:     rgba(15,9,0,0.58);
-  --text5:     rgba(15,9,0,0.32);
+  /* Text — high-contrast warm charcoals */
+  --text:      #1a1208;
+  --text2:     #3d3020;
+  --text3:     rgba(26,18,8,0.72);
+  --text4:     rgba(26,18,8,0.52);
+  --text5:     rgba(26,18,8,0.32);
 
-  /* Accent colors — deep, highly readable */
-  --red:       #8a1425;
-  --red-dim:   rgba(138,20,37,0.20);
-  --red-glow:  rgba(138,20,37,0.15);
-  --gold:      #8a6100;
-  --gold-dim:  rgba(138,97,0,0.22);
+  /* Accent colors — vibrant, readable on light */
+  --red:       #a01830;
+  --red-dim:   rgba(160,24,48,0.12);
+  --red-glow:  rgba(160,24,48,0.10);
+  --gold:      #9a6d00;
+  --gold-dim:  rgba(154,109,0,0.14);
 
   /* Surfaces */
-  --glass:     rgba(232,225,205,0.95);
-  --nav-bg:    rgba(215,206,185,0.98);
+  --glass:     rgba(255,253,248,0.92);
+  --nav-bg:    rgba(245,240,232,0.96);
 
   /* Overlays */
-  --noise-o:   0.022;
-  --global-bg-o: 0.68;
-  --tint:      rgba(90,75,50,0.20);
+  --noise-o:   0.015;
+  --global-bg-o: 0.18;
+  --tint:      rgba(120,100,70,0.08);
 
-  /* Shadows — warm, medium depth */
-  --shadow-card: 0 4px 28px rgba(60,42,12,0.28), 0 1px 5px rgba(60,42,12,0.16);
+  /* Shadows — soft, warm depth */
+  --shadow-card: 0 2px 16px rgba(80,60,30,0.10), 0 1px 3px rgba(80,60,30,0.08);
   
-  --bg-rgb: 200,191,166;
+  --bg-rgb: 245,240,232;
 }
 
 /* ════════════════════════

@@ -24,41 +24,37 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
           className="absolute inset-0"
           style={{
             backgroundImage: "url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png')",
-            backgroundSize: '140% auto',
-            backgroundPosition: 'center 54%',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 52%',
             backgroundRepeat: 'no-repeat',
-            filter: 'blur(52px) saturate(1.08) brightness(0.90)',
-            transform: 'scale(1.12)',
-            opacity: 0.28,
+            filter: 'blur(56px) saturate(1.08) brightness(0.86)',
+            transform: 'scale(1.16)',
+            opacity: 0.26,
           }}
         />
         <div
           className="absolute inset-0 transition-all duration-300"
           style={{
             backgroundImage: "url('https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png')",
-            backgroundSize: 'contain',
-            backgroundPosition: 'center center',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 52%',
             backgroundRepeat: 'no-repeat',
-            filter: 'saturate(1.08) contrast(1.02) brightness(1.02)',
-            opacity: 0.80,
-            WebkitMaskImage:
-              'radial-gradient(ellipse 130% 108% at 50% 52%, rgba(0,0,0,0.98) 32%, rgba(0,0,0,0.78) 54%, rgba(0,0,0,0.48) 72%, rgba(0,0,0,0.20) 86%, rgba(0,0,0,0) 100%)',
-            maskImage:
-              'radial-gradient(ellipse 130% 108% at 50% 52%, rgba(0,0,0,0.98) 32%, rgba(0,0,0,0.78) 54%, rgba(0,0,0,0.48) 72%, rgba(0,0,0,0.20) 86%, rgba(0,0,0,0) 100%)',
+            filter: 'saturate(1.06) contrast(1.00) brightness(0.98)',
+            opacity: 0.78,
           }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(ellipse 122% 98% at 50% 52%, rgba(10,10,11,0.00) 0%, rgba(10,10,11,0.08) 58%, rgba(10,10,11,0.24) 74%, rgba(10,10,11,0.56) 88%, rgba(10,10,11,0.86) 100%)',
+              'radial-gradient(ellipse 124% 100% at 50% 52%, rgba(10,10,11,0.00) 0%, rgba(10,10,11,0.10) 50%, rgba(10,10,11,0.30) 74%, rgba(10,10,11,0.68) 90%, rgba(10,10,11,0.90) 100%)',
           }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(to bottom, rgba(10,10,11,0.58) 0%, rgba(10,10,11,0.16) 22%, rgba(10,10,11,0.20) 68%, rgba(10,10,11,0.80) 100%)',
+              'linear-gradient(to bottom, rgba(10,10,11,0.64) 0%, rgba(10,10,11,0.22) 24%, rgba(10,10,11,0.24) 70%, rgba(10,10,11,0.88) 100%)',
           }}
         />
       </div>

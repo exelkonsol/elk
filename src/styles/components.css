@@ -487,7 +487,32 @@
 }
 
 [data-theme="light"] #player-art-bg {
-  filter: blur(50px) brightness(0.32) saturate(0.3);
+  filter: blur(52px) brightness(0.22) saturate(0.26);
+}
+
+[data-theme="light"] .player-card {
+  --text: #120c05;
+  --text2: #23170c;
+  --text3: rgba(18, 12, 5, 0.86);
+  --text4: rgba(18, 12, 5, 0.74);
+  --text5: rgba(18, 12, 5, 0.60);
+  --border: rgba(70, 45, 18, 0.26);
+  background: rgba(255, 250, 240, 0.94);
+  box-shadow: 0 10px 36px rgba(70, 45, 18, 0.16);
+}
+
+[data-theme="light"] .player-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 250, 240, 0.26) 0%,
+    rgba(255, 250, 240, 0.42) 44%,
+    rgba(255, 250, 240, 0.52) 100%
+  );
 }
 
 #viz-canvas {

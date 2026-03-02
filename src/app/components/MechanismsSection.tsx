@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Info } from 'lucide-react';
-import { Mechanism, ALLOWED_MECHANISMS, Votes, voteSupabase, voteLocal, hasVotedThisCycle, markVoted, getVotedMechanism } from '../utils/supabase';
+import { ALLOWED_MECHANISMS, voteSupabase, voteLocal, hasVotedThisCycle, markVoted, getVotedMechanism } from '../utils/supabase';
+import type { Mechanism, Votes } from '../utils/supabase';
 
 interface MechanismsSectionProps {
   votes: Votes;

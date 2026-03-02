@@ -11,7 +11,8 @@ import Footer from './components/Footer';
 import MiniPlayer from './components/MiniPlayer';
 import Toast from './components/Toast';
 import Modal from './components/Modal';
-import { initSupabase, Votes, getLocalVotes } from './utils/supabase';
+import { initSupabase } from './utils/supabase';
+import type { Votes } from './utils/supabase';
 
 export default function App() {
   const [votes, setVotes] = useState<Votes>({ isolation: 0, anchoring: 0, distraction: 0, sublimation: 0 });

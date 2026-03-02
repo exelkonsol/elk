@@ -11,19 +11,9 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
     navigator.clipboard.writeText(ca).then(() => displayToast('CA COPIED'));
   };
 
+  // Upload newfooter.jpg to your repo/CDN and replace this URL
   const IMAGE_URL =
-    'https://raw.githubusercontent.com/exelkonsol/elk/main/images/newpreview.png';
-
-  const radialMask = [
-    'radial-gradient(ellipse 70% 78% at 50% 50%,',
-    '  #000 0%,',
-    '  rgba(0,0,0,0.95) 20%,',
-    '  rgba(0,0,0,0.80) 36%,',
-    '  rgba(0,0,0,0.52) 52%,',
-    '  rgba(0,0,0,0.22) 66%,',
-    '  rgba(0,0,0,0.06) 78%,',
-    '  transparent 88%)',
-  ].join('');
+    'https://raw.githubusercontent.com/exelkonsol/elk/main/images/newfooter.jpg';
 
   return (
     <footer
@@ -36,71 +26,65 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
       {/* ── BACKGROUND LAYERS ───────────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none select-none">
 
-        {/* Layer 1 — blurred ambient bloom, extended beyond bounds */}
+        {/* Layer 1 — soft ambient bloom behind everything */}
         <div
-          className="absolute inset-[-20%]"
+          className="absolute inset-[-10%]"
           style={{
             backgroundImage: `url('${IMAGE_URL}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'blur(120px) saturate(1.1) brightness(0.5)',
-            opacity: 0.10,
+            filter: 'blur(80px) saturate(1.2) brightness(0.55)',
+            opacity: 0.18,
           }}
         />
 
-        {/* Layer 2 — <img> with mask applied directly on the element.
-            This is the KEY fix: mask tracks the actual image dimensions,
-            not the container, so no edge lines survive at any viewport. */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <img
-            src={IMAGE_URL}
-            alt=""
-            aria-hidden="true"
-            className="w-full h-full"
-            style={{
-              objectFit: 'contain',
-              objectPosition: 'center 50%',
-              filter: 'saturate(0.92) brightness(0.75)',
-              opacity: 0.38,
-              WebkitMaskImage: radialMask,
-              maskImage: radialMask,
-              WebkitMaskSize: '100% 100%',
-              maskSize: '100% 100%',
-              display: 'block',
-            }}
-          />
-        </div>
+        {/* Layer 2 — main image, cover fill, light radial fade on edges only */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url('${IMAGE_URL}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            filter: 'saturate(0.95) brightness(0.82)',
+            opacity: 0.52,
+            // Gentle radial fade — image already has black edges so
+            // we only need a soft vignette, not an aggressive crop mask
+            WebkitMaskImage:
+              'radial-gradient(ellipse 90% 88% at 50% 50%, #000 0%, #000 38%, rgba(0,0,0,0.88) 56%, rgba(0,0,0,0.50) 74%, rgba(0,0,0,0.14) 88%, transparent 100%)',
+            maskImage:
+              'radial-gradient(ellipse 90% 88% at 50% 50%, #000 0%, #000 38%, rgba(0,0,0,0.88) 56%, rgba(0,0,0,0.50) 74%, rgba(0,0,0,0.14) 88%, transparent 100%)',
+          }}
+        />
 
-        {/* Layer 3 — four-directional hard edge kill, extra aggressive */}
+        {/* Layer 3 — edge reinforcement, especially top/bottom */}
         <div
           className="absolute inset-0"
           style={{
             background: [
               'linear-gradient(to bottom,',
               '  #0a0a0b 0%,',
-              '  rgba(10,10,11,0.92) 7%,',
-              '  rgba(10,10,11,0.40) 20%,',
-              '  transparent 35%)',
+              '  rgba(10,10,11,0.75) 6%,',
+              '  rgba(10,10,11,0.18) 18%,',
+              '  transparent 32%)',
               ',',
               'linear-gradient(to top,',
               '  #0a0a0b 0%,',
-              '  rgba(10,10,11,0.92) 7%,',
-              '  rgba(10,10,11,0.40) 20%,',
-              '  transparent 35%)',
+              '  rgba(10,10,11,0.75) 6%,',
+              '  rgba(10,10,11,0.18) 18%,',
+              '  transparent 32%)',
               ',',
               'linear-gradient(to right,',
               '  #0a0a0b 0%,',
-              '  rgba(10,10,11,0.95) 5%,',
-              '  rgba(10,10,11,0.55) 14%,',
-              '  rgba(10,10,11,0.18) 26%,',
-              '  transparent 38%)',
+              '  rgba(10,10,11,0.60) 4%,',
+              '  rgba(10,10,11,0.12) 14%,',
+              '  transparent 26%)',
               ',',
               'linear-gradient(to left,',
               '  #0a0a0b 0%,',
-              '  rgba(10,10,11,0.95) 5%,',
-              '  rgba(10,10,11,0.55) 14%,',
-              '  rgba(10,10,11,0.18) 26%,',
-              '  transparent 38%)',
+              '  rgba(10,10,11,0.60) 4%,',
+              '  rgba(10,10,11,0.12) 14%,',
+              '  transparent 26%)',
             ].join(''),
           }}
         />

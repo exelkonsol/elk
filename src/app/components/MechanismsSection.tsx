@@ -159,17 +159,17 @@ const MechanismsSection: React.FC<MechanismsSectionProps> = ({
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4 items-stretch">
           {mechanisms.map((mech, index) => (
             <div
               key={mech.id}
-              className={`reveal ${visible ? 'visible' : ''}`}
+              className={`reveal h-full ${visible ? 'visible' : ''}`}
               style={{
                 transitionDelay: `${index * 120}ms`,
               }}
             >
               <div
-                className="bg-[var(--card)] border rounded-xl p-7 min-h-[320px] flex flex-col justify-between cursor-pointer transition-all duration-250 hover:-translate-y-1 group relative overflow-hidden"
+                className="bg-[var(--card)] border rounded-xl p-7 h-[24rem] sm:h-[24.5rem] md:h-[25rem] flex flex-col justify-between cursor-pointer transition-all duration-250 hover:-translate-y-1 group relative overflow-hidden"
                 style={{
                   borderColor: 'var(--border)',
                   boxShadow: 'var(--shadow-card)',
@@ -184,13 +184,13 @@ const MechanismsSection: React.FC<MechanismsSectionProps> = ({
                     </h3>
                     <Info className="w-4 h-4 flex-shrink-0 mt-1" style={{ color: 'var(--text4)' }} />
                   </div>
-                  <p className="text-[0.95rem] leading-relaxed mb-3" style={{ color: 'var(--text3)' }}>
+                  <p className="text-[0.95rem] leading-relaxed mb-3 min-h-[5.8rem]" style={{ color: 'var(--text3)' }}>
                     {mech.desc}
                   </p>
-                  <p className="font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--text4)' }}>
+                  <p className="font-['JetBrains_Mono'] text-[0.58rem] tracking-[0.2em] uppercase mb-3 min-h-[1.8rem]" style={{ color: 'var(--text4)' }}>
                     {mech.tagline}
                   </p>
-                  <p className="font-['JetBrains_Mono'] text-xs tracking-widest uppercase" style={{ color: mech.color }}>
+                  <p className="font-['JetBrains_Mono'] text-xs tracking-widest uppercase min-h-[1.25rem]" style={{ color: mech.color }}>
                     {mech.accent}
                   </p>
                 </div>

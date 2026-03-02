@@ -29,13 +29,30 @@ const Footer: React.FC<FooterProps> = ({ displayToast }) => {
             backgroundRepeat: 'no-repeat',
             filter: 'saturate(1.08) contrast(1.02) brightness(1.02)',
             opacity: 0.88,
+            WebkitMaskImage:
+              'radial-gradient(ellipse 92% 84% at 50% 52%, rgba(0,0,0,1) 58%, rgba(0,0,0,0.76) 78%, rgba(0,0,0,0.08) 100%)',
+            maskImage:
+              'radial-gradient(ellipse 92% 84% at 50% 52%, rgba(0,0,0,1) 58%, rgba(0,0,0,0.76) 78%, rgba(0,0,0,0.08) 100%)',
           }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(ellipse 95% 85% at 50% 50%, rgba(10,10,11,0.20) 0%, rgba(10,10,11,0.36) 58%, rgba(10,10,11,0.64) 100%)',
+              'radial-gradient(ellipse 88% 80% at 50% 52%, rgba(10,10,11,0.04) 0%, rgba(10,10,11,0.24) 58%, rgba(10,10,11,0.56) 100%)',
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `
+              linear-gradient(to right, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.18) 18%, rgba(10,10,11,0.18) 82%, rgba(10,10,11,0.92) 100%),
+              linear-gradient(to bottom, rgba(10,10,11,0.94) 0%, rgba(10,10,11,0.16) 20%, rgba(10,10,11,0.16) 74%, rgba(10,10,11,0.96) 100%),
+              radial-gradient(circle at 0% 0%, rgba(10,10,11,0.56) 0%, rgba(10,10,11,0) 44%),
+              radial-gradient(circle at 100% 0%, rgba(10,10,11,0.56) 0%, rgba(10,10,11,0) 44%),
+              radial-gradient(circle at 0% 100%, rgba(10,10,11,0.66) 0%, rgba(10,10,11,0) 46%),
+              radial-gradient(circle at 100% 100%, rgba(10,10,11,0.66) 0%, rgba(10,10,11,0) 46%)
+            `,
           }}
         />
       </div>
